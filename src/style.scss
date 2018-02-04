@@ -1,6 +1,6 @@
 
-$mdc-theme-primary: rgb(0, 255, 85);
-$mdc-theme-secondary: #e4f403;
+// $mdc-theme-primary: rgb(0, 255, 85);
+// $mdc-theme-secondary: #e4f403;
 
 
 //@import "node_modules/material-components-web/material-components-web";
@@ -42,6 +42,9 @@ body{
     min-height:100vh;
     overflow:hidden;
 }
+#page{
+    
+}
 
 .fab--absolute {
   position: fixed;
@@ -57,6 +60,6 @@ body{
 }
 
 .mdc-card {
-    height: 350px;
+    // height: 350px;
     width: 350px;
   }
