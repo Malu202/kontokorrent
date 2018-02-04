@@ -1,0 +1,192 @@
+openapi: 3.0.0
+info:
+  title: Kontokorrent
+  version: 1.0.0
+security:
+  - bearerAuth: []         # use the same name as above
+servers:
+  - url: https://konrokorrent.azurewebsites.net/api
+paths:
+  /kontokorrent:
+    get:
+      summary: akuteller Status des Kontokorrents
+      tags:
+        - Kontokorrent
+      responses:
+        '200':
+          description: der aktuelle Stand des Kontokorrents
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Kontokorrent"
+  /persons:
+    post:
+      summary: eine Person anlegen
+      tags:
+          - Personen
+      requestBody:
+        description: Person die angelegt werden soll
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NeuePerson'
+      responses:
+        '400':
+          description: name nicht mehr verfügbar oder nicht angegeben
+        '200':
+          description: Die angelegte Person
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Person"
+    delete:
+      summary: eine Person löschen
+      tags:
+        - Personen
+      parameters:
+        - name: id
+          in: path
+          description: id der Person die gelöscht werden soll
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: wurde gelöscht
+        '404':
+          description: Person nicht gefunden
+        '400':
+          description: id fehlt
+  /payments:
+    get:
+      summary: alle Bezahlungen auflisten
+      tags:
+        - Bezahlungen
+      responses:
+        '200':
+          description: Ein Array von Bezahlungen
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Bezahlungen"
+    post:
+      summary: eine neue Bezahlung anlegen
+      tags:
+        - Bezahlungen
+      requestBody:
+        description: Bezahlung die angelegt werden soll
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NeueBezahlung'
+      responses:
+        '200':
+          description: Bezahlung
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bezahlung"
+        '404':
+          description: bezahlender oder empfaenger nicht gefunden
+        '400':
+          description: bezahlender, empfaenger oder wert nicht angegeben
+    delete:
+      summary: eine Bezahlung löschen
+      tags:
+        - Bezahlungen
+      parameters:
+        - name: id
+          in: path
+          description: id der Bezahlung die gelöscht werden soll
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: wurde gelöscht
+        '404':
+          description: Bezahlung nicht gefunden
+        '400':
+          description: id fehlt
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+  schemas:
+    Kontokorrent:
+      type: array
+      items:
+        $ref: "#/components/schemas/PersonenStatus"
+    PersonenStatus:
+      properties:
+        person:
+          $ref: "#/components/schemas/Person"
+        wert:
+          type: number
+          description: Gesamtsaldo also alles was noch bezahlt werden muss minus alles was man noch bekommt. Ein positiver Wert bedeutet somit Schulden
+        einzelSaldos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Saldo"
+    Saldo:
+      properties:
+        betrifft:
+          $ref: "#/components/schemas/Person"
+        saldo:
+          type: number
+          description: ein positiver Wert bedeutet man schuldet der Person _betrifft_ diesen Betrag, ein negativer Wert bedeutet man bekommt diesen Betrag von der jeweiligen Person
+    Person:
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+    NeuePerson:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    NeueBezahlung:
+      required:
+        - bezahlender
+        - empfaenger
+        - wert
+      properties:
+        bezahlende:
+          type: string
+          description: ids der Person die bezahlt
+        empfaenger:
+          type: array
+          items:
+            type: string
+            description: ids der Personen an die die Zahlung geht
+        wert:
+          type: number
+        beschreibung:
+          type: string
+    Bezahlung:
+      properties:
+        id:
+          type: string
+        zeit:
+          type: string
+          format: date-time
+        bezahlende:
+          $ref: "#/components/schemas/Person"
+        empfaenger:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+        wert:
+          type: number
+        beschreibung:
+          type: string
+    Bezahlungen:
+      type: array
+      items:
+        $ref: "#/components/schemas/Bezahlung"
