@@ -5,8 +5,32 @@ info:
 security:
   - bearerAuth: []         # use the same name as above
 servers:
-  - url: https://konrokorrent.azurewebsites.net/api
+  - url: https://kontokorrent.azurewebsites.net/api
 paths:
+  /token:
+    post:
+      summary: einen Bearer Token abholen für die Authorizaton der restlichen api
+      tags:
+        - token
+      security: []
+      requestBody:
+        description: Tokenrequest
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenRequest"
+      responses:
+        '400':
+          description: secret fehlt
+        '401':
+          description: es gibt keinen Kontokorrent mit diesem Secret
+        '200':
+          description: Tokenresponse
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Token"
   /kontokorrent:
     get:
       summary: akuteller Status des Kontokorrents
@@ -19,6 +43,23 @@ paths:
             application/json:    
               schema:
                 $ref: "#/components/schemas/Kontokorrent"
+    post:
+      summary: einen neuen Kontokorrent anlegen
+      tags:
+        - Kontokorrent
+      security: []
+      requestBody:
+        description: Kontokorrent der angelegt werden soll
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NeuerKontokorrent"
+      responses:
+        '400':
+          description: secret fehlt oder wird bereits verwendet
+        '200':
+          description: erfolgreich angelegt
   /persons:
     post:
       summary: eine Person anlegen
@@ -117,6 +158,22 @@ components:
       scheme: bearer
       bearerFormat: JWT    # optional, arbitrary value for documentation purposes
   schemas:
+    Token:
+      properties:
+        token:
+          type: string
+    TokenRequest:
+      required:
+        - secret
+      properties:
+        secret:
+          type: string
+    NeuerKontokorrent:
+      required:
+        - secret
+      properties:
+        secret:
+          type: string
     Kontokorrent:
       type: array
       items:
@@ -153,13 +210,13 @@ components:
           type: string
     NeueBezahlung:
       required:
-        - bezahlender
+        - bezahlendePerson
         - empfaenger
         - wert
       properties:
-        bezahlende:
+        bezahlendePerson:
           type: string
-          description: ids der Person die bezahlt
+          description: id der Person die bezahlt
         empfaenger:
           type: array
           items:
@@ -173,10 +230,10 @@ components:
       properties:
         id:
           type: string
-        zeit:
+        zeitpunkt:
           type: string
           format: date-time
-        bezahlende:
+        bezahlendePerson:
           $ref: "#/components/schemas/Person"
         empfaenger:
           type: array
