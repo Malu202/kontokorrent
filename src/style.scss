@@ -34,13 +34,11 @@
 html{
     height:100vh;
     min-height:100vh;
-    overflow:hidden;
 }
 
 body{
     height:100vh;
     min-height:100vh;
-    overflow:hidden;
 }
 #page{
     display: flex;
@@ -48,6 +46,8 @@ body{
     align-items: flex-start;
     justify-content: space-evenly;
     width: 100%;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 .fab--absolute {
