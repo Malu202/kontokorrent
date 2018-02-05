@@ -1,7 +1,15 @@
 
+var personenliste = [];
+
+for (var i = 0; i < 6; i++) { 
+    personenliste.push({
+        name: "Person " + i,
+        betrag: 100*i
+    })
+}
 
 
-var overview = document.getElementById("overview");
+var overview = document.getElementById("overviewList");
 function createOverviewPerson(name, betrag) {
     var name = name;
     var betrag = betrag;
@@ -19,6 +27,9 @@ function createOverviewPerson(name, betrag) {
     outerSpan.appendChild(innerSpan);
 }
 
-for (var i = 0; i < 6; i++) { 
-    createOverviewPerson("Person " + i, i * 100);
+
+
+
+for (var j = 0; j < personenliste.length; j++) { 
+    createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
 }

@@ -6,12 +6,12 @@
 //@import "node_modules/material-components-web/material-components-web";
 @import "node_modules/@material/button/mdc-button";
 @import "node_modules/@material/card/mdc-card";
-// @import "node_modules/@material/checkbox/mdc-checkbox";
+@import "node_modules/@material/checkbox/mdc-checkbox";
 // @import "node_modules/@material/dialog/mdc-dialog";
 @import "node_modules/@material/drawer/mdc-drawer";
 //@import "node_modules/@material/elevation/mdc-elevation";
 @import "node_modules/@material/fab/mdc-fab";
-// @import "node_modules/@material/form-field/mdc-form-field";
+@import "node_modules/@material/form-field/mdc-form-field";
 //@import "node_modules/@material/grid-list/mdc-grid-list";
 // @import "node_modules/@material/icon-toggle/mdc-icon-toggle";
 //@import "node_modules/@material/layout-grid/mdc-layout-grid";
@@ -43,7 +43,11 @@ body{
     overflow:hidden;
 }
 #page{
-    
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    width: 100%;
 }
 
 .fab--absolute {
@@ -59,7 +63,10 @@ body{
   }
 }
 
+h1, h2, h3, h4, h5, h6{
+    margin-left: 16px;
+}
 .mdc-card {
     // height: 350px;
-    width: 350px;
-  }
+    min-width: 350px;
+}

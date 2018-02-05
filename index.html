@@ -25,34 +25,58 @@
     </button>
 
     <div class="mdc-toolbar-fixed-adjust" id="page">
-        <div class="mdc-card">
-            <h1>Übersicht</h1>
-            <ul class="mdc-list mdc-list--two-line" id="overview">
-                <li class="mdc-list-item">
-                    <span class="mdc-list-item__text">
-                        Raphi
-                        <span class="mdc-list-item__secondary-text">
-                            -500€
-                        </span>
-                    </span>
-                </li>
-                <li class="mdc-list-item">
-                    <span class="mdc-list-item__text">
-                        Martin
-                        <span class="mdc-list-item__secondary-text">
-                            500€
-                        </span>
-                    </span>
-                </li>
-            </ul>
-            <div class="mdc-card__actions">
-                <div class="mdc-card__action-buttons">
-                    <button class="mdc-button mdc-card__action mdc-card__action--button">Action 2</button>
+        <div class="mdc-card" id="overview">
+            <h2>Übersicht</h1>
+                <ul class="mdc-list mdc-list--two-line" id="overviewList">
+                </ul>
+                <div class="mdc-card__actions">
+                    <div class="mdc-card__action-buttons">
+                        <button class="mdc-button mdc-card__action mdc-card__action--button">Action 2</button>
+                    </div>
+                    <div class="mdc-card__action-icons">
+                        <i class="material-icons mdc-card__action mdc-card__action--icon" tabindex="0" role="button" title="Share">share</i>
+                    </div>
                 </div>
-                <div class="mdc-card__action-icons">
-                    <i class="material-icons mdc-card__action mdc-card__action--icon" tabindex="0" role="button" title="Share">share</i>
+        </div>
+        <div class="mdc-card" id="newTransaction">
+            <h2>Neue Transaktion</h1>
+
+                <h4>Diese Personen zahlen:</h4>
+                <div id="payingPersons">
+                    <div class="mdc-form-field">
+                        <div class="mdc-checkbox">
+                            <input type="checkbox" class="mdc-checkbox__native-control" />
+                            <div class="mdc-checkbox__background">
+                                <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                    <path class="mdc-checkbox__checkmark-path" fill="none" stroke="white" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
+                                </svg>
+                                <div class="mdc-checkbox__mixedmark"></div>
+                            </div>
+                        </div>
+                        <label for="my-checkbox">My Checkbox Label</label>
+                    </div>
                 </div>
-            </div>
+                <h4>für diese Personen:</h4>
+                <div id="payingPersons">
+                    <div class="mdc-form-field">
+                        <div class="mdc-checkbox">
+                            <input type="checkbox" class="mdc-checkbox__native-control" />
+                            <div class="mdc-checkbox__background">
+                                <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                    <path class="mdc-checkbox__checkmark-path" fill="none" stroke="white" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
+                                </svg>
+                                <div class="mdc-checkbox__mixedmark"></div>
+                            </div>
+                        </div>
+                        <label for="my-checkbox">My Checkbox Label</label>
+                    </div>
+                </div>
+
+                <div class="mdc-card__actions">
+                    <div class="mdc-card__action-buttons">
+                        <button class="mdc-button mdc-card__action mdc-card__action--button">Action 2</button>
+                    </div>
+                </div>
         </div>
     </div>
 </body>
