@@ -237,8 +237,8 @@ function updateEventScreen(status) {
 
 
 
-var payingPerson = document.getElementById("payingPerson")
-
+var payingPerson = document.getElementById("payingPerson");
+var newTransaction = document.getElementById("newTransaction");
 var overview = document.getElementById("overviewList");
 function createOverviewPerson(name, betrag) {
     var name = name;
@@ -250,6 +250,7 @@ function createOverviewPerson(name, betrag) {
     outerSpan.innerHTML = name;
     var innerSpan = document.createElement("span");
     innerSpan.className = "mdc-list-item__secondary-text";
+    betrag = Math.round((betrag + 0.00001) * 100) / 100;
     innerSpan.innerHTML = betrag + '€';
 
     overview.appendChild(li);
@@ -258,6 +259,7 @@ function createOverviewPerson(name, betrag) {
 
     li.onclick = function () {
         payingPerson.innerHTML = name;
+        newTransaction.scrollIntoView({block: "start", behavior: "smooth"});
     }
 }
 
