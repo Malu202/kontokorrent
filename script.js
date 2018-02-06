@@ -30,6 +30,7 @@ function getToken() {
 
 var personenliste = [];
 
+var splashScreen = document.getElementById("splashScreen")
 var loginBox = document.getElementById("loginBox");
 var loginButton = document.getElementById("loginButton");
 var eventInput = document.getElementById("eventInput");
@@ -38,10 +39,11 @@ var createEventButton = document.getElementById("createEventButton");
 loginButton.onclick = function () {
     var eventname = eventInput.value;
     if (eventname) {
-
+        hideSplashError();
+        exitSplashScreen();
     }
     else {
-        console.log("Event eingeben!")
+        showSplashScreenError("Event eingeben!");
     }
 }
 
@@ -50,22 +52,39 @@ var backToLoginButton = document.getElementById("backToLoginButton");
 var addNewPersonButton = document.getElementById("addNewPersonButton");
 var createPersonsList = document.getElementById("createPersonsList");
 var createNewEventButton = document.getElementById("createNewEventButton");
+var newEventInput = document.getElementById("newEventInput");
 
 createEventButton.onclick = function () {
     loginBox.style.display = "none";
     createEventBox.style.display = "flex";
-    if(newPersonList.length == 0) createNewPersonCreator();
+    if (newPersonList.length == 0) createNewPersonCreator();
+    hideSplashError();
 }
 backToLoginButton.onclick = function () {
     loginBox.style.display = "flex";
     createEventBox.style.display = "none";
+    hideSplashError();
 }
 addNewPersonButton.onclick = function () {
     createNewPersonCreator();
 }
-createNewEventButton.onclick = function (){
-    for (var i = 0; i<newPersonList.length;i++){
-        console.log(newPersonList[i].value);
+createNewEventButton.onclick = function () {
+    hideSplashError();
+    var filteredNewPersonList = [];
+    for (var i = 0; i < newPersonList.length; i++) {
+        if (newPersonList[i].value) filteredNewPersonList.push(newPersonList[i].value);
+    }
+    if (newEventInput.value) {
+        if (filteredNewPersonList.length > 1) {
+            for (var i = 0; i < filteredNewPersonList.length; i++) {
+                console.log(filteredNewPersonList[i]);
+            }
+            exitSplashScreen();
+        } else {
+            showSplashScreenError("Mindestens 2 Personen eingeben");
+        }
+    } else {
+        showSplashScreenError("Eventnamen eingeben");
     }
 }
 
@@ -98,9 +117,20 @@ function createNewPersonCreator() {
         if (index > -1) {
             newPersonList.splice(index, 1);
         }
-        
+
     }
     newPersonList.push(input);
+}
+var errorText = document.getElementById("errorText");
+function showSplashScreenError(error) {
+    errorText.innerHTML = error;
+    errorText.style.display = "block";
+}
+function hideSplashError() {
+    errorText.style.display = "none";
+}
+function exitSplashScreen() {
+    splashScreen.style.display = "none";
 }
 
 var payingPerson = document.getElementById("payingPerson")
