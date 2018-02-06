@@ -9,6 +9,41 @@
 </head>
 
 <body class="mdc-typography">
+
+    <div id="splashScreen">
+        <div id="loginBox">
+            <div id="eventTextField" class="mdc-text-field">
+                <input type="text" class="mdc-text-field__input" id="eventInput" placeholder="Event eingeben">
+            </div>
+            <button id="loginButton" class="mdc-button mdc-button--raised">
+                Login
+            </button>
+            <button id="createEventButton" class="mdc-button mdc-button--compact mdc-button--dense">
+                Event erstellen
+            </button>
+        </div>
+
+        <div id="createEventBox">
+            <div id="newEventTextField" class="mdc-text-field">
+                <input type="text" class="mdc-text-field__input" id="newEventInput" placeholder="Neues Event eingeben">
+            </div>
+            <ul id="createPersonsList" class="mdc-list mdc-list--non-interactive">
+               
+            </ul>
+            <button id="addNewPersonButton" class="mdc-button">
+                    <a class="mdc-list-item__meta material-icons">&#xE148;</a>
+                </button>
+            <button id="createNewEventButton" class="mdc-button mdc-button--raised">
+                Erstellen
+            </button>
+            <button id="backToLoginButton" class="mdc-button mdc-button--compact mdc-button--dense">
+                zurück
+            </button>
+        </div>
+    </div>
+
+
+
     <div class="mdc-toolbar mdc-toolbar--fixed">
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
@@ -48,9 +83,8 @@
                     <div class="mdc-line-ripple"></div>
                 </div>
 
-                <h4>Diese Personen zahlen:</h4>
-
-                <div id="payingPersons"></div>
+                <h4>Diese Person zahlt:</h4>
+                <div id="payingPerson">Bitte Person in der Übersicht auswählen</div>
 
                 <h4>für diese Personen:</h4>
 

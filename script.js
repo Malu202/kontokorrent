@@ -1,13 +1,109 @@
+var apiUrl = "https://kontokorrent.azurewebsites.net/api";
+
+var postRequest = function (url, jsondata, callback) {
+    var http = new XMLHttpRequest();
+    http.open("POST", url, true);
+
+    http.setRequestHeader("Content-type", "application/json");
+    http.onreadystatechange = function () {
+        if (http.readyState == 4) {
+            var responseJSON = JSON.parse(http.responseText);
+            callback(responseJSON);
+        }
+    }
+    http.send(JSON.stringify(jsondata));
+}
+var getRequest = function (url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.addEventListener('load', function (event) {
+        var json = JSON.parse(xhr.responseText);
+        callback(json);
+    });
+    xhr.send();
+}
+
+var token;
+function getToken() {
+
+}
 
 var personenliste = [];
 
-for (var i = 0; i < 6; i++) {
-    personenliste.push({
-        name: "Person " + i,
-        betrag: 100 * i
-    })
+var loginBox = document.getElementById("loginBox");
+var loginButton = document.getElementById("loginButton");
+var eventInput = document.getElementById("eventInput");
+var createEventButton = document.getElementById("createEventButton");
+
+loginButton.onclick = function () {
+    var eventname = eventInput.value;
+    if (eventname) {
+
+    }
+    else {
+        console.log("Event eingeben!")
+    }
 }
 
+var createEventBox = document.getElementById("createEventBox");
+var backToLoginButton = document.getElementById("backToLoginButton");
+var addNewPersonButton = document.getElementById("addNewPersonButton");
+var createPersonsList = document.getElementById("createPersonsList");
+var createNewEventButton = document.getElementById("createNewEventButton");
+
+createEventButton.onclick = function () {
+    loginBox.style.display = "none";
+    createEventBox.style.display = "flex";
+    if(newPersonList.length == 0) createNewPersonCreator();
+}
+backToLoginButton.onclick = function () {
+    loginBox.style.display = "flex";
+    createEventBox.style.display = "none";
+}
+addNewPersonButton.onclick = function () {
+    createNewPersonCreator();
+}
+createNewEventButton.onclick = function (){
+    for (var i = 0; i<newPersonList.length;i++){
+        console.log(newPersonList[i].value);
+    }
+}
+
+var newPersonList = []
+function createNewPersonCreator() {
+    var li = document.createElement("li");
+    li.className = "mdc-list-item";
+    var div = document.createElement("div");
+    div.className = "mdc-text-field";
+    var input = document.createElement("input");
+    input.className = "mdc-text-field__input"
+    input.setAttribute("type", "text");
+    input.setAttribute("placeholder", "Name eingeben");
+    var button = document.createElement("button");
+    button.className = "mdc-button";
+    var a = document.createElement("a");
+    a.className = "mdc-list-item__meta material-icons";
+    a.innerHTML = "&#xE872;";
+
+    createPersonsList.appendChild(li);
+    li.appendChild(div);
+    div.appendChild(input);
+    li.appendChild(button);
+    button.appendChild(a);
+
+    button.onclick = function () {
+        createPersonsList.removeChild(li);
+
+        var index = newPersonList.indexOf(input);
+        if (index > -1) {
+            newPersonList.splice(index, 1);
+        }
+        
+    }
+    newPersonList.push(input);
+}
+
+var payingPerson = document.getElementById("payingPerson")
 
 var overview = document.getElementById("overviewList");
 function createOverviewPerson(name, betrag) {
@@ -25,16 +121,16 @@ function createOverviewPerson(name, betrag) {
     overview.appendChild(li);
     li.appendChild(outerSpan);
     outerSpan.appendChild(innerSpan);
+
+    li.onclick = function () {
+        payingPerson.innerHTML = name;
+    }
 }
 
 var payingPersons = document.getElementById("payingPersons");
 var payedPersons = document.getElementById("payedPersons");
-function populatePayingPersons() {
+function populateTransactionPersons() {
     for (var i = 0; i < personenliste.length; i++) {
-        var payingCheckbox = createCheckbox(personenliste[i].name);
-        personenliste[i].payingcheckbox = payingCheckbox;
-        payingPersons.appendChild(payingCheckbox);
-
         var payedCheckbox = createCheckbox(personenliste[i].name);
         personenliste[i].payedCheckbox = payedCheckbox;
         payedPersons.appendChild(payedCheckbox);
@@ -56,9 +152,9 @@ function createCheckbox(labelString) {
     svg.setAttribute("viewBox", "0 0 24 24");
     var path = document.createElement("path");
     path.className = "mdc-checkbox__checkmark-path";
-    path.setAttribute("fill","none");
-    path.setAttribute("stroke","white");
-    path.setAttribute('d',"M1.73,12.91 8.1,19.28 22.79,4.59");
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", "white");
+    path.setAttribute('d', "M1.73,12.91 8.1,19.28 22.79,4.59");
     var mixedmark = document.createElement("div");
     mixedmark.className = "mdc-checkbox__mixedmark";
     var label = document.createElement("label");
@@ -74,8 +170,17 @@ function createCheckbox(labelString) {
     return formField;
 }
 
-
-for (var j = 0; j < personenliste.length; j++) {
-    createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
+function initializeEventScreen() {
+    for (var i = 0; i < 6; i++) {
+        personenliste.push({
+            name: "Person " + i,
+            betrag: 100 * i
+        })
+    }
+    for (var j = 0; j < personenliste.length; j++) {
+        createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
+    }
+    populateTransactionPersons();
 }
-populatePayingPersons();
+
+// initializeEventScreen();
