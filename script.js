@@ -1,31 +1,47 @@
-var apiUrl = "https://kontokorrent.azurewebsites.net/api";
+var API_URL = "https://kontokorrent.azurewebsites.net/api";
+var KONTOKORRENT_URL = API_URL + "/kontokorrent";
+var TOKEN_URL = API_URL + "/token";
+var PERSONS_URL = API_URL + "/persons";
 
-var postRequest = function (url, jsondata, callback) {
+var postRequest = function (url, includeToken, jsondata, callback) {
     var http = new XMLHttpRequest();
     http.open("POST", url, true);
 
     http.setRequestHeader("Content-type", "application/json");
+    if (includeToken) http.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("token"));
     http.onreadystatechange = function () {
         if (http.readyState == 4) {
-            var responseJSON = JSON.parse(http.responseText);
-            callback(responseJSON);
+            var responseJSON
+            try { responseJSON = JSON.parse(http.responseText); }
+            catch (error) { responseJSON = http.responseText; }
+            callback(responseJSON, http.status);
         }
     }
     http.send(JSON.stringify(jsondata));
 }
-var getRequest = function (url, callback) {
+var getRequest = function (url, includeToken, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
+    if (includeToken) xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("token"));
     xhr.addEventListener('load', function (event) {
-        var json = JSON.parse(xhr.responseText);
-        callback(json);
+        var json;
+        try { json = JSON.parse(xhr.responseText); }
+        catch (error) { json = xhr.responseText; }
+        callback(json, xhr.status);
     });
     xhr.send();
 }
 
-var token;
-function getToken() {
 
+function getToken(eventname, callback) {
+    postRequest(TOKEN_URL, false, { "secret": eventname }, function (response, code) {
+        console.log(code);
+        console.log(response);
+        if (code == 200) {
+            localStorage.setItem('token', response.token);
+        }
+        callback(response, code)
+    });
 }
 
 var personenliste = [];
@@ -40,11 +56,26 @@ loginButton.onclick = function () {
     var eventname = eventInput.value;
     if (eventname) {
         hideSplashError();
-        exitSplashScreen();
+
+        getToken(eventname, function (response, code) {
+            if (code = 200) {
+                exitSplashScreen();
+                //initializeEventScreen();
+            }
+            else {
+                showSplashScreenError(response);
+            }
+        });
     }
     else {
         showSplashScreenError("Event eingeben!");
     }
+}
+
+var logOutButton = document.getElementById("logOutButton");
+logOutButton.onclick = function(){
+    localStorage.removeItem("token");
+    showSplashScreen();
 }
 
 var createEventBox = document.getElementById("createEventBox");
@@ -81,12 +112,41 @@ createNewEventButton.onclick = function () {
             for (var i = 0; i < filteredNewPersonList.length; i++) {
                 console.log(filteredNewPersonList[i]);
             }
-            exitSplashScreen();
+            postRequest(KONTOKORRENT_URL, false, { "secret": newEventInput.value }, function (response, code) {
+                if (code == 200) {
+                    getToken(newEventInput.value, function (response, code) {
+                        if (code == 200) {
+                            createMultiplePersons(filteredNewPersonList, function(lastError){
+                                exitSplashScreen();
+                                initializeEventScreen();
+                            });
+                        }
+                    });
+                }
+                else {
+                    showSplashScreenError(response);
+                }
+            });
         } else {
             showSplashScreenError("Mindestens 2 Personen eingeben");
         }
     } else {
         showSplashScreenError("Eventnamen eingeben");
+    }
+}
+
+function createMultiplePersons(namelist, callback) {
+    var requestCount = namelist.length;
+    var lastError = 200;
+    function requestFinished() {
+        requestCount--;
+        if(requestCount == 0) callback(lastError);
+    }
+    for (var i = 0; i < requestCount; i++) {
+        postRequest(PERSONS_URL, true, {}, function (request,code) {
+            requestFinished();
+            if(code != 200) lastError = code;
+        });
     }
 }
 
@@ -135,7 +195,10 @@ function exitSplashScreen() {
     splashScreen.style.display = "none";
     initializeEventScreen();
 }
-
+function showSplashScreen() {
+    splashScreen.style.display = "flex";
+    initializeEventScreen();
+}
 
 function initializeEventScreen() {
     for (var i = 0; i < 6; i++) {
@@ -230,4 +293,20 @@ payedForAllCheckboxInput.onclick = function () {
         }
     }
 }
-// initializeEventScreen();
+autoLogin = function () {
+    if (localStorage.getItem("token")) {
+        getRequest(KONTOKORRENT_URL, true, function (response, code) {
+            console.log(response.toString());
+            console.log(code);
+            if (code == 401) { showSplashScreen(); }
+            else {
+                console.log("got status");
+                initializeEventScreen();
+            }
+        });
+    }
+    else {
+        showSplashScreen();
+    }
+}
+autoLogin()

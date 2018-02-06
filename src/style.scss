@@ -33,17 +33,6 @@
 @import "@material/toolbar/mdc-toolbar";
 @import "@material/typography/mdc-typography";
 
-html{
-    // height:100vh;
-    // min-height:100vh;
-}
-
-body{
-    // height:100vh;
-    // min-height:100vh;
-}
-
-
 #splashScreen{
     position: fixed;
     width: 100%;
@@ -54,12 +43,11 @@ body{
     bottom: 0;
     background-color: rgb(255, 255, 255);
     z-index: 1000;
-    display:flex;
+    display:none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow:auto;
-    // cursor: pointer;
 }
 #errorText{
     margin-bottom: 8px;
