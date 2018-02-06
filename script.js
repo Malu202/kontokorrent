@@ -58,6 +58,8 @@ createEventButton.onclick = function () {
     loginBox.style.display = "none";
     createEventBox.style.display = "flex";
     if (newPersonList.length == 0) createNewPersonCreator();
+    if (newPersonList.length == 1) createNewPersonCreator();
+
     hideSplashError();
 }
 backToLoginButton.onclick = function () {
@@ -131,7 +133,24 @@ function hideSplashError() {
 }
 function exitSplashScreen() {
     splashScreen.style.display = "none";
+    initializeEventScreen();
 }
+
+
+function initializeEventScreen() {
+    for (var i = 0; i < 6; i++) {
+        personenliste.push({
+            name: "Person " + i,
+            betrag: 100 * i
+        })
+    }
+    for (var j = 0; j < personenliste.length; j++) {
+        createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
+    }
+    populateTransactionPersons();
+}
+
+
 
 var payingPerson = document.getElementById("payingPerson")
 
@@ -157,7 +176,7 @@ function createOverviewPerson(name, betrag) {
     }
 }
 
-var payingPersons = document.getElementById("payingPersons");
+//var payingPersons = document.getElementById("payingPersons");
 var payedPersons = document.getElementById("payedPersons");
 function populateTransactionPersons() {
     for (var i = 0; i < personenliste.length; i++) {
@@ -199,18 +218,16 @@ function createCheckbox(labelString) {
     formField.appendChild(label);
     return formField;
 }
-
-function initializeEventScreen() {
-    for (var i = 0; i < 6; i++) {
-        personenliste.push({
-            name: "Person " + i,
-            betrag: 100 * i
-        })
+payedForAllCheckboxInput = document.getElementById("payedForAllCheckboxInput");
+payedForAllCheckboxInput.onclick = function () {
+    if (payedForAllCheckboxInput.checked) {
+        for (var i = 0; i < personenliste.length; i++) {
+            personenliste[i].payedCheckbox.firstChild.firstChild.checked = true;
+        }
+    } else {
+        for (var i = 0; i < personenliste.length; i++) {
+            personenliste[i].payedCheckbox.firstChild.firstChild.checked = false;
+        }
     }
-    for (var j = 0; j < personenliste.length; j++) {
-        createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
-    }
-    populateTransactionPersons();
 }
-
 // initializeEventScreen();
