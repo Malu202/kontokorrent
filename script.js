@@ -225,6 +225,9 @@ function updateEventScreen(status) {
                 betrag: status[i].wert,
             })
         }
+        while (overview.firstChild) {
+            overview.removeChild(overview.firstChild);
+          }
         for (var j = 0; j < personenliste.length; j++) {
             createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
         }
@@ -261,6 +264,9 @@ function createOverviewPerson(name, betrag) {
 //var payingPersons = document.getElementById("payingPersons");
 var payedPersons = document.getElementById("payedPersons");
 function populateTransactionPersons() {
+    while (payedPersons.firstChild) {
+        payedPersons.removeChild(payedPersons.firstChild);
+    }
     for (var i = 0; i < personenliste.length; i++) {
         var payedCheckbox = createCheckbox(personenliste[i].name);
         personenliste[i].payedCheckbox = payedCheckbox;
@@ -326,23 +332,23 @@ confirmTransactionButton.onclick = function () {
         if (personenliste[i].payedCheckbox.firstChild.firstChild.checked) {
             payees.push(personenliste[i].id);
         }
-        if(payer == personenliste[i].name){
+        if (payer == personenliste[i].name) {
             payerId = personenliste[i].id;
         }
     }
     var amount = amountInput.value;
     amount = amount.replace(",", ".");
-    amount = amount.replace(/ /g,'')
-    if(amount == "") amount = undefined;
+    amount = amount.replace(/ /g, '')
+    if (amount == "") amount = undefined;
 
-    if ((betreff != "") && (payer != "Bitte Person in der Übersicht auswählen") && (payees.length != 0) && !isNaN(amount)){       
+    if ((betreff != "") && (payer != "Bitte Person in der Übersicht auswählen") && (payees.length != 0) && !isNaN(amount)) {
         var request = {
             "bezahlendePerson": payerId,
             "empfaenger": payees,
             "wert": amount,
             "beschreibung": betreff
         };
-        postRequest(PAYMENTS_URL,true,request,function(response,code){
+        postRequest(PAYMENTS_URL, true, request, function (response, code) {
 
         })
     }
