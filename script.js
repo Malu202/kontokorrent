@@ -2,6 +2,7 @@ var API_URL = "https://kontokorrent.azurewebsites.net/api";
 var KONTOKORRENT_URL = API_URL + "/kontokorrent";
 var TOKEN_URL = API_URL + "/token";
 var PERSONS_URL = API_URL + "/persons";
+var PAYMENTS_URL = API_URL + "/payments"
 
 var postRequest = function (url, includeToken, jsondata, callback) {
     var http = new XMLHttpRequest();
@@ -58,12 +59,20 @@ loginButton.onclick = function () {
         hideSplashError();
 
         getToken(eventname, function (response, code) {
-            if (code = 200) {
-                exitSplashScreen();
-                //initializeEventScreen();
+            if (code == 200) {
+                getRequest(KONTOKORRENT_URL, true, function (res, c) {
+                    if (c = 200) {
+                        exitSplashScreen(res);
+                    }
+                    else {
+                        showSplashScreenError(res);
+                    }
+
+                });
             }
             else {
                 showSplashScreenError(response);
+
             }
         });
     }
@@ -73,7 +82,7 @@ loginButton.onclick = function () {
 }
 
 var logOutButton = document.getElementById("logOutButton");
-logOutButton.onclick = function(){
+logOutButton.onclick = function () {
     localStorage.removeItem("token");
     showSplashScreen();
 }
@@ -109,16 +118,20 @@ createNewEventButton.onclick = function () {
     }
     if (newEventInput.value) {
         if (filteredNewPersonList.length > 1) {
-            for (var i = 0; i < filteredNewPersonList.length; i++) {
-                console.log(filteredNewPersonList[i]);
-            }
             postRequest(KONTOKORRENT_URL, false, { "secret": newEventInput.value }, function (response, code) {
                 if (code == 200) {
                     getToken(newEventInput.value, function (response, code) {
                         if (code == 200) {
-                            createMultiplePersons(filteredNewPersonList, function(lastError){
-                                exitSplashScreen();
-                                initializeEventScreen();
+                            createMultiplePersons(filteredNewPersonList, function (lastError) {
+                                if (lastError == 200) {
+                                    getRequest(KONTOKORRENT_URL, true, function (res, c) {
+                                        if (c == 200) {
+                                            exitSplashScreen(res);
+                                        }
+                                    })
+                                } else {
+                                    showSplashScreenError("Personen konnten nicht für dieses Event erstellt werden");
+                                }
                             });
                         }
                     });
@@ -140,12 +153,13 @@ function createMultiplePersons(namelist, callback) {
     var lastError = 200;
     function requestFinished() {
         requestCount--;
-        if(requestCount == 0) callback(lastError);
+        if (requestCount == 0) callback(lastError);
+        console.log("requestFinished");
     }
     for (var i = 0; i < requestCount; i++) {
-        postRequest(PERSONS_URL, true, {}, function (request,code) {
+        postRequest(PERSONS_URL, true, { "name": namelist[i] }, function (request, code) {
             requestFinished();
-            if(code != 200) lastError = code;
+            if (code != 200) lastError = code;
         });
     }
 }
@@ -191,26 +205,31 @@ function showSplashScreenError(error) {
 function hideSplashError() {
     errorText.style.display = "none";
 }
-function exitSplashScreen() {
+function exitSplashScreen(status) {
     splashScreen.style.display = "none";
-    initializeEventScreen();
+
+    updateEventScreen(status);
 }
 function showSplashScreen() {
     splashScreen.style.display = "flex";
-    initializeEventScreen();
+    //initializeEventScreen();
 }
 
-function initializeEventScreen() {
-    for (var i = 0; i < 6; i++) {
-        personenliste.push({
-            name: "Person " + i,
-            betrag: 100 * i
-        })
+function updateEventScreen(status) {
+    if (status.length) {
+        personenliste = [];
+        for (var i = 0; i < status.length; i++) {
+            personenliste.push({
+                name: status[i].person.name,
+                id: status[i].person.id,
+                betrag: status[i].wert,
+            })
+        }
+        for (var j = 0; j < personenliste.length; j++) {
+            createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
+        }
+        populateTransactionPersons();
     }
-    for (var j = 0; j < personenliste.length; j++) {
-        createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
-    }
-    populateTransactionPersons();
 }
 
 
@@ -293,15 +312,51 @@ payedForAllCheckboxInput.onclick = function () {
         }
     }
 }
+
+var confirmTransactionButton = document.getElementById("confirmTransactionButton");
+var betreffInput = document.getElementById("betreffInput");
+var amountInput = document.getElementById("amountInput");
+
+confirmTransactionButton.onclick = function () {
+    var betreff = betreffInput.value;
+    var payer = payingPerson.innerHTML;
+    var payerId;
+    var payees = [];
+    for (var i = 0; i < personenliste.length; i++) {
+        if (personenliste[i].payedCheckbox.firstChild.firstChild.checked) {
+            payees.push(personenliste[i].id);
+        }
+        if(payer == personenliste[i].name){
+            payerId = personenliste[i].id;
+        }
+    }
+    var amount = amountInput.value;
+    amount = amount.replace(",", ".");
+    amount = amount.replace(/ /g,'')
+    if(amount == "") amount = undefined;
+
+    if ((betreff != "") && (payer != "Bitte Person in der Übersicht auswählen") && (payees.length != 0) && !isNaN(amount)){       
+        var request = {
+            "bezahlendePerson": payerId,
+            "empfaenger": payees,
+            "wert": amount,
+            "beschreibung": betreff
+        };
+        postRequest(PAYMENTS_URL,true,request,function(response,code){
+
+        })
+    }
+}
+
 autoLogin = function () {
     if (localStorage.getItem("token")) {
         getRequest(KONTOKORRENT_URL, true, function (response, code) {
-            console.log(response.toString());
+            console.log(response);
             console.log(code);
             if (code == 401) { showSplashScreen(); }
             else {
                 console.log("got status");
-                initializeEventScreen();
+                updateEventScreen(response);
             }
         });
     }
