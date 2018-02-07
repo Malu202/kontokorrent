@@ -293,7 +293,7 @@ function createCheckbox(labelString) {
     path.className = "mdc-checkbox__checkmark-path";
     path.setAttribute("fill", "none");
     path.setAttribute("stroke", "white");
-    path.setAttribute('d', "M1.73,12.91 8.1,19.28 22.79,4.59");
+    path.setAttribute('d', "M1.73 12.91 8.1 19.28 22.79,4.59");
     var mixedmark = document.createElement("div");
     mixedmark.className = "mdc-checkbox__mixedmark";
     var label = document.createElement("label");
