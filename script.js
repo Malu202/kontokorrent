@@ -287,13 +287,10 @@ function createCheckbox(labelString) {
     var background = document.createElement("div");
     background.className = "mdc-checkbox__background";
     var svg = document.createElement("svg");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     svg.className = "mdc-checkbox__checkmark";
     svg.setAttribute("viewBox", "0 0 24 24");
-    var path = document.createElement("path");
-    path.className = "mdc-checkbox__checkmark-path";
-    path.setAttribute("fill", "none");
-    path.setAttribute("stroke", "white");
-    path.setAttribute('d', "M1.73 12.91 8.1 19.28 22.79 4.59");
+    svg.innerHTML = '<path class="mdc-checkbox__checkmark-path" fill="none" stroke="white" d="M 1.73 12.91 L 8.1 19.28 L 22.79 4.59" />';
     var mixedmark = document.createElement("div");
     mixedmark.className = "mdc-checkbox__mixedmark";
     var label = document.createElement("label");
@@ -304,7 +301,6 @@ function createCheckbox(labelString) {
     checkbox.appendChild(background);
     background.appendChild(svg);
     background.appendChild(mixedmark);
-    svg.appendChild(path);
     formField.appendChild(label);
     return formField;
 }
