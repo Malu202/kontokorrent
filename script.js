@@ -286,8 +286,7 @@ function createCheckbox(labelString) {
     input.type = "checkbox";
     var background = document.createElement("div");
     background.className = "mdc-checkbox__background";
-    var svg = document.createElement("svg");
-    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.className = "mdc-checkbox__checkmark";
     svg.setAttribute("viewBox", "0 0 24 24");
     svg.innerHTML = '<path class="mdc-checkbox__checkmark-path" fill="none" stroke="white" d="M 1.73 12.91 L 8.1 19.28 L 22.79 4.59" />';
