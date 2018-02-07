@@ -324,7 +324,6 @@ payedForAllCheckboxInput.onclick = function () {
 var confirmTransactionButton = document.getElementById("confirmTransactionButton");
 var betreffInput = document.getElementById("betreffInput");
 var amountInput = document.getElementById("amountInput");
-var overview = document.getElementById("overview");
 var page = document.getElementById("page");
 confirmTransactionButton.onclick = function () {
     var betreff = betreffInput.value;
@@ -352,7 +351,7 @@ confirmTransactionButton.onclick = function () {
             "beschreibung": betreff
         };
         postRequest(PAYMENTS_URL, true, request, function (response, code) {
-            overview.scrollIntoView();
+            overview.scrollIntoView({ block: "start", behavior: "smooth" });
         })
     }
 
