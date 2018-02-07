@@ -214,7 +214,7 @@ function showSplashScreen() {
     splashScreen.style.display = "flex";
     //initializeEventScreen();
 }
-
+var toolbarTitle = document.getElementById("toolbarTitle");
 function updateEventScreen(status) {
     if (status.length) {
         personenliste = [];
@@ -225,9 +225,9 @@ function updateEventScreen(status) {
                 betrag: status[i].wert,
             })
         }
-        while (overview.firstChild) {
-            overview.removeChild(overview.firstChild);
-          }
+        while (overviewList.firstChild) {
+            overviewList.removeChild(overviewList.firstChild);
+        }
         for (var j = 0; j < personenliste.length; j++) {
             createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
         }
@@ -259,7 +259,7 @@ function createOverviewPerson(name, betrag) {
 
     li.onclick = function () {
         payingPerson.innerHTML = name;
-        newTransaction.scrollIntoView({block: "start", behavior: "smooth"});
+        newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
     }
 }
 
@@ -324,7 +324,8 @@ payedForAllCheckboxInput.onclick = function () {
 var confirmTransactionButton = document.getElementById("confirmTransactionButton");
 var betreffInput = document.getElementById("betreffInput");
 var amountInput = document.getElementById("amountInput");
-
+var overview = document.getElementById("overview");
+var page = document.getElementById("page");
 confirmTransactionButton.onclick = function () {
     var betreff = betreffInput.value;
     var payer = payingPerson.innerHTML;
@@ -351,9 +352,10 @@ confirmTransactionButton.onclick = function () {
             "beschreibung": betreff
         };
         postRequest(PAYMENTS_URL, true, request, function (response, code) {
-
+            overview.scrollIntoView();
         })
     }
+
 }
 
 autoLogin = function () {
