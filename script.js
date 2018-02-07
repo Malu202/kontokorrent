@@ -262,7 +262,7 @@ function createOverviewPerson(name, betrag) {
         newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
     }
 }
-payingPerson.onclick = function(){refresh();}
+//payingPerson.onclick = function(){refresh();}
 //var payingPersons = document.getElementById("payingPersons");
 var payedPersons = document.getElementById("payedPersons");
 function populateTransactionPersons() {
