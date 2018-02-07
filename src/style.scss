@@ -49,10 +49,14 @@
     justify-content: center;
     overflow:auto;
 }
-#errorText{
+.errorText{
     margin-bottom: 8px;
     color: rgb(255,0,0);
     display: none;
+}
+#transactionError{
+    
+    margin-left: 16px;
 }
 #loginBox{
     display:flex;

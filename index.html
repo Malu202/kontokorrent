@@ -11,7 +11,7 @@
 <body class="mdc-typography">
 
     <div id="splashScreen">
-        <div id="errorText">Error</div>
+        <div id="errorText" class="errorText">Error</div>
         <div id="loginBox">
             <div id="eventTextField" class="mdc-text-field">
                 <input type="text" class="mdc-text-field__input" id="eventInput" placeholder="Event eingeben">
@@ -62,6 +62,7 @@
     </button> -->
 
     <div class="mdc-toolbar-fixed-adjust" id="page">
+        
         <div class="mdc-card" id="overview">
             <h2>Übersicht</h1>
                 <ul class="mdc-list mdc-list--two-line" id="overviewList">
@@ -78,6 +79,7 @@
         <div class="mdc-card" id="newTransaction">
             <h2>Neue Transaktion</h1>
 
+                <div id="transactionError" class="errorText"></div>
                 <h4>Betreff:</h4>
                 <div class="mdc-text-field mdc-text-field--with-trailing-icon">
                     <input id="betreffInput" type="text" class="mdc-text-field__input">
@@ -115,7 +117,7 @@
                     <div class="mdc-card__action-buttons">
                         <button id="confirmTransactionButton" class="mdc-button mdc-card__action mdc-card__action--button">Bestätigen</button>
 
-                        <button id="cancelTransactionButton" class="mdc-button mdc-card__action mdc-card__action--button">Abbrechen</button>
+                        <!-- <button id="cancelTransactionButton" class="mdc-button mdc-card__action mdc-card__action--button">Abbrechen</button> -->
                     </div>
                 </div>
         </div>

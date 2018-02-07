@@ -262,7 +262,7 @@ function createOverviewPerson(name, betrag) {
         newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
     }
 }
-
+payingPerson.onclick = function(){refresh();}
 //var payingPersons = document.getElementById("payingPersons");
 var payedPersons = document.getElementById("payedPersons");
 function populateTransactionPersons() {
@@ -324,6 +324,7 @@ payedForAllCheckboxInput.onclick = function () {
 var confirmTransactionButton = document.getElementById("confirmTransactionButton");
 var betreffInput = document.getElementById("betreffInput");
 var amountInput = document.getElementById("amountInput");
+var transactionError = document.getElementById("transactionError");
 var page = document.getElementById("page");
 confirmTransactionButton.onclick = function () {
     var betreff = betreffInput.value;
@@ -351,10 +352,18 @@ confirmTransactionButton.onclick = function () {
             "beschreibung": betreff
         };
         postRequest(PAYMENTS_URL, true, request, function (response, code) {
-            overview.scrollIntoView({ block: "start", behavior: "smooth" });
+            refresh();
         })
     }
+    else{
+        transactionError.innerHTML = "Ungültige Eingabe";
+        transactionError.style.display = "block";
+        newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
 
+}
+function refresh() {
+    window.location.replace(window.location.pathname + window.location.search + window.location.hash);
 }
 
 autoLogin = function () {
@@ -374,3 +383,4 @@ autoLogin = function () {
     }
 }
 autoLogin()
+
