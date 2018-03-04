@@ -67,12 +67,10 @@ loginButton.onclick = function () {
                     else {
                         showSplashScreenError(res);
                     }
-
                 });
             }
             else {
                 showSplashScreenError(response);
-
             }
         });
     }
@@ -232,6 +230,7 @@ function updateEventScreen(status) {
             createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
         }
         populateTransactionPersons();
+        populateTransactionList();
     }
 }
 
@@ -348,9 +347,9 @@ confirmTransactionButton.onclick = function () {
         };
         postRequest(PAYMENTS_URL, true, request, function (response, code) {
             refresh();
-        })
+        });
     }
-    else{
+    else {
         transactionError.innerHTML = "Ungültige Eingabe";
         transactionError.style.display = "block";
         newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
@@ -360,6 +359,44 @@ confirmTransactionButton.onclick = function () {
 function refresh() {
     window.location.replace(window.location.pathname + window.location.search + window.location.hash);
 }
+var transactionList = document.getElementById("transactions");
+function populateTransactionList() {
+    getRequest(PAYMENTS_URL, true, function (response, code) {
+        if (code == 200) {
+            while (transactionList.firstChild) {
+                transactionList.removeChild(transactionList.firstChild);
+            }
+            for (var i = 0; i < response.length; i++) {
+                transactionList.appendChild(createTransactionListItem(response[i].beschreibung, response[i].bezahlendePerson.name, response[i].empfaenger, response[i].wert));
+            }
+        }
+    })
+}
+function createTransactionListItem(name, payer, payees, amount) {
+    var li = document.createElement("li");
+    li.className = "mdc-list-item"
+    var div = document.createElement("div");
+    div.className = "mdc-list-item__text";
+    div.innerHTML = name;
+    var span = document.createElement("span");
+    span.className = "mdc-list-item__secondary-text";
+    span.innerHTML = payer + " an ";
+    for (var i = 0; i < payees.length; i++) {
+        span.innerHTML += payees[i].name;
+        if (i != payees.length - 1) span.innerHTML += ", "
+    }
+    var div2 = document.createElement("div");
+    div2.className = "mdc-list-item__meta";
+    div2.innerHTML = amount;
+
+    li.appendChild(div);
+    div.appendChild(span);
+    li.appendChild(div2);
+
+    return li;
+}
+
+
 
 autoLogin = function () {
     if (localStorage.getItem("token")) {
