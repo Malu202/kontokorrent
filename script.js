@@ -360,15 +360,35 @@ function refresh() {
     window.location.replace(window.location.pathname + window.location.search + window.location.hash);
 }
 var transactionList = document.getElementById("transactions");
+var transactions = [];
 function populateTransactionList() {
     getRequest(PAYMENTS_URL, true, function (response, code) {
         if (code == 200) {
             while (transactionList.firstChild) {
                 transactionList.removeChild(transactionList.firstChild);
             }
+            transactions = [];
             for (var i = 0; i < response.length; i++) {
+
+                transactions[i] = response[i];
+                var currentDate = new Date(transactions[i].zeitpunkt);
+                if (i == 0) {
+                    var dateHeading = document.createElement("h3");
+                    dateHeading.className = "mdc-list-group__subheader";
+                    dateHeading.innerHTML = currentDate.toLocaleDateString();
+                    transactionList.appendChild(dateHeading);
+                } else {
+                    var previousDate = new Date(transactions[i - 1].zeitpunkt);
+                    if (previousDate.getDate() != currentDate.getDate() || previousDate.getMonth() != currentDate.getMonth() || previousDate.getFullYear() != currentDate.getFullYear()) {
+                        var dateHeading = document.createElement("h3");
+                        dateHeading.className = "mdc-list-group__subheader";
+                        dateHeading.innerHTML = currentDate.toLocaleDateString();
+                        transactionList.appendChild(dateHeading);
+                    }
+                }
                 transactionList.appendChild(createTransactionListItem(response[i].beschreibung, response[i].bezahlendePerson.name, response[i].empfaenger, response[i].wert));
             }
+
         }
     })
 }
@@ -387,7 +407,7 @@ function createTransactionListItem(name, payer, payees, amount) {
     }
     var div2 = document.createElement("div");
     div2.className = "mdc-list-item__meta";
-    div2.innerHTML = amount + " €";
+    div2.innerHTML = amount + "€";
 
     li.appendChild(div);
     div.appendChild(span);
