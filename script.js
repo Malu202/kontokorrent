@@ -387,7 +387,7 @@ function createTransactionListItem(name, payer, payees, amount) {
     }
     var div2 = document.createElement("div");
     div2.className = "mdc-list-item__meta";
-    div2.innerHTML = amount;
+    div2.innerHTML = amount + " €";
 
     li.appendChild(div);
     div.appendChild(span);
