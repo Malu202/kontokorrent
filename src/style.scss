@@ -3,7 +3,8 @@
 // $mdc-theme-secondary: #e4f403;
 
 
-@import "node_modules/material-components-web/material-components-web";
+//@import "node_modules/material-components-web/material-components-web";
+
 
 // @import "@material/line-ripple/mdc-line-ripple";
 @import "@material/button/mdc-button";
@@ -32,6 +33,8 @@
 @import "@material/theme/mdc-theme";
 @import "@material/toolbar/mdc-toolbar";
 @import "@material/typography/mdc-typography";
+
+@include mdc-list-group-subheader-ink-color($mdc-theme-primary);
 
 #splashScreen{
     position: fixed;
