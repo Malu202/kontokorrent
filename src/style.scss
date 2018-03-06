@@ -16,7 +16,7 @@
 // @import "@material/elevation/mdc-elevation";
 @import "@material/fab/mdc-fab";
 @import "@material/form-field/mdc-form-field";
-// @import "@material/grid-list/mdc-grid-list";
+//@import "@material/grid-list/mdc-grid-list";
 // @import "@material/icon-toggle/mdc-icon-toggle";
 // @import "@material/layout-grid/mdc-layout-grid";
 // @import "@material/linear-progress/mdc-linear-progress";
@@ -35,7 +35,10 @@
 @import "@material/typography/mdc-typography";
 
 @include mdc-list-group-subheader-ink-color($mdc-theme-primary);
-
+body{
+    margin: 0px;
+    padding: 0px;
+}
 #splashScreen{
     position: fixed;
     width: 100%;
@@ -92,27 +95,27 @@
     align-items: flex-start;
     justify-content: space-evenly;
     width: 100%;
-    padding-top: 8px;
-    padding-bottom: 8px;
 }
 #page>*{
-    flex: 1 0 auto;
+    flex: 1 1 auto;
+    margin: 4px 4px;
 }
+
 #toolbarSpacer{
     height:1px;
 }
-.fab--absolute {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-}
+// .fab--absolute {
+//   position: fixed;
+//   bottom: 1rem;
+//   right: 1rem;
+// }
 
-@media(min-width: 1024px) {
-   .fab--absolute {
-    bottom: 1.5rem;
-    right: 1.5rem;
-  }
-}
+// @media(min-width: 1024px) {
+//    .fab--absolute {
+//     bottom: 1.5rem;
+//     right: 1.5rem;
+//   }
+// }
 
 h1, h2, h3, h4, h5, h6{
     margin-left: 16px;
@@ -121,6 +124,11 @@ h1, h2, h3, h4, h5, h6{
 .mdc-card {
     // height: 350px;
     max-width: 350px;
+}
+#overviewList{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
 }
 #newTransaction .mdc-form-field{
     margin-left: 8px;
