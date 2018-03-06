@@ -359,6 +359,17 @@ confirmTransactionButton.onclick = function () {
 function refresh() {
     window.location.replace(window.location.pathname + window.location.search + window.location.hash);
 }
+
+//Date erweitern so dass es Wochentagsnamen unterstützt:
+(function () {
+    var days = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+    Date.prototype.getDayName = function () {
+        return days[this.getDay()];
+    };
+})();
+
+
+
 var transactionList = document.getElementById("transactions");
 var transactions = [];
 function populateTransactionList() {
@@ -375,14 +386,14 @@ function populateTransactionList() {
                 if (i == 0) {
                     var dateHeading = document.createElement("h3");
                     dateHeading.className = "mdc-list-group__subheader";
-                    dateHeading.innerHTML = currentDate.toLocaleDateString();
+                    dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
                     transactionList.appendChild(dateHeading);
                 } else {
                     var previousDate = new Date(transactions[i - 1].zeitpunkt);
                     if (previousDate.getDate() != currentDate.getDate() || previousDate.getMonth() != currentDate.getMonth() || previousDate.getFullYear() != currentDate.getFullYear()) {
                         var dateHeading = document.createElement("h3");
                         dateHeading.className = "mdc-list-group__subheader";
-                        dateHeading.innerHTML = currentDate.toLocaleDateString();
+                        dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
                         transactionList.appendChild(dateHeading);
                     }
                 }
