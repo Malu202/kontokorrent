@@ -285,9 +285,11 @@ function createCheckbox(labelString) {
     input.type = "checkbox";
     var background = document.createElement("div");
     background.className = "mdc-checkbox__background";
-    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    //var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    var svg = document.createElement("svg");
     svg.className = "mdc-checkbox__checkmark";
     svg.setAttribute("viewBox", "0 0 24 24");
+    
     svg.innerHTML = '<path class="mdc-checkbox__checkmark-path" fill="none" stroke="white" d="M 1.73 12.91 L 8.1 19.28 L 22.79 4.59" />';
     var mixedmark = document.createElement("div");
     mixedmark.className = "mdc-checkbox__mixedmark";
@@ -429,7 +431,7 @@ function createTransactionListItem(name, payer, payees, amount) {
 
 
 
-autoLogin = function () {
+function autoLogin() {
     if (localStorage.getItem("token")) {
         getRequest(KONTOKORRENT_URL, true, function (response, code) {
             console.log(response);
