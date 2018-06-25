@@ -11,7 +11,7 @@
 
 <body class="mdc-typography">
 
-    <div id="splashScreen">
+    <div id="splashScreen" class="page splashScreen">
         <div id="errorText" class="errorText">Error</div>
         <div id="loginBox">
             <div id="eventTextField" class="mdc-text-field">
@@ -46,7 +46,7 @@
 
 
 
-    <div class="mdc-toolbar mdc-toolbar--fixed">
+    <div class="mdc-toolbar mdc-toolbar--fixed page homeScreen">
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
                 <!-- <button class="menu material-icons mdc-toolbar__menu-icon">&#xE5D2;</button> -->
@@ -62,8 +62,8 @@
         <span class="mdc-fab__icon">&#xE145;</span>
     </button> -->
 
-    <div class="mdc-toolbar-fixed-adjust" id="page">
-
+    <div class="mdc-toolbar-fixed-adjust page homeScreen" id="page">
+        
         <div class="mdc-card" id="overview">
             <ul class="mdc-list mdc-list--two-line" id="overviewList">
             </ul>
@@ -131,4 +131,5 @@
     </div>
 </body>
 
+<script src="pageSwitcher.js"></script>
 <script src="script.js"></script>

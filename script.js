@@ -45,6 +45,11 @@ function getToken(eventname, callback) {
     });
 }
 
+var pageSwitcher = new PageSwitcher;
+
+
+
+
 var personenliste = [];
 
 var splashScreen = document.getElementById("splashScreen")
@@ -62,7 +67,7 @@ loginButton.onclick = function () {
             if (code == 200) {
                 getRequest(KONTOKORRENT_URL, true, function (res, c) {
                     if (c = 200) {
-                        exitSplashScreen(res);
+                        showHomeScreen(res);
                     }
                     else {
                         showSplashScreenError(res);
@@ -124,7 +129,7 @@ createNewEventButton.onclick = function () {
                                 if (lastError == 200) {
                                     getRequest(KONTOKORRENT_URL, true, function (res, c) {
                                         if (c == 200) {
-                                            exitSplashScreen(res);
+                                            showHomeScreen(res);
                                         }
                                     })
                                 } else {
@@ -203,14 +208,12 @@ function showSplashScreenError(error) {
 function hideSplashError() {
     errorText.style.display = "none";
 }
-function exitSplashScreen(status) {
-    splashScreen.style.display = "none";
-
+function showHomeScreen(status) {
+    pageSwitcher.switchToPage("homeScreen");
     updateEventScreen(status);
 }
 function showSplashScreen() {
-    splashScreen.style.display = "flex";
-    //initializeEventScreen();
+    pageSwitcher.switchToPage("splashScreen");
 }
 var toolbarTitle = document.getElementById("toolbarTitle");
 function updateEventScreen(status) {
@@ -439,7 +442,8 @@ function autoLogin() {
             if (code == 401) { showSplashScreen(); }
             else {
                 console.log("got status");
-                updateEventScreen(response);
+                //updateEventScreen();
+                showHomeScreen(response);
             }
         });
     }
