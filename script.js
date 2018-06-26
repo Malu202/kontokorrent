@@ -288,12 +288,24 @@ function createCheckbox(labelString) {
     input.type = "checkbox";
     var background = document.createElement("div");
     background.className = "mdc-checkbox__background";
-    //var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    var svg = document.createElement("svg");
-    svg.className = "mdc-checkbox__checkmark";
-    svg.setAttribute("viewBox", "0 0 24 24");
+
+
+
+
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    // var svg = document.createElement("svg");
+    svg.setAttributeNS(null, "class", "mdc-checkbox__checkmark");
+    svg.setAttributeNS(null, "viewBox", "0 0 24 24");
     
-    svg.innerHTML = '<path class="mdc-checkbox__checkmark-path" fill="none" stroke="white" d="M 1.73 12.91 L 8.1 19.28 L 22.79 4.59" />';
+    //svg.innerHTML = '<path class="mdc-checkbox__checkmark-path" fill="none" stroke="white" d="M 1.73 12.91 L 8.1 19.28 L 22.79 4.59"></path>';
+    var path = document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttributeNS(null, "class", "mdc-checkbox__checkmark-path");
+    path.setAttributeNS(null, "fill", "none");
+    path.setAttributeNS(null, "stroke", "white");
+    path.setAttributeNS(null, "d", "M 1.73 12.91 L 8.1 19.28 L 22.79 4.59");
+
+
+
     var mixedmark = document.createElement("div");
     mixedmark.className = "mdc-checkbox__mixedmark";
     var label = document.createElement("label");
@@ -303,6 +315,9 @@ function createCheckbox(labelString) {
     checkbox.appendChild(input);
     checkbox.appendChild(background);
     background.appendChild(svg);
+    // svg.innerHTML += "\n";
+    svg.appendChild(path);
+    // svg.innerHTML += "\n";
     background.appendChild(mixedmark);
     formField.appendChild(label);
     return formField;
@@ -442,7 +457,6 @@ function autoLogin() {
             if (code == 401) { showSplashScreen(); }
             else {
                 console.log("got status");
-                //updateEventScreen();
                 showHomeScreen(response);
             }
         });
