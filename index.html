@@ -11,6 +11,20 @@
 
 <body class="mdc-typography">
 
+    <div id="loadScreen" class="loadScreen page">
+        <div id="loadingInformation">Loading something...</div>
+        <div id="progressBar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate page loadScreen">
+            <div class="mdc-linear-progress__buffering-dots"></div>
+            <div class="mdc-linear-progress__buffer"></div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+        </div>
+    </div>
+
     <div id="splashScreen" class="page splashScreen">
         <div id="errorText" class="errorText">Error</div>
         <div id="loginBox">
@@ -63,7 +77,7 @@
     </button> -->
 
     <div class="mdc-toolbar-fixed-adjust page homeScreen" id="page">
-        
+
         <div class="mdc-card" id="overview">
             <ul class="mdc-list mdc-list--two-line" id="overviewList">
             </ul>

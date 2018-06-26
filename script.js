@@ -47,9 +47,6 @@ function getToken(eventname, callback) {
 
 var pageSwitcher = new PageSwitcher;
 
-
-
-
 var personenliste = [];
 
 var splashScreen = document.getElementById("splashScreen")
@@ -62,7 +59,7 @@ loginButton.onclick = function () {
     var eventname = eventInput.value;
     if (eventname) {
         hideSplashError();
-
+        showLoadScreen("Kontokorrent wird geladen");
         getToken(eventname, function (response, code) {
             if (code == 200) {
                 getRequest(KONTOKORRENT_URL, true, function (res, c) {
@@ -121,6 +118,7 @@ createNewEventButton.onclick = function () {
     }
     if (newEventInput.value) {
         if (filteredNewPersonList.length > 1) {
+            showLoadScreen("Event wird erstellt");
             postRequest(KONTOKORRENT_URL, false, { "secret": newEventInput.value }, function (response, code) {
                 if (code == 200) {
                     getToken(newEventInput.value, function (response, code) {
@@ -133,6 +131,7 @@ createNewEventButton.onclick = function () {
                                         }
                                     })
                                 } else {
+                                    showSplashScreen();
                                     showSplashScreenError("Personen konnten nicht für dieses Event erstellt werden");
                                 }
                             });
@@ -140,6 +139,7 @@ createNewEventButton.onclick = function () {
                     });
                 }
                 else {
+                    showSplashScreen();
                     showSplashScreenError(response);
                 }
             });
@@ -209,11 +209,16 @@ function hideSplashError() {
     errorText.style.display = "none";
 }
 function showHomeScreen(status) {
-    pageSwitcher.switchToPage("homeScreen");
     updateEventScreen(status);
+    pageSwitcher.switchToPage("homeScreen");
 }
 function showSplashScreen() {
     pageSwitcher.switchToPage("splashScreen");
+}
+var loadInfoText = document.getElementById("loadingInformation");
+function showLoadScreen(loadInfo) { 
+    loadInfoText.innerHTML = loadInfo + "...";
+    pageSwitcher.switchToPage("loadScreen");
 }
 var toolbarTitle = document.getElementById("toolbarTitle");
 function updateEventScreen(status) {
@@ -289,11 +294,7 @@ function createCheckbox(labelString) {
     var background = document.createElement("div");
     background.className = "mdc-checkbox__background";
 
-
-
-
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    // var svg = document.createElement("svg");
     svg.setAttributeNS(null, "class", "mdc-checkbox__checkmark");
     svg.setAttributeNS(null, "viewBox", "0 0 24 24");
     
@@ -304,8 +305,6 @@ function createCheckbox(labelString) {
     path.setAttributeNS(null, "stroke", "white");
     path.setAttributeNS(null, "d", "M 1.73 12.91 L 8.1 19.28 L 22.79 4.59");
 
-
-
     var mixedmark = document.createElement("div");
     mixedmark.className = "mdc-checkbox__mixedmark";
     var label = document.createElement("label");
@@ -315,9 +314,7 @@ function createCheckbox(labelString) {
     checkbox.appendChild(input);
     checkbox.appendChild(background);
     background.appendChild(svg);
-    // svg.innerHTML += "\n";
     svg.appendChild(path);
-    // svg.innerHTML += "\n";
     background.appendChild(mixedmark);
     formField.appendChild(label);
     return formField;
@@ -365,6 +362,7 @@ confirmTransactionButton.onclick = function () {
             "wert": amount,
             "beschreibung": betreff
         };
+        showLoadScreen("Transaktion wird hinzugefügt");
         postRequest(PAYMENTS_URL, true, request, function (response, code) {
             refresh();
         });
@@ -451,6 +449,7 @@ function createTransactionListItem(name, payer, payees, amount) {
 
 function autoLogin() {
     if (localStorage.getItem("token")) {
+        showLoadScreen("Übersicht wird geladen");
         getRequest(KONTOKORRENT_URL, true, function (response, code) {
             console.log(response);
             console.log(code);
@@ -465,5 +464,5 @@ function autoLogin() {
         showSplashScreen();
     }
 }
-autoLogin()
+autoLogin();
 
