@@ -399,6 +399,7 @@ function populateTransactionList() {
             while (transactionList.firstChild) {
                 transactionList.removeChild(transactionList.firstChild);
             }
+            response.reverse();
             transactions = [];
             for (var i = 0; i < response.length; i++) {
 
