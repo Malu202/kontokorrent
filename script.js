@@ -266,7 +266,7 @@ function createOverviewPerson(name, betrag) {
 
     li.onclick = function () {
         payingPerson.innerHTML = name;
-        newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
+        if(newTransaction.getBoundingClientRect().bottom > (window.innerHeight || document.documentElement.clientHeight)) newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
     }
 }
 //payingPerson.onclick = function(){refresh();}
