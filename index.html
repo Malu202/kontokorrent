@@ -2,7 +2,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
     <link rel="stylesheet" href="style.css">
-    <link rel="shortcut icon" href="http://download.easyicon.net/ico/1200339/128/">
+    <!-- <link rel="shortcut icon" href="http://download.easyicon.net/ico/1200339/128/"> -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="viewport" content="initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no, width = device-width, height = device-height">
     <title>Kontokorrent</title>
@@ -11,7 +11,21 @@
 
 <body class="mdc-typography">
 
-    <div id="splashScreen">
+    <div id="loadScreen" class="loadScreen page">
+        <div id="loadingInformation">Loading something...</div>
+        <div id="progressBar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate page loadScreen">
+            <div class="mdc-linear-progress__buffering-dots"></div>
+            <div class="mdc-linear-progress__buffer"></div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="splashScreen" class="page splashScreen">
         <div id="errorText" class="errorText">Error</div>
         <div id="loginBox">
             <div id="eventTextField" class="mdc-text-field">
@@ -46,7 +60,7 @@
 
 
 
-    <div class="mdc-toolbar mdc-toolbar--fixed">
+    <div class="mdc-toolbar mdc-toolbar--fixed page homeScreen">
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
                 <!-- <button class="menu material-icons mdc-toolbar__menu-icon">&#xE5D2;</button> -->
@@ -62,7 +76,7 @@
         <span class="mdc-fab__icon">&#xE145;</span>
     </button> -->
 
-    <div class="mdc-toolbar-fixed-adjust" id="page">
+    <div class="mdc-toolbar-fixed-adjust page homeScreen" id="page">
 
         <div class="mdc-card" id="overview">
             <ul class="mdc-list mdc-list--two-line" id="overviewList">
@@ -131,4 +145,5 @@
     </div>
 </body>
 
+<script src="pageSwitcher.js"></script>
 <script src="script.js"></script>
