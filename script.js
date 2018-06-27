@@ -284,6 +284,8 @@ function populateTransactionPersons() {
 }
 
 function createCheckbox(labelString) {
+    var id = "autoCreatedCheckbox" + labelString;
+
     var formField = document.createElement("div");
     formField.className = "mdc-form-field";
     var checkbox = document.createElement("div");
@@ -291,6 +293,7 @@ function createCheckbox(labelString) {
     var input = document.createElement("input");
     input.className = "mdc-checkbox__native-control";
     input.type = "checkbox";
+    input.id = id;
     var background = document.createElement("div");
     background.className = "mdc-checkbox__background";
 
@@ -309,7 +312,7 @@ function createCheckbox(labelString) {
     mixedmark.className = "mdc-checkbox__mixedmark";
     var label = document.createElement("label");
     label.innerHTML = labelString;
-
+    label.setAttribute("for", id);
     formField.appendChild(checkbox);
     checkbox.appendChild(input);
     checkbox.appendChild(background);
