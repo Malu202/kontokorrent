@@ -3,9 +3,9 @@ info:
   title: Kontokorrent
   version: 1.0.0
 security:
-  - bearerAuth: []         # use the same name as above
+  - bearerAuth: []
 servers:
-  - url: https://kontokorrent.azurewebsites.net/api
+  - url: 'https://kontokorrent.azurewebsites.net/api'
 paths:
   /token:
     post:
@@ -19,18 +19,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TokenRequest"
+              $ref: '#/components/schemas/TokenRequest'
       responses:
+        '200':
+          description: Tokenresponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
         '400':
           description: secret fehlt
         '401':
           description: es gibt keinen Kontokorrent mit diesem Secret
-        '200':
-          description: Tokenresponse
-          content:
-            application/json:    
-              schema:
-                $ref: "#/components/schemas/Token"
   /kontokorrent:
     get:
       summary: akuteller Status des Kontokorrents
@@ -40,9 +40,9 @@ paths:
         '200':
           description: der aktuelle Stand des Kontokorrents
           content:
-            application/json:    
+            application/json:
               schema:
-                $ref: "#/components/schemas/Kontokorrent"
+                $ref: '#/components/schemas/Kontokorrent'
     post:
       summary: einen neuen Kontokorrent anlegen
       tags:
@@ -54,17 +54,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NeuerKontokorrent"
+              $ref: '#/components/schemas/NeuerKontokorrent'
       responses:
-        '400':
-          description: secret fehlt oder wird bereits verwendet
         '200':
           description: erfolgreich angelegt
+        '400':
+          description: secret fehlt oder wird bereits verwendet
   /persons:
     post:
       summary: eine Person anlegen
       tags:
-          - Personen
+        - Personen
       requestBody:
         description: Person die angelegt werden soll
         required: true
@@ -73,14 +73,14 @@ paths:
             schema:
               $ref: '#/components/schemas/NeuePerson'
       responses:
-        '400':
-          description: name nicht mehr verfügbar oder nicht angegeben
         '200':
           description: Die angelegte Person
           content:
-            application/json:    
+            application/json:
               schema:
-                $ref: "#/components/schemas/Person"
+                $ref: '#/components/schemas/Person'
+        '400':
+          description: name nicht mehr verfügbar oder nicht angegeben
     delete:
       summary: eine Person löschen
       tags:
@@ -95,10 +95,10 @@ paths:
       responses:
         '200':
           description: wurde gelöscht
-        '404':
-          description: Person nicht gefunden
         '400':
           description: id fehlt
+        '404':
+          description: Person nicht gefunden
   /payments:
     get:
       summary: alle Bezahlungen auflisten
@@ -108,9 +108,9 @@ paths:
         '200':
           description: Ein Array von Bezahlungen
           content:
-            application/json:    
+            application/json:
               schema:
-                $ref: "#/components/schemas/Bezahlungen"
+                $ref: '#/components/schemas/Bezahlungen'
     post:
       summary: eine neue Bezahlung anlegen
       tags:
@@ -128,11 +128,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Bezahlung"
+                $ref: '#/components/schemas/Bezahlung'
+        '400':
+          description: 'bezahlender, empfaenger oder wert nicht angegeben'
         '404':
           description: bezahlender oder empfaenger nicht gefunden
-        '400':
-          description: bezahlender, empfaenger oder wert nicht angegeben
     delete:
       summary: eine Bezahlung löschen
       tags:
@@ -147,16 +147,16 @@ paths:
       responses:
         '200':
           description: wurde gelöscht
-        '404':
-          description: Bezahlung nicht gefunden
         '400':
           description: id fehlt
+        '404':
+          description: Bezahlung nicht gefunden
 components:
   securitySchemes:
-    bearerAuth:            # arbitrary name for the security scheme
+    bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+      bearerFormat: JWT
   schemas:
     Token:
       properties:
@@ -175,27 +175,34 @@ components:
         secret:
           type: string
     Kontokorrent:
-      type: array
-      items:
-        $ref: "#/components/schemas/PersonenStatus"
+      properties:
+        personenStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonenStatus'
+        letzteBezahlungen:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bezahlung'
     PersonenStatus:
       properties:
         person:
-          $ref: "#/components/schemas/Person"
+          $ref: '#/components/schemas/Person'
         wert:
           type: number
-          description: Gesamtsaldo also alles was noch bezahlt werden muss minus alles was man noch bekommt. Ein positiver Wert bedeutet somit Schulden
-        einzelSaldos:
-          type: array
-          items:
-            $ref: "#/components/schemas/Saldo"
+          description: >-
+            Gesamtsaldo also alles was noch bezahlt werden muss minus alles was
+            man noch bekommt. Ein positiver Wert bedeutet somit Schulden
     Saldo:
       properties:
         betrifft:
-          $ref: "#/components/schemas/Person"
+          $ref: '#/components/schemas/Person'
         saldo:
           type: number
-          description: ein positiver Wert bedeutet man schuldet der Person _betrifft_ diesen Betrag, ein negativer Wert bedeutet man bekommt diesen Betrag von der jeweiligen Person
+          description: >-
+            ein positiver Wert bedeutet man schuldet der Person _betrifft_
+            diesen Betrag, ein negativer Wert bedeutet man bekommt diesen Betrag
+            von der jeweiligen Person
     Person:
       properties:
         name:
@@ -234,11 +241,11 @@ components:
           type: string
           format: date-time
         bezahlendePerson:
-          $ref: "#/components/schemas/Person"
+          $ref: '#/components/schemas/Person'
         empfaenger:
           type: array
           items:
-            $ref: "#/components/schemas/Person"
+            $ref: '#/components/schemas/Person'
         wert:
           type: number
         beschreibung:
@@ -246,4 +253,4 @@ components:
     Bezahlungen:
       type: array
       items:
-        $ref: "#/components/schemas/Bezahlung"
+        $ref: '#/components/schemas/Bezahlung'
