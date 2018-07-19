@@ -139,6 +139,26 @@
         <div class="mdc-card" id="history">
             <ul class="mdc-list mdc-list--two-line" id="transactions">
             </ul>
+            <div id="loadMoreBar">
+                <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+                    <div class="mdc-linear-progress__buffering-dots"></div>
+                    <div class="mdc-linear-progress__buffer"></div>
+                    <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                        <span class="mdc-linear-progress__bar-inner"></span>
+                    </div>
+                    <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                        <span class="mdc-linear-progress__bar-inner"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdc-card__actions">
+                <div class="mdc-card__action-buttons">
+                    <button id="loadMoreTransactionsButton" class="mdc-button mdc-card__action mdc-card__action--button">
+                        Mehr Laden
+                    </button>
+                </div>
+            </div>
         </div>
 
 

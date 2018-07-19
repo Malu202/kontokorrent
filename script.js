@@ -1,4 +1,4 @@
-var API_URL = "https://kontokorrent.azurewebsites.net/api";
+var API_URL = "https://kontokorrent-test.azurewebsites.net/api";
 var KONTOKORRENT_URL = API_URL + "/kontokorrent";
 var TOKEN_URL = API_URL + "/token";
 var PERSONS_URL = API_URL + "/persons";
@@ -221,7 +221,8 @@ function showLoadScreen(loadInfo) {
     pageSwitcher.switchToPage("loadScreen");
 }
 var toolbarTitle = document.getElementById("toolbarTitle");
-function updateEventScreen(status) {
+function updateEventScreen(response) {
+    var status = response.personenStatus;
     if (status.length) {
         personenliste = [];
         for (var i = 0; i < status.length; i++) {
@@ -238,7 +239,7 @@ function updateEventScreen(status) {
             createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
         }
         populateTransactionPersons();
-        populateTransactionList();
+        populateTransactionList(response.letzteBezahlungen);
     }
 }
 
@@ -389,21 +390,29 @@ function refresh() {
     };
 })();
 
-
+var loadMoreTransactionButton = document.getElementById("loadMoreTransactionsButton");
+var transactionDownloadProgress = document.getElementById("loadMoreBar");
+loadMoreTransactionButton.onclick = function () { 
+    transactionDownloadProgress.style.display = "block";
+    loadMoreTransactionButton.parentElement.parentElement.style.display = "none";
+    getRequest(PAYMENTS_URL, true, function (response, code) {
+        if (code == 200) {
+            populateTransactionList(response);
+        }
+        transactionDownloadProgress.style.display = "none";        
+    });
+}
 
 var transactionList = document.getElementById("transactions");
 var transactions = [];
-function populateTransactionList() {
-    getRequest(PAYMENTS_URL, true, function (response, code) {
-        if (code == 200) {
+function populateTransactionList(letzteBezahlungen) {
             while (transactionList.firstChild) {
                 transactionList.removeChild(transactionList.firstChild);
             }
-            response.reverse();
             transactions = [];
-            for (var i = 0; i < response.length; i++) {
+            for (var i = 0; i < letzteBezahlungen.length; i++) {
 
-                transactions[i] = response[i];
+                transactions[i] = letzteBezahlungen[i];
                 var currentDate = new Date(transactions[i].zeitpunkt);
                 if (i == 0) {
                     var dateHeading = document.createElement("h3");
@@ -419,11 +428,8 @@ function populateTransactionList() {
                         transactionList.appendChild(dateHeading);
                     }
                 }
-                transactionList.appendChild(createTransactionListItem(response[i].beschreibung, response[i].bezahlendePerson.name, response[i].empfaenger, response[i].wert));
+                transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, letzteBezahlungen[i].wert));
             }
-
-        }
-    })
 }
 function createTransactionListItem(name, payer, payees, amount) {
     var li = document.createElement("li");
