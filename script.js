@@ -2,7 +2,9 @@ var API_URL = "https://kontokorrent.azurewebsites.net/api";
 var KONTOKORRENT_URL = API_URL + "/kontokorrent";
 var TOKEN_URL = API_URL + "/token";
 var PERSONS_URL = API_URL + "/persons";
-var PAYMENTS_URL = API_URL + "/payments"
+var PAYMENTS_URL = API_URL + "/payments";
+
+const ENTER_KEYCODE = 13;
 
 var postRequest = function (url, includeToken, jsondata, callback) {
     var http = new XMLHttpRequest();
@@ -55,7 +57,18 @@ var loginButton = document.getElementById("loginButton");
 var eventInput = document.getElementById("eventInput");
 var createEventButton = document.getElementById("createEventButton");
 
+eventInput.addEventListener("keyup", function (event) {
+    var keyCode = event.which || event.keyCode || event.charCode;
+    if (keyCode == ENTER_KEYCODE) {
+        login();
+    }
+});
+
 loginButton.onclick = function () {
+    login();
+}
+
+function login() { 
     var eventname = eventInput.value;
     if (eventname) {
         hideSplashError();
@@ -216,7 +229,7 @@ function showSplashScreen() {
     pageSwitcher.switchToPage("splashScreen");
 }
 var loadInfoText = document.getElementById("loadingInformation");
-function showLoadScreen(loadInfo) { 
+function showLoadScreen(loadInfo) {
     loadInfoText.innerHTML = loadInfo + "...";
     pageSwitcher.switchToPage("loadScreen");
 }
@@ -267,7 +280,7 @@ function createOverviewPerson(name, betrag) {
 
     li.onclick = function () {
         payingPerson.innerHTML = name;
-        if(newTransaction.getBoundingClientRect().bottom > (window.innerHeight || document.documentElement.clientHeight)) newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
+        if (newTransaction.getBoundingClientRect().bottom > (window.innerHeight || document.documentElement.clientHeight)) newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
     }
 }
 //payingPerson.onclick = function(){refresh();}
@@ -301,9 +314,9 @@ function createCheckbox(labelString) {
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttributeNS(null, "class", "mdc-checkbox__checkmark");
     svg.setAttributeNS(null, "viewBox", "0 0 24 24");
-    
+
     //svg.innerHTML = '<path class="mdc-checkbox__checkmark-path" fill="none" stroke="white" d="M 1.73 12.91 L 8.1 19.28 L 22.79 4.59"></path>';
-    var path = document.createElementNS("http://www.w3.org/2000/svg","path");
+    var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttributeNS(null, "class", "mdc-checkbox__checkmark-path");
     path.setAttributeNS(null, "fill", "none");
     path.setAttributeNS(null, "stroke", "white");
@@ -392,44 +405,44 @@ function refresh() {
 
 var loadMoreTransactionButton = document.getElementById("loadMoreTransactionsButton");
 var transactionDownloadProgress = document.getElementById("loadMoreBar");
-loadMoreTransactionButton.onclick = function () { 
+loadMoreTransactionButton.onclick = function () {
     transactionDownloadProgress.style.display = "block";
     loadMoreTransactionButton.parentElement.parentElement.style.display = "none";
     getRequest(PAYMENTS_URL, true, function (response, code) {
         if (code == 200) {
             populateTransactionList(response);
         }
-        transactionDownloadProgress.style.display = "none";        
+        transactionDownloadProgress.style.display = "none";
     });
 }
 
 var transactionList = document.getElementById("transactions");
 var transactions = [];
 function populateTransactionList(letzteBezahlungen) {
-            while (transactionList.firstChild) {
-                transactionList.removeChild(transactionList.firstChild);
-            }
-            transactions = [];
-            for (var i = 0; i < letzteBezahlungen.length; i++) {
+    while (transactionList.firstChild) {
+        transactionList.removeChild(transactionList.firstChild);
+    }
+    transactions = [];
+    for (var i = 0; i < letzteBezahlungen.length; i++) {
 
-                transactions[i] = letzteBezahlungen[i];
-                var currentDate = new Date(transactions[i].zeitpunkt);
-                if (i == 0) {
-                    var dateHeading = document.createElement("h3");
-                    dateHeading.className = "mdc-list-group__subheader";
-                    dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
-                    transactionList.appendChild(dateHeading);
-                } else {
-                    var previousDate = new Date(transactions[i - 1].zeitpunkt);
-                    if (previousDate.getDate() != currentDate.getDate() || previousDate.getMonth() != currentDate.getMonth() || previousDate.getFullYear() != currentDate.getFullYear()) {
-                        var dateHeading = document.createElement("h3");
-                        dateHeading.className = "mdc-list-group__subheader";
-                        dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
-                        transactionList.appendChild(dateHeading);
-                    }
-                }
-                transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, letzteBezahlungen[i].wert));
+        transactions[i] = letzteBezahlungen[i];
+        var currentDate = new Date(transactions[i].zeitpunkt);
+        if (i == 0) {
+            var dateHeading = document.createElement("h3");
+            dateHeading.className = "mdc-list-group__subheader";
+            dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
+            transactionList.appendChild(dateHeading);
+        } else {
+            var previousDate = new Date(transactions[i - 1].zeitpunkt);
+            if (previousDate.getDate() != currentDate.getDate() || previousDate.getMonth() != currentDate.getMonth() || previousDate.getFullYear() != currentDate.getFullYear()) {
+                var dateHeading = document.createElement("h3");
+                dateHeading.className = "mdc-list-group__subheader";
+                dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
+                transactionList.appendChild(dateHeading);
             }
+        }
+        transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, letzteBezahlungen[i].wert));
+    }
 }
 function createTransactionListItem(name, payer, payees, amount) {
     var li = document.createElement("li");
