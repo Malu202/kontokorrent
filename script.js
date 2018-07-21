@@ -46,6 +46,9 @@ function getToken(eventname, callback) {
         callback(response, code)
     });
 }
+function setToken(token) {
+    localStorage.setItem('token', token);
+}
 
 var pageSwitcher = new PageSwitcher;
 
@@ -68,7 +71,7 @@ loginButton.onclick = function () {
     login();
 }
 
-function login() { 
+function login() {
     var eventname = eventInput.value;
     if (eventname) {
         hideSplashError();
@@ -132,24 +135,15 @@ createNewEventButton.onclick = function () {
     if (newEventInput.value) {
         if (filteredNewPersonList.length > 1) {
             showLoadScreen("Event wird erstellt");
-            postRequest(KONTOKORRENT_URL, false, { "secret": newEventInput.value }, function (response, code) {
+            var event = { "secret": newEventInput.value };
+            event.Personen = [];
+            for (var i = 0; i < filteredNewPersonList.length; i++) {
+                event.Personen.push({ "name": filteredNewPersonList[i] });
+            }
+            postRequest(KONTOKORRENT_URL, false, event, function (response, code) {
                 if (code == 200) {
-                    getToken(newEventInput.value, function (response, code) {
-                        if (code == 200) {
-                            createMultiplePersons(filteredNewPersonList, function (lastError) {
-                                if (lastError == 200) {
-                                    getRequest(KONTOKORRENT_URL, true, function (res, c) {
-                                        if (c == 200) {
-                                            showHomeScreen(res);
-                                        }
-                                    })
-                                } else {
-                                    showSplashScreen();
-                                    showSplashScreenError("Personen konnten nicht für dieses Event erstellt werden");
-                                }
-                            });
-                        }
-                    });
+                    setToken(response.token);
+                    showHomeScreen(response);
                 }
                 else {
                     showSplashScreen();
@@ -161,22 +155,6 @@ createNewEventButton.onclick = function () {
         }
     } else {
         showSplashScreenError("Eventnamen eingeben");
-    }
-}
-
-function createMultiplePersons(namelist, callback) {
-    var requestCount = namelist.length;
-    var lastError = 200;
-    function requestFinished() {
-        requestCount--;
-        if (requestCount == 0) callback(lastError);
-        console.log("requestFinished");
-    }
-    for (var i = 0; i < requestCount; i++) {
-        postRequest(PERSONS_URL, true, { "name": namelist[i] }, function (request, code) {
-            requestFinished();
-            if (code != 200) lastError = code;
-        });
     }
 }
 
@@ -252,7 +230,7 @@ function updateEventScreen(response) {
             createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
         }
         populateTransactionPersons();
-        populateTransactionList(response.letzteBezahlungen);
+        if(response.letzteBezahlungen) populateTransactionList(response.letzteBezahlungen);
     }
 }
 
