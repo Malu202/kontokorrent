@@ -230,7 +230,7 @@ function updateEventScreen(response) {
             createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
         }
         populateTransactionPersons();
-        if(response.letzteBezahlungen) populateTransactionList(response.letzteBezahlungen);
+        populateTransactionList(response.letzteBezahlungen);
     }
 }
 
@@ -401,26 +401,28 @@ function populateTransactionList(letzteBezahlungen) {
         transactionList.removeChild(transactionList.firstChild);
     }
     transactions = [];
-    for (var i = 0; i < letzteBezahlungen.length; i++) {
+    if (letzteBezahlungen != undefined) {
+        for (var i = 0; i < letzteBezahlungen.length; i++) {
 
-        transactions[i] = letzteBezahlungen[i];
-        var currentDate = new Date(transactions[i].zeitpunkt);
-        if (i == 0) {
-            var dateHeading = document.createElement("h3");
-            dateHeading.className = "mdc-list-group__subheader";
-            dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
-            transactionList.appendChild(dateHeading);
-        } else {
-            var previousDate = new Date(transactions[i - 1].zeitpunkt);
-            if (previousDate.getDate() != currentDate.getDate() || previousDate.getMonth() != currentDate.getMonth() || previousDate.getFullYear() != currentDate.getFullYear()) {
+            transactions[i] = letzteBezahlungen[i];
+            var currentDate = new Date(transactions[i].zeitpunkt);
+            if (i == 0) {
                 var dateHeading = document.createElement("h3");
                 dateHeading.className = "mdc-list-group__subheader";
                 dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
                 transactionList.appendChild(dateHeading);
+            } else {
+                var previousDate = new Date(transactions[i - 1].zeitpunkt);
+                if (previousDate.getDate() != currentDate.getDate() || previousDate.getMonth() != currentDate.getMonth() || previousDate.getFullYear() != currentDate.getFullYear()) {
+                    var dateHeading = document.createElement("h3");
+                    dateHeading.className = "mdc-list-group__subheader";
+                    dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
+                    transactionList.appendChild(dateHeading);
+                }
             }
+            transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, letzteBezahlungen[i].wert));
         }
-        transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, letzteBezahlungen[i].wert));
-    }
+    }    
 }
 function createTransactionListItem(name, payer, payees, amount) {
     var li = document.createElement("li");
