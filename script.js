@@ -400,19 +400,18 @@ function populateTransactionList(letzteBezahlungen) {
     while (transactionList.firstChild) {
         transactionList.removeChild(transactionList.firstChild);
     }
-    transactions = [];
+    transactions = letzteBezahlungen;
     if (letzteBezahlungen != undefined) {
         for (var i = 0; i < letzteBezahlungen.length; i++) {
 
-            transactions[i] = letzteBezahlungen[i];
-            var currentDate = new Date(transactions[i].zeitpunkt);
+            var currentDate = new Date(letzteBezahlungen[i].zeitpunkt);
             if (i == 0) {
                 var dateHeading = document.createElement("h3");
                 dateHeading.className = "mdc-list-group__subheader";
                 dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
                 transactionList.appendChild(dateHeading);
             } else {
-                var previousDate = new Date(transactions[i - 1].zeitpunkt);
+                var previousDate = new Date(letzteBezahlungen[i - 1].zeitpunkt);
                 if (previousDate.getDate() != currentDate.getDate() || previousDate.getMonth() != currentDate.getMonth() || previousDate.getFullYear() != currentDate.getFullYear()) {
                     var dateHeading = document.createElement("h3");
                     dateHeading.className = "mdc-list-group__subheader";
