@@ -6,9 +6,9 @@ var PAYMENTS_URL = API_URL + "/payments";
 
 const ENTER_KEYCODE = 13;
 
-var postRequest = function (url, includeToken, jsondata, callback) {
+var request = function (type, url, includeToken, jsondata, callback) {
     var http = new XMLHttpRequest();
-    http.open("POST", url, true);
+    http.open(type, url, true);
 
     http.setRequestHeader("Content-type", "application/json");
     if (includeToken) http.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("token"));
@@ -22,6 +22,14 @@ var postRequest = function (url, includeToken, jsondata, callback) {
     }
     http.send(JSON.stringify(jsondata));
 }
+
+var postRequest = function (url, includeToken, jsondata, callback) {
+    request("POST", url, includeToken, jsondata, callback);
+}
+var deleteRequest = function (url, includeToken, jsondata, callback) {
+    request("DELETE", url, includeToken, jsondata, callback);
+}
+
 var getRequest = function (url, includeToken, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
@@ -400,19 +408,19 @@ function populateTransactionList(letzteBezahlungen) {
     while (transactionList.firstChild) {
         transactionList.removeChild(transactionList.firstChild);
     }
-    transactions = [];
+    transactions = letzteBezahlungen;
+    console.log(letzteBezahlungen);
     if (letzteBezahlungen != undefined) {
         for (var i = 0; i < letzteBezahlungen.length; i++) {
 
-            transactions[i] = letzteBezahlungen[i];
-            var currentDate = new Date(transactions[i].zeitpunkt);
+            var currentDate = new Date(letzteBezahlungen[i].zeitpunkt);
             if (i == 0) {
                 var dateHeading = document.createElement("h3");
                 dateHeading.className = "mdc-list-group__subheader";
                 dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
                 transactionList.appendChild(dateHeading);
             } else {
-                var previousDate = new Date(transactions[i - 1].zeitpunkt);
+                var previousDate = new Date(letzteBezahlungen[i - 1].zeitpunkt);
                 if (previousDate.getDate() != currentDate.getDate() || previousDate.getMonth() != currentDate.getMonth() || previousDate.getFullYear() != currentDate.getFullYear()) {
                     var dateHeading = document.createElement("h3");
                     dateHeading.className = "mdc-list-group__subheader";
@@ -420,11 +428,11 @@ function populateTransactionList(letzteBezahlungen) {
                     transactionList.appendChild(dateHeading);
                 }
             }
-            transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, letzteBezahlungen[i].wert));
+            transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, letzteBezahlungen[i].wert, letzteBezahlungen[i].id));
         }
-    }    
+    }
 }
-function createTransactionListItem(name, payer, payees, amount) {
+function createTransactionListItem(name, payer, payees, amount, id) {
     var li = document.createElement("li");
     li.className = "mdc-list-item"
     var div = document.createElement("div");
@@ -445,6 +453,21 @@ function createTransactionListItem(name, payer, payees, amount) {
     div.appendChild(span);
     li.appendChild(div2);
 
+    li.addEventListener('contextmenu', function (ev) {
+        ev.preventDefault();
+
+        showDialog("Zahlung löschen?", 'Wirklich "' + name + '" löschen?', "Ja", "Nein", function () {
+            showLoadScreen("Zahlung wird gelöscht");
+            deleteRequest(PAYMENTS_URL + "?id=" + id, true, {}, function (response, code) {
+                if (code == 200) {
+                    refresh();
+                }
+            });
+        }, null);
+
+
+        return false;
+    }, false);
     return li;
 }
 
@@ -468,4 +491,28 @@ function autoLogin() {
     }
 }
 autoLogin();
+
+
+var dialog = document.getElementById("dialog");
+var dialogTitel = document.getElementById("dialogTitel");
+var dialogText = document.getElementById("dialogText");
+var dialogAcceptButton = document.getElementById("dialogAcceptButton");
+var dialogCancelButton = document.getElementById("dialogCancelButton");
+
+showDialog = function (titel, text, accept, cancel, onAccept, onCancel) {
+    dialogTitel.innerHTML = titel;
+    dialogText.innerHTML = text;
+    dialogAcceptButton.innerHTML = accept;
+    dialogCancelButton.innerHTML = cancel;
+
+    dialogAcceptButton.onclick = function () {
+        dialog.classList.remove("mdc-dialog--open");
+        if (onAccept != null) onAccept();
+    }
+    dialogCancelButton.onclick = function () {
+        dialog.classList.remove("mdc-dialog--open");
+        if (onCancel != null) onCancel();
+    }
+    dialog.classList.add("mdc-dialog--open");
+}
 
