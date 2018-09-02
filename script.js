@@ -6,9 +6,9 @@ var PAYMENTS_URL = API_URL + "/payments";
 
 const ENTER_KEYCODE = 13;
 
-var postRequest = function (url, includeToken, jsondata, callback) {
+var request = function (type, url, includeToken, jsondata, callback) {
     var http = new XMLHttpRequest();
-    http.open("POST", url, true);
+    http.open(type, url, true);
 
     http.setRequestHeader("Content-type", "application/json");
     if (includeToken) http.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("token"));
@@ -22,6 +22,14 @@ var postRequest = function (url, includeToken, jsondata, callback) {
     }
     http.send(JSON.stringify(jsondata));
 }
+
+var postRequest = function (url, includeToken, jsondata, callback) { 
+    request("POST", url, includeToken, jsondata, callback);
+}
+var deleteRequest = function (url, includeToken, jsondata, callback) { 
+    request("DELETE", url, includeToken, jsondata, callback);
+}
+
 var getRequest = function (url, includeToken, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
@@ -401,6 +409,7 @@ function populateTransactionList(letzteBezahlungen) {
         transactionList.removeChild(transactionList.firstChild);
     }
     transactions = letzteBezahlungen;
+    console.log(letzteBezahlungen);
     if (letzteBezahlungen != undefined) {
         for (var i = 0; i < letzteBezahlungen.length; i++) {
 
@@ -419,11 +428,11 @@ function populateTransactionList(letzteBezahlungen) {
                     transactionList.appendChild(dateHeading);
                 }
             }
-            transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, letzteBezahlungen[i].wert));
+            transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, letzteBezahlungen[i].wert, letzteBezahlungen[i].id));
         }
-    }    
+    }
 }
-function createTransactionListItem(name, payer, payees, amount) {
+function createTransactionListItem(name, payer, payees, amount, id) {
     var li = document.createElement("li");
     li.className = "mdc-list-item"
     var div = document.createElement("div");
@@ -444,6 +453,19 @@ function createTransactionListItem(name, payer, payees, amount) {
     div.appendChild(span);
     li.appendChild(div2);
 
+    li.addEventListener('contextmenu', function (ev) {
+        ev.preventDefault();
+        var json = {};
+        json.id = id;
+        showLoadScreen("Zahlung wird gelöscht");
+        deleteRequest(PAYMENTS_URL+"?id="+id, true, {}, function (response, code) {
+            if (code == 200) {
+                refresh();
+            }
+        });
+
+        return false;
+    }, false);
     return li;
 }
 
