@@ -23,10 +23,10 @@ var request = function (type, url, includeToken, jsondata, callback) {
     http.send(JSON.stringify(jsondata));
 }
 
-var postRequest = function (url, includeToken, jsondata, callback) { 
+var postRequest = function (url, includeToken, jsondata, callback) {
     request("POST", url, includeToken, jsondata, callback);
 }
-var deleteRequest = function (url, includeToken, jsondata, callback) { 
+var deleteRequest = function (url, includeToken, jsondata, callback) {
     request("DELETE", url, includeToken, jsondata, callback);
 }
 
@@ -455,14 +455,16 @@ function createTransactionListItem(name, payer, payees, amount, id) {
 
     li.addEventListener('contextmenu', function (ev) {
         ev.preventDefault();
-        var json = {};
-        json.id = id;
-        showLoadScreen("Zahlung wird gelöscht");
-        deleteRequest(PAYMENTS_URL+"?id="+id, true, {}, function (response, code) {
-            if (code == 200) {
-                refresh();
-            }
-        });
+
+        showDialog("Zahlung löschen?", 'Wirklich "' + name + '" löschen?', "Ja", "Nein", function () {
+            showLoadScreen("Zahlung wird gelöscht");
+            deleteRequest(PAYMENTS_URL + "?id=" + id, true, {}, function (response, code) {
+                if (code == 200) {
+                    refresh();
+                }
+            });
+        }, null);
+
 
         return false;
     }, false);
@@ -489,4 +491,28 @@ function autoLogin() {
     }
 }
 autoLogin();
+
+
+var dialog = document.getElementById("dialog");
+var dialogTitel = document.getElementById("dialogTitel");
+var dialogText = document.getElementById("dialogText");
+var dialogAcceptButton = document.getElementById("dialogAcceptButton");
+var dialogCancelButton = document.getElementById("dialogCancelButton");
+
+showDialog = function (titel, text, accept, cancel, onAccept, onCancel) {
+    dialogTitel.innerHTML = titel;
+    dialogText.innerHTML = text;
+    dialogAcceptButton.innerHTML = accept;
+    dialogCancelButton.innerHTML = cancel;
+
+    dialogAcceptButton.onclick = function () {
+        dialog.classList.remove("mdc-dialog--open");
+        if (onAccept != null) onAccept();
+    }
+    dialogCancelButton.onclick = function () {
+        dialog.classList.remove("mdc-dialog--open");
+        if (onCancel != null) onCancel();
+    }
+    dialog.classList.add("mdc-dialog--open");
+}
 
