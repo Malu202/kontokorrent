@@ -46,8 +46,6 @@ var getRequest = function (url, includeToken, callback) {
 
 function getToken(eventname, callback) {
     postRequest(TOKEN_URL, false, { "secret": eventname }, function (response, code) {
-        console.log(code);
-        console.log(response);
         if (code == 200) {
             localStorage.setItem('token', response.token);
         }
@@ -409,7 +407,6 @@ function populateTransactionList(letzteBezahlungen) {
         transactionList.removeChild(transactionList.firstChild);
     }
     transactions = letzteBezahlungen;
-    console.log(letzteBezahlungen);
     if (letzteBezahlungen != undefined) {
         for (var i = 0; i < letzteBezahlungen.length; i++) {
 
@@ -477,11 +474,8 @@ function autoLogin() {
     if (localStorage.getItem("token")) {
         showLoadScreen("Übersicht wird geladen");
         getRequest(KONTOKORRENT_URL, true, function (response, code) {
-            console.log(response);
-            console.log(code);
             if (code == 401) { showSplashScreen(); }
             else {
-                console.log("got status");
                 showHomeScreen(response);
             }
         });
