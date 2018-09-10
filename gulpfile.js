@@ -8,12 +8,12 @@ gulp.task('css', function () {
         .pipe(autoprefixer({
             browsers: ['last 2 versions', 'android 4.4']
         }))
-        .pipe(gulp.dest(''));
+        .pipe(gulp.dest('./'));
 });
 
 
-gulp.task('default', ['css']);
+gulp.task('default',  gulp.series('css'));
 
-gulp.task('watch', ['default'], function () {
-    return gulp.watch('src/*', ['default']);
-})
+gulp.task('watch', gulp.series('css', function () {
+    return gulp.watch('src/*', gulp.series('css'));
+}));
