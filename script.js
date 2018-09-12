@@ -440,7 +440,7 @@ function centBetragMitNull(wert) {
     var Nachkommastellen = 0;
     if (Kommaposition != -1) Nachkommastellen = Betrag.toString().length - Kommaposition;
     if (Nachkommastellen == 1) Betrag += '0';
-    return Betrag;
+    return wert;
 }
 function createTransactionListItem(name, payer, payees, amount, id) {
     var li = document.createElement("li");
