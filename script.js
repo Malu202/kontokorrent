@@ -268,8 +268,8 @@ function createOverviewPerson(name, betrag) {
     }
 }
 function round(value, decimals) {
-    return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-  }
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+}
 //payingPerson.onclick = function(){refresh();}
 //var payingPersons = document.getElementById("payingPersons");
 var payedPersons = document.getElementById("payedPersons");
@@ -428,19 +428,21 @@ function populateTransactionList(letzteBezahlungen) {
                     transactionList.appendChild(dateHeading);
                 }
             }
-            
+            //console.log(letzteBezahlungen[i].beschreibung);
             transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, centBetragMitNull(letzteBezahlungen[i].wert), letzteBezahlungen[i].id));
         }
     }
 }
 //Mindestens 2 Nachkommastellen oder mehr, außer bei ganzen Euro Beträgen, z.B.: 1.333, 1.50, 50€
-function centBetragMitNull(wert) { 
+function centBetragMitNull(wert) {
     var Betrag = wert;
-    var Kommaposition = Betrag.toString().indexOf(".") + 1;
+    var Kommaindex = Betrag.toString().indexOf(".");
     var Nachkommastellen = 0;
-    if (Kommaposition != -1) Nachkommastellen = Betrag.toString().length - Kommaposition;
-    if (Nachkommastellen == 1) Betrag += '0';
-    return wert;
+    if (Kommaindex != -1) {
+        Nachkommastellen = Betrag.toString().length - (Kommaindex+1);
+        if (Nachkommastellen == 1) Betrag += '0';
+    }
+    return Betrag;
 }
 function createTransactionListItem(name, payer, payees, amount, id) {
     var li = document.createElement("li");
