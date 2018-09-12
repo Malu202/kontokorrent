@@ -255,7 +255,7 @@ function createOverviewPerson(name, betrag) {
     outerSpan.innerHTML = name;
     var innerSpan = document.createElement("span");
     innerSpan.className = "mdc-list-item__secondary-text";
-    betrag = Math.round((betrag + 0.00001) * 100) / 100;
+    betrag = centBetragMitNull(round(betrag, 2));
     innerSpan.innerHTML = betrag + '€';
 
     overview.appendChild(li);
@@ -267,6 +267,9 @@ function createOverviewPerson(name, betrag) {
         if (newTransaction.getBoundingClientRect().bottom > (window.innerHeight || document.documentElement.clientHeight)) newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
     }
 }
+function round(value, decimals) {
+    return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+  }
 //payingPerson.onclick = function(){refresh();}
 //var payingPersons = document.getElementById("payingPersons");
 var payedPersons = document.getElementById("payedPersons");
@@ -425,9 +428,19 @@ function populateTransactionList(letzteBezahlungen) {
                     transactionList.appendChild(dateHeading);
                 }
             }
-            transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, letzteBezahlungen[i].wert, letzteBezahlungen[i].id));
+            
+            transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, centBetragMitNull(letzteBezahlungen[i].wert), letzteBezahlungen[i].id));
         }
     }
+}
+//Mindestens 2 Nachkommastellen oder mehr, außer bei ganzen Euro Beträgen, z.B.: 1.333, 1.50, 50€
+function centBetragMitNull(wert) { 
+    var Betrag = wert;
+    var Kommaposition = Betrag.toString().indexOf(".") + 1;
+    var Nachkommastellen = 0;
+    if (Kommaposition != -1) Nachkommastellen = Betrag.toString().length - Kommaposition;
+    if (Nachkommastellen == 1) Betrag += '0';
+    return Betrag;
 }
 function createTransactionListItem(name, payer, payees, amount, id) {
     var li = document.createElement("li");
