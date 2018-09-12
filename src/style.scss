@@ -46,13 +46,14 @@ body{
     align-items: center;
     justify-content: center;
     overflow:auto;
+    position: absolute;
 }
 #progressBar{    
     margin: 8px;
     width: 50%;
 }
 .mdc-text-field__input{
-    padding: 0; //bugfix
+    padding: 0!important; //bugfix
 }
 #splashScreen{
     position: fixed;
