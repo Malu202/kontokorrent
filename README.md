@@ -6,6 +6,7 @@
 * mehrere Währungen (Wechselkurs anbieten, in der History anzeigen)
 * Optionale genauere Eingabe (Datum, Geld gegeben,...)
 * Payments bearbeiten (z.b Person ändern ohne alles neu eingeben zu müssen)
+* Personen zu vorhandenen Events hinzufügen
 ### Performance
 * stuff cachen
 * offline funktion (post mit abgelaufenem token)
