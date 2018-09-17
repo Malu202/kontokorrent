@@ -35,9 +35,13 @@
 @import "@material/typography/mdc-typography";
 
 @include mdc-list-group-subheader-ink-color($mdc-theme-primary);
+html{
+    height: 100%;
+}
 body{
     margin: 0px;
     padding: 0px;
+    height: 100%;
 }
 #loadScreen{
     width: 100%;
@@ -56,7 +60,7 @@ body{
     padding: 0!important; //bugfix
 }
 #splashScreen{
-    position: fixed;
+    // position: fixed;
     width: 100%;
     height: 100%;
     top: 0; 
@@ -68,8 +72,19 @@ body{
     //display:none;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    // justify-content: center;
     overflow:auto;
+}
+#splashScreen::before{
+    content: "";
+    flex: 1 1 0;
+}
+#splashScreen::after{
+    content: "";
+    flex: 1 1 0;
+}
+#splashScreen>*{
+    flex: 0 0 auto;
 }
 .errorText{
     margin-bottom: 8px;
