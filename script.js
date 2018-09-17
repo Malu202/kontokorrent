@@ -89,12 +89,15 @@ function login() {
                         showHomeScreen(res);
                     }
                     else {
-                        showSplashScreenError(res);
+                        showSplashScreenError(res + " Code " +c);
                     }
                 });
             }
+            else if (code == 401) { 
+                showSplashScreenError("Kontokorrent nicht gefunden!");
+            }
             else {
-                showSplashScreenError(response);
+                showSplashScreenError(response + " Code " + code);
             }
         });
     }
@@ -152,7 +155,6 @@ createNewEventButton.onclick = function () {
                     showHomeScreen(response);
                 }
                 else {
-                    showSplashScreen();
                     showSplashScreenError(response);
                 }
             });
@@ -201,6 +203,7 @@ var errorText = document.getElementById("errorText");
 function showSplashScreenError(error) {
     errorText.innerHTML = error;
     errorText.style.display = "block";
+    showSplashScreen();
 }
 function hideSplashError() {
     errorText.style.display = "none";
