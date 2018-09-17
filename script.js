@@ -359,10 +359,15 @@ confirmTransactionButton.onclick = function () {
     }
     var amount = amountInput.value;
     amount = amount.replace(",", ".");
-    amount = amount.replace(/ /g, '')
-    if (amount == "") amount = undefined;
+    amount = amount.replace(/ /g, '');
 
-    if ((betreff != "") && (payer != "Bitte Person in der Übersicht auswählen") && (payees.length != 0) && !isNaN(amount)) {
+    var error = [];
+    if (betreff == "") error.push("Betreff");
+    if (payer == "Bitte Person in der Übersicht auswählen") error.push("bezahlende Person");
+    if (payees.length == 0) error.push("empfangende Personen");
+    if (amount == "") error.push("Betrag");
+
+    if (error.length == 0) {
         var request = {
             "bezahlendePerson": payerId,
             "empfaenger": payees,
@@ -375,7 +380,13 @@ confirmTransactionButton.onclick = function () {
         });
     }
     else {
-        transactionError.innerHTML = "Ungültige Eingabe";
+        var errormessage = "Bitte ";
+        for (var i = 0; i < error.length; i++) { 
+            errormessage += error[i];
+            if (i != error.length-1) errormessage += ', ';
+        }
+        errormessage += " eingeben!";
+        transactionError.innerHTML = errormessage;
         transactionError.style.display = "block";
         newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
     }
