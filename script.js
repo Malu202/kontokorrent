@@ -466,7 +466,7 @@ function createTransactionListItem(name, payer, payees, amount, id) {
     div.innerHTML = name;
     var span = document.createElement("span");
     span.className = "mdc-list-item__secondary-text";
-    span.innerHTML = payer + " an ";
+    span.innerHTML = payer + " für ";
     for (var i = 0; i < payees.length; i++) {
         span.innerHTML += payees[i].name;
         if (i != payees.length - 1) span.innerHTML += ", "
