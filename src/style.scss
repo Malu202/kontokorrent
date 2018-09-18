@@ -56,8 +56,19 @@ body{
     margin: 8px;
     width: 50%;
 }
-.mdc-text-field__input{
-    padding: 0!important; //bugfix
+// .mdc-text-field__input{
+//     padding: 0!important; //bugfix
+// }
+.mdc-text-field--fullwidth{
+    height: 31px;
+    margin-bottom: 8px;
+    width: auto;
+}
+.mdc-text-field__icon{
+    bottom: 8px!important;
+}
+.mdc-list--two-line .mdc-list-item__text{
+    align-self: center;
 }
 #splashScreen{
     // position: fixed;

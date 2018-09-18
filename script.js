@@ -171,7 +171,7 @@ function createNewPersonCreator() {
     var li = document.createElement("li");
     li.className = "mdc-list-item";
     var div = document.createElement("div");
-    div.className = "mdc-text-field";
+    div.className = "mdc-text-field  mdc-text-field--fullwidth";
     var input = document.createElement("input");
     input.className = "mdc-text-field__input"
     input.setAttribute("type", "text");
