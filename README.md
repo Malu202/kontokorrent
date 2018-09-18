@@ -15,6 +15,6 @@
 * Unterzahlungen (Essen soll nicht durch 4 geteilt werden)
 * Secret nicht mehr case sensitive machen (serverseitig ignorecase und alles klein vom client schicken)
 * UI verbessern (zu faul zum eingeben)
-* genauere Hinweise bei ungültiger Eingabe
+* ~~genauere Hinweise bei ungültiger Eingabe~~
 ## Backend
 * [Kontokorrent-API](https://github.com/tuwrraphael/kontokorrent-api)
