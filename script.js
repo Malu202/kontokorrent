@@ -360,6 +360,7 @@ confirmTransactionButton.onclick = function () {
     var amount = amountInput.value;
     amount = amount.replace(",", ".");
     amount = amount.replace(/ /g, '');
+    
 
     var error = [];
     if (betreff == "") error.push("Betreff");
