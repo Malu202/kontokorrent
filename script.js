@@ -5,6 +5,7 @@ var PERSONS_URL = API_URL + "/persons";
 var PAYMENTS_URL = API_URL + "/payments";
 
 const ENTER_KEYCODE = 13;
+// const KOMMA_KEYCODE = 188;
 
 var request = function (type, url, includeToken, jsondata, callback) {
     var http = new XMLHttpRequest();
@@ -344,6 +345,17 @@ var betreffInput = document.getElementById("betreffInput");
 var amountInput = document.getElementById("amountInput");
 var transactionError = document.getElementById("transactionError");
 var page = document.getElementById("page");
+// //Edge Bugfix
+// amountInput.addEventListener("keyup", function (event) {
+//     var keyCode = event.which || event.keyCode || event.charCode;
+//     if (keyCode == KOMMA_KEYCODE) {
+//         event.stopPropagation();
+//         event.preventDefault();
+//         event.returnValue = false;
+//         event.cancelBubble = true;
+//         amountInput.value += ".";
+//     }
+// });
 confirmTransactionButton.onclick = function () {
     var betreff = betreffInput.value;
     var payer = payingPerson.innerHTML;
@@ -360,13 +372,13 @@ confirmTransactionButton.onclick = function () {
     var amount = amountInput.value;
     amount = amount.replace(",", ".");
     amount = amount.replace(/ /g, '');
-    
+
 
     var error = [];
     if (betreff == "") error.push("Betreff");
     if (payer == "Bitte Person in der Übersicht auswählen") error.push("bezahlende Person");
     if (payees.length == 0) error.push("empfangende Personen");
-    if (amount == "") error.push("Betrag");
+    if (amount == "" || isNaN(amount)) error.push("Betrag");
 
     if (error.length == 0) {
         var request = {
