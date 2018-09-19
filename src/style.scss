@@ -62,13 +62,26 @@ body{
 .mdc-text-field--fullwidth{
     height: 31px;
     margin-bottom: 8px;
-    width: auto;
+    width: auto; //bugfix
 }
 .mdc-text-field__icon{
-    bottom: 8px!important;
+    bottom: 8px!important;//bugfix
 }
 .mdc-list--two-line .mdc-list-item__text{
     align-self: center;
+}
+.mdc-select--box{
+    background-color: #fff !important; //bugfix
+    margin-left:8px;
+    margin-right: 8px;
+    height: 31px; //bugfix
+}
+.mdc-select__native-control{//bugfix
+    padding: 0px;
+    height: auto !important;
+}
+.mdc-select--box::before{
+    background-color: #fff !important;
 }
 #splashScreen{
     // position: fixed;
