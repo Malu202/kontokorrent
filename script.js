@@ -369,7 +369,10 @@ confirmTransactionButton.onclick = function () {
             payerId = personenliste[i].id;
         }
     }
+    amountInput.setAttribute("type", "text");
     var amount = amountInput.value;
+    amountInput.setAttribute("type", "number");
+    
     amount = amount.replace(",", ".");
     amount = amount.replace(/ /g, '');
 
