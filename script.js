@@ -90,11 +90,11 @@ function login() {
                         showHomeScreen(res);
                     }
                     else {
-                        showSplashScreenError(res + " Code " +c);
+                        showSplashScreenError(res + " Code " + c);
                     }
                 });
             }
-            else if (code == 401) { 
+            else if (code == 401) {
                 showSplashScreenError("Kontokorrent nicht gefunden!");
             }
             else {
@@ -268,7 +268,7 @@ function createOverviewPerson(name, betrag) {
 
     li.onclick = function () {
         payingPerson.innerHTML = name;
-        if (newTransaction.getBoundingClientRect().bottom > (window.innerHeight || document.documentElement.clientHeight)) newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
+        //if (newTransaction.getBoundingClientRect().bottom > (window.innerHeight || document.documentElement.clientHeight)) newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
     }
 }
 function round(value, decimals) {
@@ -328,7 +328,8 @@ function createCheckbox(labelString) {
     return formField;
 }
 payedForAllCheckboxInput = document.getElementById("payedForAllCheckboxInput");
-payedForAllCheckboxInput.onclick = function () {
+payedForAllCheckboxInput.onclick = checkAllPersons;
+function checkAllPersons() {
     if (payedForAllCheckboxInput.checked) {
         for (var i = 0; i < personenliste.length; i++) {
             personenliste[i].payedCheckbox.firstChild.firstChild.checked = true;
@@ -342,29 +343,27 @@ payedForAllCheckboxInput.onclick = function () {
 
 var confirmTransactionButton = document.getElementById("confirmTransactionButton");
 var betreffInput = document.getElementById("betreffInput");
-var amountInput = document.getElementById("amountInput");
+var transactionAmountInput = document.getElementById("amountInput");
 var transactionError = document.getElementById("transactionError");
 var page = document.getElementById("page");
-// //Edge Bugfix
-// amountInput.addEventListener("keyup", function (event) {
-//     var keyCode = event.which || event.keyCode || event.charCode;
-//     if (keyCode == KOMMA_KEYCODE) {
-//         event.stopPropagation();
-//         event.preventDefault();
-//         event.returnValue = false;
-//         event.cancelBubble = true;
-//         amountInput.value += ".";
-//     }
-// });
+
 confirmTransactionButton.onclick = function () {
-    var betreff = betreffInput.value;
-    var payer = payingPerson.innerHTML;
-    var payerId;
     var payees = [];
     for (var i = 0; i < personenliste.length; i++) {
         if (personenliste[i].payedCheckbox.firstChild.firstChild.checked) {
             payees.push(personenliste[i].id);
         }
+    }
+    confirmTransaction(betreffInput.value, payingPerson.innerHTML, transactionError, transactionAmountInput, payees, null, function () {
+        //refresh();
+    });
+}
+function confirmTransaction(betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
+    var betreff = betreffInput;
+    var payer = payingPerson;
+    var payerId;
+    var payees = payeeIds;
+    for (var i = 0; i < personenliste.length; i++) {
         if (payer == personenliste[i].name) {
             payerId = personenliste[i].id;
         }
@@ -372,7 +371,7 @@ confirmTransactionButton.onclick = function () {
     amountInput.setAttribute("type", "text");
     var amount = amountInput.value;
     amountInput.setAttribute("type", "number");
-    
+
     amount = amount.replace(",", ".");
     amount = amount.replace(/ /g, '');
 
@@ -390,21 +389,26 @@ confirmTransactionButton.onclick = function () {
             "wert": amount,
             "beschreibung": betreff
         };
+        if (zeitpunkt != null) {
+            console.log("zeitpunkt");
+            request.zeitpunkt = zeitpunkt;
+        }
         showLoadScreen("Transaktion wird hinzugefügt");
         postRequest(PAYMENTS_URL, true, request, function (response, code) {
-            refresh();
+            callback(response, code, true);
         });
     }
     else {
         var errormessage = "Bitte ";
-        for (var i = 0; i < error.length; i++) { 
+        for (var i = 0; i < error.length; i++) {
             errormessage += error[i];
-            if (i != error.length-1) errormessage += ', ';
+            if (i != error.length - 1) errormessage += ', ';
         }
         errormessage += " eingeben!";
-        transactionError.innerHTML = errormessage;
-        transactionError.style.display = "block";
-        newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
+        transactionErrorDiv.innerHTML = errormessage;
+        transactionErrorDiv.style.display = "block";
+        //newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
+        callback(null, null, false);
     }
 
 }
@@ -459,7 +463,7 @@ function populateTransactionList(letzteBezahlungen) {
                 }
             }
             //console.log(letzteBezahlungen[i].beschreibung);
-            transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, centBetragMitNull(letzteBezahlungen[i].wert), letzteBezahlungen[i].id));
+            transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, centBetragMitNull(letzteBezahlungen[i].wert), letzteBezahlungen[i].id, letzteBezahlungen[i].zeitpunkt));
         }
     }
 }
@@ -469,12 +473,13 @@ function centBetragMitNull(wert) {
     var Kommaindex = Betrag.toString().indexOf(".");
     var Nachkommastellen = 0;
     if (Kommaindex != -1) {
-        Nachkommastellen = Betrag.toString().length - (Kommaindex+1);
+        Nachkommastellen = Betrag.toString().length - (Kommaindex + 1);
         if (Nachkommastellen == 1) Betrag += '0';
     }
     return Betrag;
 }
-function createTransactionListItem(name, payer, payees, amount, id) {
+var transactionsDetails = document.getElementById("transactionsDetails");
+function createTransactionListItem(name, payer, payees, amount, id, zeitpunkt) {
     var li = document.createElement("li");
     li.className = "mdc-list-item"
     var div = document.createElement("div");
@@ -510,9 +515,89 @@ function createTransactionListItem(name, payer, payees, amount, id) {
 
         return false;
     }, false);
+
+    li.addEventListener('click', function (ev) {
+        return false;//remove this to activat editing feature
+        ev.preventDefault();
+        var thisTransaction = transactionsDetails.cloneNode(true);
+        var everySubNode = thisTransaction.getElementsByTagName("*");
+
+        var newName, newPayer, transactionError, newAmount, newPayees;
+        for (var i = 0; i < thisTransaction.childNodes.length; i++) {
+            var node = thisTransaction.childNodes[i];
+            if (node.id == "betreffTextField") {
+                newName = node.childNodes[1];
+                newName.value = name;
+            } else if (node.id == "payingPerson") {
+                newPayer = node;
+                newPayer.innerHTML = payer;
+            } else if (node.id == "payedPersons") {
+                newPayees = node.childNodes;
+                for (var j = 0; j < node.childNodes.length; j++) {
+                    var personenName = node.childNodes[j].childNodes[1].innerHTML;
+                    for (var k = 0; k < payees.length; k++) {
+                        if (personenName == payees[k].name) node.childNodes[j].firstChild.firstChild.checked = true;
+                    }
+                }
+            } else if (node.id == "amountTextField") {
+                newAmount = node.childNodes[1];
+                node.childNodes[1].value = amount;
+            } else if (node.id == "transactionError") {
+                transactionError = node;
+                transactionError.innerHTML = "";
+            } else if (node.id == "alle") {
+                node.style.display = "none";
+            }
+
+        }
+        for (var l = 0; l < everySubNode.length; l++) {
+            var idSuffix = "Edit";
+            var forAttr = everySubNode[l].getAttribute("for");
+            if (forAttr != null) everySubNode[l].setAttribute("for", forAttr + idSuffix);
+            everySubNode[l].id += idSuffix;
+        }
+        // var deleteButton = document.createElement("li");
+        // li.className = "mdc-list-item"
+        showAsDialog(thisTransaction, "speichern", "abbrechen", function () {
+            var newPayeeIds = [];
+            for (var i = 0; i < newPayees.length; i++) {
+                if (newPayees[i].firstChild.firstChild.checked) {
+                    for (var j = 0; j < personenliste.length; j++) {
+                        if (personenliste[j].name == newPayees[i].childNodes[1].innerHTML) newPayeeIds.push(personenliste[j].id);
+                    }
+                }
+            }
+            var erfolg = true;
+            confirmTransaction(newName.value, newPayer.innerHTML, transactionError, newAmount, newPayeeIds, zeitpunkt, function (response, code, success) {
+                if (!success) {
+                    erfolg = false;
+                    return false;
+                }
+                if (code == 200) {
+                    deletePayment(id, function () {
+                        if (code == 200) {
+                            refresh();
+                        } else {
+                            showLoadScreen("Error Code: " + code + " " + response)
+                            setTimeout(refresh, 6000);
+                        }
+                    });
+                } else {
+                    showLoadScreen("Error Code: " + code + " " + response)
+                    setTimeout(refresh, 6000);
+                }
+            });
+            return erfolg;
+        }, null);
+    }, false);
+
     return li;
 }
 
+
+function deletePayment(id, callback) {
+    deleteRequest(PAYMENTS_URL + "?id=" + id, true, {}, function (r, c) { callback(r, c) });
+}
 
 
 function autoLogin() {
@@ -540,18 +625,39 @@ var dialogCancelButton = document.getElementById("dialogCancelButton");
 
 showDialog = function (titel, text, accept, cancel, onAccept, onCancel) {
     dialogTitel.innerHTML = titel;
+    dialogText.innerHTML = "";
     dialogText.innerHTML = text;
-    dialogAcceptButton.innerHTML = accept;
-    dialogCancelButton.innerHTML = cancel;
+    setupDialogButtons(dialog, dialogAcceptButton, dialogCancelButton, accept, cancel, onAccept, onCancel);
+}
 
-    dialogAcceptButton.onclick = function () {
+
+var customDialog = document.getElementById("customDialog");
+var customDialogAcceptButton = document.getElementById("customDialogAcceptButton");
+var customDialogCancelButton = document.getElementById("customDialogCancelButton");
+var customDialogContent = document.getElementById("customDialogContent");
+
+showAsDialog = function (html, accept, cancel, onAccept, onCancel) {
+    customDialogContent.innerHTML = "";
+    customDialogContent.appendChild(html);
+    setupDialogButtons(customDialog, customDialogAcceptButton, customDialogCancelButton, accept, cancel, onAccept, onCancel);
+}
+
+function setupDialogButtons(dialog, acceptButton, cancelButton, accept, cancel, onAccept, onCancel) {
+    acceptButton.innerHTML = accept;
+    cancelButton.innerHTML = cancel;
+
+    acceptButton.onclick = function () {
         dialog.classList.remove("mdc-dialog--open");
-        if (onAccept != null) onAccept();
+        var done = true;
+        if (onAccept != null) done = onAccept();
+        if(!done) dialog.classList.add("mdc-dialog--open");
     }
-    dialogCancelButton.onclick = function () {
+    cancelButton.onclick = function () {
         dialog.classList.remove("mdc-dialog--open");
-        if (onCancel != null) onCancel();
+        var done = true;
+        if (onCancel != null) done = onCancel();
+        if(!done) dialog.classList.add("mdc-dialog--open");
+
     }
     dialog.classList.add("mdc-dialog--open");
 }
-
