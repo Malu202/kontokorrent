@@ -233,6 +233,9 @@ components:
           type: number
         beschreibung:
           type: string
+        zeitpunkt:
+          type: string
+          format: date-time
     Bezahlung:
       properties:
         id:
