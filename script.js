@@ -518,7 +518,7 @@ function createTransactionListItem(name, payer, payees, amount, id, zeitpunkt) {
     }, false);
 
     li.addEventListener('click', function (ev) {
-        return false;//remove this to activat editing feature
+        //return false;//remove this to activat editing feature
         ev.preventDefault();
         var thisTransaction = transactionsDetails.cloneNode(true);
         var everySubNode = thisTransaction.getElementsByTagName("*");
