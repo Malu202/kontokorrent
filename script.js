@@ -445,31 +445,31 @@ function populateTransactionList(letzteBezahlungen) {
     }
     transactions = letzteBezahlungen;
     if (letzteBezahlungen != undefined) {
-        for (var i = 0; i < letzteBezahlungen.length; i++) {
-
-            var currentDate = new Date(letzteBezahlungen[i].zeitpunkt);
-            if (i == 0) {
-                var dateHeading = document.createElement("h3");
-                dateHeading.className = "mdc-list-group__subheader";
-                dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
-                transactionList.appendChild(dateHeading);
-            } else {
-                var previousDate = new Date(letzteBezahlungen[i - 1].zeitpunkt);
-                if (previousDate.getDate() != currentDate.getDate() || previousDate.getMonth() != currentDate.getMonth() || previousDate.getFullYear() != currentDate.getFullYear()) {
-                    var dateHeading = document.createElement("h3");
-                    dateHeading.className = "mdc-list-group__subheader";
-                    dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
-                    transactionList.appendChild(dateHeading);
-                }
-            }
-            //console.log(letzteBezahlungen[i].beschreibung);
-            transactionList.appendChild(createTransactionListItem(letzteBezahlungen[i].beschreibung, letzteBezahlungen[i].bezahlendePerson.name, letzteBezahlungen[i].empfaenger, centBetragMitNull(letzteBezahlungen[i].wert), letzteBezahlungen[i].id, letzteBezahlungen[i].zeitpunkt));
-        }
+        createPaymentList(letzteBezahlungen, transactionList);
     }
 }
 
-function createPaymentList(payments, parent) { 
+function createPaymentList(payments, parent) {
+    for (var i = 0; i < payments.length; i++) {
 
+        var currentDate = new Date(payments[i].zeitpunkt);
+        if (i == 0) {
+            var dateHeading = document.createElement("h3");
+            dateHeading.className = "mdc-list-group__subheader";
+            dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
+            parent.appendChild(dateHeading);
+        } else {
+            var previousDate = new Date(payments[i - 1].zeitpunkt);
+            if (previousDate.getDate() != currentDate.getDate() || previousDate.getMonth() != currentDate.getMonth() || previousDate.getFullYear() != currentDate.getFullYear()) {
+                var dateHeading = document.createElement("h3");
+                dateHeading.className = "mdc-list-group__subheader";
+                dateHeading.innerHTML = currentDate.getDayName() + ", " + currentDate.toLocaleDateString();
+                parent.appendChild(dateHeading);
+            }
+        }
+        //console.log(letzteBezahlungen[i].beschreibung);
+        parent.appendChild(createTransactionListItem(payments[i].beschreibung, payments[i].bezahlendePerson.name, payments[i].empfaenger, centBetragMitNull(payments[i].wert), payments[i].id, payments[i].zeitpunkt));
+    }
 }
 
 //Mindestens 2 Nachkommastellen oder mehr, außer bei ganzen Euro Beträgen, z.B.: 1.333, 1.50, 50€
@@ -511,7 +511,7 @@ function createTransactionListItem(name, payer, payees, amount, id, zeitpunkt) {
         showDialog("Zahlung löschen?", 'Wirklich "' + name + '" löschen?', "Ja", "Nein", function () {
             showLoadScreen("Zahlung wird gelöscht");
             // deleteRequest(PAYMENTS_URL + "/" + id, true, {}, function (response, code) {
-            deletePayment(id, function (response,code) { 
+            deletePayment(id, function (response, code) {
                 if (code == 200) {
                     refresh();
                 }
@@ -605,13 +605,16 @@ function deletePayment(id, callback) {
     deleteRequest(PAYMENTS_URL + "/" + id, true, {}, function (r, c) { callback(r, c) });
 }
 
-var deleteButton = document.getElementById("deletedButton");
-deleteButton.onclick = function () { 
-    pageSwitcher.switchToPage("deletedScreen");
-}
+var deletedButton = document.getElementById("deletedButton");
+var deletedCard = document.getElementById("deletedPayments");
+// deletedButton.onclick = function () {
+//     pageSwitcher.switchToPage("deletedScreen");
+
+//     createPaymentList(transactions, deletedCard);
+// }
 
 var toolbarTitle = document.getElementById("Toolbar");
-toolbarTitle.onclick = function () { 
+toolbarTitle.onclick = function () {
     pageSwitcher.switchToPage("homeScreen");
 }
 
@@ -666,13 +669,13 @@ function setupDialogButtons(dialog, acceptButton, cancelButton, accept, cancel, 
         dialog.classList.remove("mdc-dialog--open");
         var done = true;
         if (onAccept != null) done = onAccept();
-        if(!done) dialog.classList.add("mdc-dialog--open");
+        if (!done) dialog.classList.add("mdc-dialog--open");
     }
     cancelButton.onclick = function () {
         dialog.classList.remove("mdc-dialog--open");
         var done = true;
         if (onCancel != null) done = onCancel();
-        if(!done) dialog.classList.add("mdc-dialog--open");
+        if (!done) dialog.classList.add("mdc-dialog--open");
 
     }
     dialog.classList.add("mdc-dialog--open");

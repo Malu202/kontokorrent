@@ -76,19 +76,22 @@
     <div class="mdc-toolbar mdc-toolbar--fixed page homeScreen deletedScreen">
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-                <!-- <button class="menu material-icons mdc-toolbar__menu-icon">&#xE5D2;</button> -->
+                <button class="menu material-icons mdc-toolbar__menu-icon">&#xE5D2;</button>
                 <span id="Toolbar" class="mdc-toolbar__title catalog-title">Kontokorrent</span>
             </section>
             <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
-                <a class="material-icons mdc-toolbar__icon homeScreen" id="deletedButton">&#xE872;</a>
+                <!-- <a class="material-icons mdc-toolbar__icon homeScreen" id="deletedButton">&#xE872;</a> -->
                 <a class="material-icons mdc-toolbar__icon" id="logOutButton">&#xE879;</a>
             </section>
         </div>
     </div>
-    <div class="mdc-toolbar-fixed-adjust page deletedScreen" id="deleted">
-        Deleted Payments coming soon
+    <div class="mdc-toolbar-fixed-adjust contentPage page deletedScreen" id="deleted">
+        <div class="mdc-card">
+            <h2 class="mdc-typography--headline5">Gelöschte Transaktionen</h2>
+            <div id="deletedPayments"></div>
+        </div>
     </div>
-    <div class="mdc-toolbar-fixed-adjust page homeScreen" id="page">
+    <div class="mdc-toolbar-fixed-adjust contentPage page homeScreen" id="page">
 
         <div class="mdc-card" id="overview">
             <ul class="mdc-list mdc-list--two-line" id="overviewList">

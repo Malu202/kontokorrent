@@ -147,14 +147,14 @@ body{
     width: auto;
     align-self: flex-end;
 }
-#page{
+.contentPage{
     //display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-evenly;
     width: 100%;
 }
-#page>*{
+.contentPage>*{
     flex: 1 1 auto;
     margin: 4px 4px;
 }
