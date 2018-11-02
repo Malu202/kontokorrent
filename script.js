@@ -30,6 +30,9 @@ var postRequest = function (url, includeToken, jsondata, callback) {
 var deleteRequest = function (url, includeToken, jsondata, callback) {
     request("DELETE", url, includeToken, jsondata, callback);
 }
+var putRequest = function (url, includeToken, jsondata, callback) {
+    request("PUT", url, includeToken, jsondata, callback);
+}
 
 var getRequest = function (url, includeToken, callback) {
     var xhr = new XMLHttpRequest();
@@ -354,11 +357,19 @@ confirmTransactionButton.onclick = function () {
             payees.push(personenliste[i].id);
         }
     }
-    confirmTransaction(betreffInput.value, payingPerson.innerHTML, transactionError, transactionAmountInput, payees, null, function () {
-        refresh();
+    confirmTransaction(betreffInput.value, payingPerson.innerHTML, transactionError, transactionAmountInput, payees, null, function (res,code,success) {
+        if (success) {
+            refresh();
+        }
     });
 }
 function confirmTransaction(betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
+    parseTransactionInput(null, betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback);
+}
+function editTransaction(paymentId, betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
+    parseTransactionInput(paymentId, betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback);
+}
+function parseTransactionInput(paymentId, betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
     var betreff = betreffInput;
     var payer = payingPerson;
     var payerId;
@@ -390,13 +401,19 @@ function confirmTransaction(betreffInput, payingPerson, transactionErrorDiv, amo
             "beschreibung": betreff
         };
         if (zeitpunkt != null) {
-            console.log("zeitpunkt");
             request.zeitpunkt = zeitpunkt;
         }
-        showLoadScreen("Transaktion wird hinzugefügt");
-        postRequest(PAYMENTS_URL, true, request, function (response, code) {
-            callback(response, code, true);
-        });
+        if (paymentId == null) {
+            showLoadScreen("Transaktion wird hinzugefügt");
+            postRequest(PAYMENTS_URL, true, request, function (response, code) {
+                callback(response, code, true);
+            });
+        } else {
+            showLoadScreen("Transaktion wird bearbeitet");
+            putRequest(PAYMENTS_URL + "/" + paymentId, true, request, function (response, code) {
+                callback(response, code, true);
+            });
+        }
     }
     else {
         var errormessage = "Bitte ";
@@ -410,7 +427,6 @@ function confirmTransaction(betreffInput, payingPerson, transactionErrorDiv, amo
         //newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
         callback(null, null, false);
     }
-
 }
 function refresh() {
     window.location.replace(window.location.pathname + window.location.search + window.location.hash);
@@ -574,20 +590,13 @@ function createTransactionListItem(name, payer, payees, amount, id, zeitpunkt) {
                 }
             }
             var erfolg = true;
-            confirmTransaction(newName.value, newPayer.innerHTML, transactionError, newAmount, newPayeeIds, zeitpunkt, function (response, code, success) {
+            editTransaction(id, newName.value, newPayer.innerHTML, transactionError, newAmount, newPayeeIds, zeitpunkt, function (response, code, success) {
                 if (!success) {
                     erfolg = false;
                     return false;
                 }
                 if (code == 200) {
-                    deletePayment(id, function () {
-                        if (code == 200) {
-                            refresh();
-                        } else {
-                            showLoadScreen("Error Code: " + code + " " + response)
-                            setTimeout(refresh, 6000);
-                        }
-                    });
+                    refresh();
                 } else {
                     showLoadScreen("Error Code: " + code + " " + response)
                     setTimeout(refresh, 6000);
