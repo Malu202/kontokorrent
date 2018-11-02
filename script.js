@@ -240,7 +240,7 @@ function updateEventScreen(response) {
             overviewList.removeChild(overviewList.firstChild);
         }
         for (var j = 0; j < personenliste.length; j++) {
-            createOverviewPerson(personenliste[j].name, personenliste[j].betrag);
+            createOverviewPerson(personenliste[j].name, personenliste[j].id, personenliste[j].betrag);
         }
         populateTransactionPersons();
         populateTransactionList(response.letzteBezahlungen);
@@ -252,7 +252,7 @@ function updateEventScreen(response) {
 var payingPerson = document.getElementById("payingPerson");
 var newTransaction = document.getElementById("newTransaction");
 var overview = document.getElementById("overviewList");
-function createOverviewPerson(name, betrag) {
+function createOverviewPerson(name, id, betrag) {
     var name = name;
     var betrag = betrag;
     var li = document.createElement("li");
@@ -270,7 +270,8 @@ function createOverviewPerson(name, betrag) {
     outerSpan.appendChild(innerSpan);
 
     li.onclick = function () {
-        payingPerson.innerHTML = name;
+        // payingPerson.innerHTML = name;
+        payerSelect.value = id;
         //if (newTransaction.getBoundingClientRect().bottom > (window.innerHeight || document.documentElement.clientHeight)) newTransaction.scrollIntoView({ block: "start", behavior: "smooth" });
     }
 }
@@ -280,15 +281,29 @@ function round(value, decimals) {
 //payingPerson.onclick = function(){refresh();}
 //var payingPersons = document.getElementById("payingPersons");
 var payedPersons = document.getElementById("payedPersons");
+var payerSelect = document.getElementById("payerSelect");
+
 function populateTransactionPersons() {
     while (payedPersons.firstChild) {
         payedPersons.removeChild(payedPersons.firstChild);
     }
+    payerSelect.innerHTML = "";
+    payerSelect.appendChild(createSelectOption("", "", true, true));
     for (var i = 0; i < personenliste.length; i++) {
         var payedCheckbox = createCheckbox(personenliste[i].name);
         personenliste[i].payedCheckbox = payedCheckbox;
         payedPersons.appendChild(payedCheckbox);
+
+        payerSelect.appendChild(createSelectOption(personenliste[i].id, personenliste[i].name, false, false));
     }
+}
+function createSelectOption(value, text, selected, disabled) {
+    var option = document.createElement("option");
+    option.disabled = disabled;
+    option.selected = selected;
+    option.value = value;
+    option.innerHTML = text;
+    return option;
 }
 
 function createCheckbox(labelString) {
@@ -357,28 +372,28 @@ confirmTransactionButton.onclick = function () {
             payees.push(personenliste[i].id);
         }
     }
-    confirmTransaction(betreffInput.value, payingPerson.innerHTML, transactionError, transactionAmountInput, payees, null, function (res,code,success) {
+    confirmTransaction(betreffInput.value, payerSelect, transactionError, transactionAmountInput, payees, null, function (res, code, success) {
         if (success) {
             refresh();
         }
     });
 }
-function confirmTransaction(betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
-    parseTransactionInput(null, betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback);
+function confirmTransaction(betreffInput, payingPersonSelect, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
+    parseTransactionInput(null, betreffInput, payingPersonSelect, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback);
 }
-function editTransaction(paymentId, betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
-    parseTransactionInput(paymentId, betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback);
+function editTransaction(paymentId, betreffInput, payingPersonSelect, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
+    parseTransactionInput(paymentId, betreffInput, payingPersonSelect, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback);
 }
-function parseTransactionInput(paymentId, betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
+function parseTransactionInput(paymentId, betreffInput, payingPersonSelect, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
     var betreff = betreffInput;
-    var payer = payingPerson;
-    var payerId;
+    //var payer = payingPerson;
+    var payerId = payingPersonSelect.options[payingPersonSelect.selectedIndex].value;
     var payees = payeeIds;
-    for (var i = 0; i < personenliste.length; i++) {
-        if (payer == personenliste[i].name) {
-            payerId = personenliste[i].id;
-        }
-    }
+    // for (var i = 0; i < personenliste.length; i++) {
+    //     if (payer == personenliste[i].name) {
+    //         payerId = personenliste[i].id;
+    //     }
+    // }
     amountInput.setAttribute("type", "text");
     var amount = amountInput.value;
     amountInput.setAttribute("type", "number");
@@ -389,7 +404,9 @@ function parseTransactionInput(paymentId, betreffInput, payingPerson, transactio
 
     var error = [];
     if (betreff == "") error.push("Betreff");
-    if (payer == "Bitte Person in der Übersicht auswählen") error.push("bezahlende Person");
+    // if (payer == "Bitte Person in der Übersicht auswählen") error.push("bezahlende Person");
+    if (payerId == "") error.push("bezahlende Person");
+
     if (payees.length == 0) error.push("empfangende Personen");
     if (amount == "" || isNaN(amount)) error.push("Betrag");
 
@@ -484,7 +501,7 @@ function createPaymentList(payments, parent) {
             }
         }
         //console.log(letzteBezahlungen[i].beschreibung);
-        parent.appendChild(createTransactionListItem(payments[i].beschreibung, payments[i].bezahlendePerson.name, payments[i].empfaenger, centBetragMitNull(payments[i].wert), payments[i].id, payments[i].zeitpunkt));
+        parent.appendChild(createTransactionListItem(payments[i].beschreibung, payments[i].bezahlendePerson.name, payments[i].bezahlendePerson.id, payments[i].empfaenger, centBetragMitNull(payments[i].wert), payments[i].id, payments[i].zeitpunkt));
     }
 }
 
@@ -500,7 +517,7 @@ function centBetragMitNull(wert) {
     return Betrag;
 }
 var transactionsDetails = document.getElementById("transactionsDetails");
-function createTransactionListItem(name, payer, payees, amount, id, zeitpunkt) {
+function createTransactionListItem(name, payer, payerId, payees, amount, id, zeitpunkt) {
     var li = document.createElement("li");
     li.className = "mdc-list-item"
     var div = document.createElement("div");
@@ -550,9 +567,10 @@ function createTransactionListItem(name, payer, payees, amount, id, zeitpunkt) {
             if (node.id == "betreffTextField") {
                 newName = node.childNodes[1];
                 newName.value = name;
-            } else if (node.id == "payingPerson") {
-                newPayer = node;
-                newPayer.innerHTML = payer;
+            } else if (node.id == "payerSelectContainer") {
+                node.childNodes[1].classList.add("mdc-select--disabled");
+                newPayer = node.childNodes[1].childNodes[3];
+                newPayer.value = payerId;
             } else if (node.id == "payedPersons") {
                 newPayees = node.childNodes;
                 for (var j = 0; j < node.childNodes.length; j++) {
@@ -590,7 +608,7 @@ function createTransactionListItem(name, payer, payees, amount, id, zeitpunkt) {
                 }
             }
             var erfolg = true;
-            editTransaction(id, newName.value, newPayer.innerHTML, transactionError, newAmount, newPayeeIds, zeitpunkt, function (response, code, success) {
+            editTransaction(id, newName.value, newPayer, transactionError, newAmount, newPayeeIds, zeitpunkt, function (response, code, success) {
                 if (!success) {
                     erfolg = false;
                     return false;

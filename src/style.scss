@@ -24,7 +24,7 @@
 @import "@material/menu/mdc-menu";
 // @import "@material/radio/mdc-radio";
 // @import "@material/ripple/mdc-ripple";
-//@import "@material/select/mdc-select";
+@import "@material/select/mdc-select";
 // @import "@material/slider/mdc-slider";
 // @import "@material/snackbar/mdc-snackbar";
 // @import "@material/switch/mdc-switch";
@@ -70,18 +70,34 @@ body{
 .mdc-list--two-line .mdc-list-item__text{
     align-self: center;
 }
-.mdc-select--box{
+// .mdc-select--box{
+//     background-color: #fff !important; //bugfix
+//     margin-left:8px;
+//     margin-right: 8px;
+//     height: 31px; //bugfix
+// }
+// .mdc-select__native-control{//bugfix
+//     padding: 0px;
+//     height: auto !important;
+// }
+.mdc-select::before, .mdc-select::after{
+    background-color: #fff !important;
+}
+.mdc-select{
     background-color: #fff !important; //bugfix
-    margin-left:8px;
-    margin-right: 8px;
-    height: 31px; //bugfix
+    padding:0px;
+    height: auto !important;
+    // margin-top: 2px;
 }
 .mdc-select__native-control{//bugfix
     padding: 0px;
     height: auto !important;
 }
-.mdc-select--box::before{
-    background-color: #fff !important;
+.mdc-select__dropdown-icon{
+    height: 5px;
+}
+#payerSelectContainer{
+    height: 31px;
 }
 #splashScreen{
     // position: fixed;
@@ -205,6 +221,16 @@ $card-max-width:350px;
 .transactionsDetails .mdc-form-field>*{
     cursor:pointer;    
     user-select: none;
+}
+.transactionsDetails .mdc-select{
+    width:100%;
+}
+.transactionsDetails .transactionContainer{
+    margin-left: 16px;    
+    margin-right: 16px; 
+    width:auto;
+    min-width: 0px;
+    max-width: none;
 }
 .payingPerson{
     margin-left: 16px;

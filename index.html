@@ -76,7 +76,7 @@
     <div class="mdc-toolbar mdc-toolbar--fixed page homeScreen deletedScreen">
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-                <button class="menu material-icons mdc-toolbar__menu-icon">&#xE5D2;</button>
+                <!-- <button class="menu material-icons mdc-toolbar__menu-icon">&#xE5D2;</button> -->
                 <span id="Toolbar" class="mdc-toolbar__title catalog-title">Kontokorrent</span>
             </section>
             <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
@@ -109,10 +109,9 @@
                 </div>
 
                 <h4>Diese Person zahlt:</h4>
-                <div id="payingPerson" class="payingPerson">Bitte Person in der Übersicht auswählen</div>
+                <!-- <div id="payingPerson" class="payingPerson">Bitte Person in der Übersicht auswählen</div> -->
 
-                <!-- <h4>Nein diese Person zahlt:</h4>
-            <div class="mdc-select mdc-select--box">
+                <!-- <div class="mdc-select mdc-select--box">
                 <select class="mdc-select__native-control">
                     <option value="payedFor">
                         Rechnung bezahlt
@@ -126,8 +125,20 @@
                 </select>
                 <div class="mdc-line-ripple"></div>
             </div> -->
+                <div id="payerSelectContainer" class="transactionContainer">
+                    <div class="mdc-select">
+                        <i class="mdc-select__dropdown-icon"></i>
+                        <select id="payerSelect" class="mdc-select__native-control">
+                            <option value="" disabled selected></option>
+                            <option value="vegetables">
+                                Vegetables
+                            </option>
+                        </select>
+                        <label class="mdc-floating-label"></label>
+                        <div class="mdc-line-ripple"></div>
+                    </div>
 
-
+                </div>
                 <h4>für diese Personen:</h4>
 
                 <div id="alle" class="mdc-form-field">
@@ -185,22 +196,6 @@
         </div>
     </div>
 
-
-    <!-- <aside id="dialog" class="mdc-dialog" role="alertdialog" aria-labelledby="my-mdc-dialog-label" aria-describedby="my-mdc-dialog-description">
-        <div class="mdc-dialog__surface">
-            <header class="mdc-dialog__header">
-                <h2 id="dialogTitel" class="mdc-dialog__header__title">
-                </h2>
-            </header>
-            <section id="dialogText" class="mdc-dialog__body">
-            </section>
-            <footer class="mdc-dialog__footer">
-                <button id="dialogCancelButton" type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel">Abbrechen</button>
-                <button id="dialogAcceptButton" type="dialogAcceptButton" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept">Ok</button>
-            </footer>
-        </div>
-        <div class="mdc-dialog__backdrop"></div>
-    </aside> -->
 
     <div class="mdc-dialog" id="dialog" role="alertdialog">
         <div class="mdc-dialog__container">
