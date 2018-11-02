@@ -73,18 +73,21 @@
 
 
 
-    <div class="mdc-toolbar mdc-toolbar--fixed page homeScreen">
+    <div class="mdc-toolbar mdc-toolbar--fixed page homeScreen deletedScreen">
         <div class="mdc-toolbar__row">
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
                 <!-- <button class="menu material-icons mdc-toolbar__menu-icon">&#xE5D2;</button> -->
                 <span id="Toolbar" class="mdc-toolbar__title catalog-title">Kontokorrent</span>
             </section>
             <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
-                <a class="material-icons mdc-toolbar__icon musik" id="logOutButton">&#xE879;</a>
+                <a class="material-icons mdc-toolbar__icon homeScreen" id="deletedButton">&#xE872;</a>
+                <a class="material-icons mdc-toolbar__icon" id="logOutButton">&#xE879;</a>
             </section>
         </div>
     </div>
-
+    <div class="mdc-toolbar-fixed-adjust page deletedScreen" id="deleted">
+        Deleted Payments coming soon
+    </div>
     <div class="mdc-toolbar-fixed-adjust page homeScreen" id="page">
 
         <div class="mdc-card" id="overview">
@@ -124,7 +127,7 @@
 
                 <h4>für diese Personen:</h4>
 
-                <div  id="alle" class="mdc-form-field">
+                <div id="alle" class="mdc-form-field">
                     <div class="mdc-checkbox">
                         <input id="payedForAllCheckboxInput" type="checkbox" class="mdc-checkbox__native-control" />
                         <div class="mdc-checkbox__background">

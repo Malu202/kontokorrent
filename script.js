@@ -467,6 +467,11 @@ function populateTransactionList(letzteBezahlungen) {
         }
     }
 }
+
+function createPaymentList(payments, parent) { 
+
+}
+
 //Mindestens 2 Nachkommastellen oder mehr, außer bei ganzen Euro Beträgen, z.B.: 1.333, 1.50, 50€
 function centBetragMitNull(wert) {
     var Betrag = wert;
@@ -598,6 +603,16 @@ function createTransactionListItem(name, payer, payees, amount, id, zeitpunkt) {
 
 function deletePayment(id, callback) {
     deleteRequest(PAYMENTS_URL + "/" + id, true, {}, function (r, c) { callback(r, c) });
+}
+
+var deleteButton = document.getElementById("deletedButton");
+deleteButton.onclick = function () { 
+    pageSwitcher.switchToPage("deletedScreen");
+}
+
+var toolbarTitle = document.getElementById("Toolbar");
+toolbarTitle.onclick = function () { 
+    pageSwitcher.switchToPage("homeScreen");
 }
 
 

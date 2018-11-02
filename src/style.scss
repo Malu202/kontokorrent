@@ -239,7 +239,9 @@ $card-max-width:350px;
     display: none;
     margin: 16px;
 }
-
+#Toolbar{
+    cursor: pointer;
+}
 //Hiding ugly und useless arrows in number input
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
