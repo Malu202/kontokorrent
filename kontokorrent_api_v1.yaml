@@ -133,6 +133,35 @@ paths:
           description: 'bezahlender, empfaenger oder wert nicht angegeben'
         '404':
           description: bezahlender oder empfaenger nicht gefunden
+    put:
+      summary: eine Bezahlung bearbeiten
+      tags:
+        - Bezahlungen
+      parameters:
+          - name: id
+            in: path
+            description: id der Bezahlung die geändert werden soll
+            required: true
+            schema:
+              type: string
+      requestBody:
+        description: Geänderte Bezahlung
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeaenderteBezahlung'
+      responses:
+        '200':
+          description: Bezahlung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bezahlung'
+        '400':
+          description: 'empfaenger wert oder zeitpunkt nicht angegeben, empfaenger nicht gefunden'
+        '404':
+          description: bezahlung oder empfaenger nicht gefunden
     delete:
       summary: eine Bezahlung löschen
       tags:
@@ -224,6 +253,24 @@ components:
         bezahlendePerson:
           type: string
           description: id der Person die bezahlt
+        empfaenger:
+          type: array
+          items:
+            type: string
+            description: ids der Personen an die die Zahlung geht
+        wert:
+          type: number
+        beschreibung:
+          type: string
+        zeitpunkt:
+          type: string
+          format: date-time
+    GeaenderteBezahlung:
+      required:
+        - empfaenger
+        - wert
+        - zeitpunkt
+      properties:
         empfaenger:
           type: array
           items:
