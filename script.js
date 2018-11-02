@@ -505,7 +505,8 @@ function createTransactionListItem(name, payer, payees, amount, id, zeitpunkt) {
 
         showDialog("Zahlung löschen?", 'Wirklich "' + name + '" löschen?', "Ja", "Nein", function () {
             showLoadScreen("Zahlung wird gelöscht");
-            deleteRequest(PAYMENTS_URL + "?id=" + id, true, {}, function (response, code) {
+            // deleteRequest(PAYMENTS_URL + "/" + id, true, {}, function (response, code) {
+            deletePayment(id, function (response,code) { 
                 if (code == 200) {
                     refresh();
                 }
@@ -596,7 +597,7 @@ function createTransactionListItem(name, payer, payees, amount, id, zeitpunkt) {
 
 
 function deletePayment(id, callback) {
-    deleteRequest(PAYMENTS_URL + "?id=" + id, true, {}, function (r, c) { callback(r, c) });
+    deleteRequest(PAYMENTS_URL + "/" + id, true, {}, function (r, c) { callback(r, c) });
 }
 
 
