@@ -7,9 +7,9 @@
   "devDependencies": {
     "gulp": "^4.0.0",
     "gulp-autoprefixer": "^6.0.0",
-    "gulp-sass": "^4.0.1",
-    "material-components-web": "^0.39.3",
-    "node-sass": "^4.9.3"
+    "gulp-sass": "^4.0.2",
+    "material-components-web": "^0.41.0",
+    "node-sass": "^4.9.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
