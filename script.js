@@ -355,7 +355,7 @@ confirmTransactionButton.onclick = function () {
         }
     }
     confirmTransaction(betreffInput.value, payingPerson.innerHTML, transactionError, transactionAmountInput, payees, null, function () {
-        //refresh();
+        refresh();
     });
 }
 function confirmTransaction(betreffInput, payingPerson, transactionErrorDiv, amountInput, payeeIds, zeitpunkt, callback) {
