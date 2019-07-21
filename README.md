@@ -16,5 +16,7 @@
 * Secret nicht mehr case sensitive machen (serverseitig ignorecase und alles klein vom client schicken)
 * UI verbessern (zu faul zum eingeben)
 * ~~genauere Hinweise bei ungültiger Eingabe~~
+* App nicht im Appstore gefunden
+* rounding im backend kontrollieren
 ## Backend
 * [Kontokorrent-API](https://github.com/tuwrraphael/kontokorrent-api)
