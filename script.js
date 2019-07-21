@@ -276,7 +276,21 @@ function createOverviewPerson(name, id, betrag) {
     }
 }
 function round(value, decimals) {
-    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+
+    //Removing scientific notation if used:
+    var valueString = value.toString();
+    var indexOfE = valueString.indexOf("E");
+    var indexOfe = valueString.indexOf("e");
+    var power = 0;
+    if (indexOfe > -1) {
+        power = parseFloat(valueString.substring(indexOfe+1));
+        valueString = valueString.substring(0,indexOfe)
+    } else if (indexOfE > -1) {
+        power = parseFloat(valueString.substring(indexOfE+1));
+        valueString = valueString.substring(0,indexOfE)
+    }
+    //round
+    return Number(Math.round(valueString + 'e' + (power + decimals)) + 'e-' + (decimals));
 }
 //payingPerson.onclick = function(){refresh();}
 //var payingPersons = document.getElementById("payingPersons");
@@ -558,7 +572,10 @@ function createTransactionListItem(name, payer, payerId, payees, amount, id, zei
     li.addEventListener('click', function (ev) {
         //return false;//remove this to activat editing feature
         ev.preventDefault();
+        var container = document.createElement("div");
         var thisTransaction = transactionsDetails.cloneNode(true);
+        container.appendChild(createMaterialIconButton("&#xE872;"));
+        container.appendChild(thisTransaction);
         var everySubNode = thisTransaction.getElementsByTagName("*");
 
         var newName, newPayer, transactionError, newAmount, newPayees;
@@ -598,7 +615,7 @@ function createTransactionListItem(name, payer, payerId, payees, amount, id, zei
         }
         // var deleteButton = document.createElement("li");
         // li.className = "mdc-list-item"
-        showAsDialog(thisTransaction, "speichern", "abbrechen", function () {
+        showAsDialog(container, "speichern", "abbrechen", function () {
             var newPayeeIds = [];
             for (var i = 0; i < newPayees.length; i++) {
                 if (newPayees[i].firstChild.firstChild.checked) {
@@ -626,7 +643,17 @@ function createTransactionListItem(name, payer, payerId, payees, amount, id, zei
 
     return li;
 }
-
+function createMaterialIconButton(iconNumber, id, onclick) {
+    var button = document.createElement("button");
+    button.className = "mdc-button";
+    if (id != null) button.id = id;
+    if (onclick != null) button.onclick = onclick();
+    var i = document.createElement("i");
+    i.className = "material-icons mdc-button__icon";
+    i.innerHTML = iconNumber;
+    button.appendChild(i);
+    return button;
+}
 
 function deletePayment(id, callback) {
     deleteRequest(PAYMENTS_URL + "/" + id, true, {}, function (r, c) { callback(r, c) });
