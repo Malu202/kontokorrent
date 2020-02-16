@@ -428,7 +428,7 @@ function parseTransactionInput(paymentId, betreffInput, payingPersonSelect, tran
         var request = {
             "bezahlendePerson": payerId,
             "empfaenger": payees,
-            "wert": amount,
+            "wert": parseFloat(amount),
             "beschreibung": betreff
         };
         if (zeitpunkt != null) {
