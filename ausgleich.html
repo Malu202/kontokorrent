@@ -13,7 +13,7 @@
         let token = localStorage.getItem("token");
         let API_URL = "https://kontokorrent.azurewebsites.net/api";
         let personen = [];
-        let rules = { bevorzugteZahlung: [], mussZahlungen: [] };
+        let rules = { bevorzugteZahlungen: [], mussZahlungen: [] };
 
         function assingDropdown(id, personen) {
             let el = document.getElementById(id);
@@ -97,7 +97,7 @@
                 addRule(r, "muss");
             }
 
-            for (let r of rules.bevorzugteZahlung) {
+            for (let r of rules.bevorzugteZahlungen) {
                 addRule(r, "bevorzugt");
             }
 
@@ -112,7 +112,7 @@
                 rules.mussZahlungen.push(rule);
             }
             else {
-                rules.bevorzugteZahlung.push(rule);
+                rules.bevorzugteZahlungen.push(rule);
             }
             await refresh();
         }
