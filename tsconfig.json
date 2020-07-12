@@ -1,0 +1,22 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+      "lib": [
+        "dom",
+        "es6"
+      ],
+      "outDir": "./dist/",
+      "noImplicitAny": true,
+      "skipLibCheck": true,
+      "module": "esnext",
+      "target": "es6",
+      "allowJs": true,
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "types": [
+        "@types/node",
+        "@types/webpack-env"
+      ],
+      "allowSyntheticDefaultImports": true
+    },
+  }
