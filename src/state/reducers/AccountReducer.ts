@@ -51,6 +51,15 @@ export class AccountReducer implements Reducer<AccountState, AccountActions> {
                 })
             }
                 break;
+            case AccountActionNames.LoginExpired: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        loginExpired: true
+                    };
+                })
+            }
+                break;
         }
     }
 }

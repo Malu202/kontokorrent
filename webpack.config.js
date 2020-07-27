@@ -1,13 +1,13 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const path = require('path');
 
 module.exports = {
     entry: {
-        index: './src/index.ts',
-        styles: "./src/styles.scss"
+        index: './src/index.ts'
     },
     devtool: "source-map",
     module: {
@@ -51,9 +51,15 @@ module.exports = {
         filename: '[contenthash].bundle.js',
         publicPath: '/'
     },
-    plugins: [new HtmlWebpackPlugin({ base: "/", title: "Kontokorrent" }),
-    new LicenseWebpackPlugin(),
-    new MiniCssExtractPlugin()],
+    plugins: [
+        new HtmlWebpackPlugin({ base: "/", title: "Kontokorrent" }),
+        new LicenseWebpackPlugin(),
+        new MiniCssExtractPlugin({
+            filename: '[name].[contenthash].css',
+            chunkFilename: '[id].[contenthash].css',
+          }),
+        new CleanWebpackPlugin()
+    ],
     mode: "development",
     devServer: {
         compress: true,

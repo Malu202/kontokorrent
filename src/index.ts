@@ -10,6 +10,8 @@ import { AccountActionCreator } from "./state/actions/AccountActionCreator";
 import { AccountReducer } from "./state/reducers/AccountReducer";
 import { KontokorrentsActionCreator } from "./state/actions/KontokorrentsActionCreator";
 import { KontokorrentsReducer } from "./state/reducers/KontokorrentsReducer";
+import "./styles.scss";
+import { AsyncRouteResolver } from "route-it/dist/router";
 
 async function run() {
     const store = new Store(() => {
@@ -17,7 +19,8 @@ async function run() {
             account: {
                 accountCreated: false,
                 accountCreating: false,
-                accountCreationFailed: false
+                accountCreationFailed: false,
+                loginExpired: false
             },
             kontokorrents: {
                 hinzufuegen: false,
@@ -29,7 +32,7 @@ async function run() {
         }
     });
     const routeResolver = new KontokorrentRouteResolver(store);
-    const router = new Router(routeResolver, new BodyChildRouteRenderer());
+    const router = new Router(routeResolver as AsyncRouteResolver<HTMLElement>, new BodyChildRouteRenderer());
 
     store.addReducer("account", new AccountReducer());
     store.addReducer("kontokorrents", new KontokorrentsReducer());

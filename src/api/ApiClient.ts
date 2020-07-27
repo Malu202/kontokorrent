@@ -4,8 +4,10 @@ import { OAuth2PopupFlow } from 'oauth2-popup-flow';
 import { AccountInfoStore } from "../lib/AccountInfoStore";
 import { KontokorrentListenEintrag } from "./KontokorrentListenEintrag";
 import { NeuerKontokorrentRequest } from "./NeuerKontokorrentRequest";
+import { TokenRenewFailedException } from "./TokenRenewFailedException";
+import { InteractionRequiredException } from "./InteractionRequiredException";
 
-const baseUrl = "http://localhost:54538";
+const baseUrl = "https://kontokorrent-v2.azurewebsites.net";
 
 export class ApiClient {
 
@@ -27,10 +29,7 @@ export class ApiClient {
     }
 
     async getUserInfo() {
-        let res = await fetch(`${baseUrl}/api/v2/userinfo`);
-        if (!res.ok) {
-            return null;
-        }
+        let res = await fetch(`${baseUrl}/api/v2/userinfo`, { headers: await this.getAuthHeader() });
         return await res.json();
     }
 
@@ -71,33 +70,40 @@ export class ApiClient {
         if (null == info) {
             throw new Error("Keine Account Information gespeichert.");
         }
-        if (info.type == AccountType.anonym) {
-            let tokenInfo = localStorage.getItem("access_token_anonymous");
+        let tokenInfo = localStorage.getItem("access_token_anonymous");
             if (null != tokenInfo) {
                 let { token, expires } = JSON.parse(tokenInfo);
                 if (token && expires && expires >= +new Date()) {
                     return token;
                 }
             }
-            let res = await postJson(`${baseUrl}/api/v2/token`, { id: info.id, secret: info.secret });
-            if (!res.ok) {
-                throw new Error("Anonymer Account: Token-Request failed");
+        if (info.type == AccountType.anonym) {
+            
+            try {
+                let res = await postJson(`${baseUrl}/api/v2/token`, { id: info.id, secret: info.secret });
+                if (!res.ok) {
+                    throw new TokenRenewFailedException(false);
+                }
+                let tokenResponse = await res.json();
+                localStorage.setItem("access_token_anonymous", JSON.stringify(tokenResponse));
+                return tokenResponse.token;
             }
-            let tokenResponse = await res.json();
-            localStorage.setItem("access_token_anonymous", JSON.stringify(tokenResponse));
-            return tokenResponse.token;
+            catch{
+                throw new TokenRenewFailedException(true);
+            }
         }
         else if (info.type == AccountType.google) {
-            let flow = new OAuth2PopupFlow({
-                authorizationUri: "https://accounts.google.com/o/oauth2/v2/auth/.well-known/openid-configuration",
-                clientId: "82890837151-n0e81vsn3ns2qn1ksh7bdohmnlau468k.apps.googleusercontent.com",
-                redirectUri: "http://localhost:4200",
-                scope: "openid",
-                responseType: "id_token",
-                additionalAuthorizationParameters: { "login_hint": info.id },
-                accessTokenStorageKey: "access_token_google"
-            });
-            return await flow.token();
+            throw new InteractionRequiredException();
+            // let flow = new OAuth2PopupFlow({
+            //     authorizationUri: "https://accounts.google.com/o/oauth2/v2/auth/.well-known/openid-configuration",
+            //     clientId: "82890837151-n0e81vsn3ns2qn1ksh7bdohmnlau468k.apps.googleusercontent.com",
+            //     redirectUri: "http://localhost:4200",
+            //     scope: "openid",
+            //     responseType: "id_token",
+            //     additionalAuthorizationParameters: { "login_hint": info.id },
+            //     accessTokenStorageKey: "access_token_google"
+            // });
+            // return await flow.token();
         }
         else {
             throw new Error(`Account Typ ${info.type} unbekannt`);

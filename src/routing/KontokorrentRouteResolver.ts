@@ -1,11 +1,11 @@
 import { Router } from "route-it";
 import { Home } from "../components/home";
 import { ServiceLocator } from "../ServiceLocator";
-import { OpenSourceInfo } from "../components/open-source-info";
 import { FeaturesRequired } from "../components/FeaturesRequired/FeaturesRequired";
 import { Login } from "../components/login/login";
 import { Store } from "../state/Store";
 import { CreateKontokorrent } from "../components/CreateKontokorrent/CreateKontokorrent";
+import { AsyncRouteResolver } from "route-it/dist/router";
 
 export enum Paths {
     Login = "login",
@@ -15,7 +15,7 @@ export enum Paths {
     CreateEvent = "create-event"
 }
 
-export class KontokorrentRouteResolver extends EventTarget {
+export class KontokorrentRouteResolver extends EventTarget implements AsyncRouteResolver<HTMLElement> {
     constructor(private store: Store) {
         super();
     }
@@ -25,12 +25,13 @@ export class KontokorrentRouteResolver extends EventTarget {
         this.serviceLocator = serviceLocator;
     }
 
-    resolve(lastRoute: string, currentRoute: string, router: Router<HTMLElement>) {
+    async resolve(lastRoute: string, currentRoute: string, router: Router<HTMLElement>) {
         if (currentRoute in Paths) {
             this.dispatchEvent(new CustomEvent("routedTo", { detail: { currentRoute } }));
         }
         switch (currentRoute) {
             case Paths.OpenSourceInfo:
+                const { OpenSourceInfo } = await import("../components/open-source-info");
                 return new OpenSourceInfo();
             case Paths.FeaturesRequired: {
                 let component = new FeaturesRequired();
@@ -56,6 +57,6 @@ export class KontokorrentRouteResolver extends EventTarget {
                 let component = new Home();
                 component.addServices(this.serviceLocator);
                 return component;
-        }        
+        }
     }
 }

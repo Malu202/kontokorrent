@@ -5,13 +5,16 @@ import { AccountInfoStore } from "../../lib/AccountInfoStore";
 import { v4 as uuid } from "uuid";
 import { AccountType } from "../../lib/AccountType";
 import { RoutingActionCreator } from "./RoutingActionCreator";
+import { TokenRenewFailedException } from "../../api/TokenRenewFailedException";
+import { InteractionRequiredException } from "../../api/InteractionRequiredException";
 
 export enum AccountActionNames {
     AccountCreating = "AccountCreating",
     AccountCreationFailed = "AccountCreationFailed",
     AccountCreated = "AccountCreated",
     AccountInitialized = "AccountInitialized",
-    LoggedOut = "LoggedOut"
+    LoggedOut = "LoggedOut",
+    LoginExpired = "LoginExpired"
 }
 
 export class AccountCreating implements Action {
@@ -49,11 +52,19 @@ export class LoggedOut implements Action {
     }
 }
 
+export class LoginExpired implements Action {
+    readonly type = AccountActionNames.LoginExpired;
+    constructor() {
+
+    }
+}
+
 export type AccountActions = AccountInitialized
     | AccountCreating
     | AccountCreated
     | AccountCreationFailed
-    | LoggedOut;
+    | LoggedOut
+    | LoginExpired;
 
 export class AccountActionCreator {
     constructor(private store: Store,
@@ -63,12 +74,33 @@ export class AccountActionCreator {
 
     }
 
-    async initializeAccount() {
+    initializeAccount() {
         if (!this.accountInfoStore.get()) {
             return false;
         }
         this.store.dispatch(new AccountInitialized());
+        this.getUserInfo();
         return true;
+    }
+
+    async getUserInfo() {
+        try {
+            let userInfo = await this.apiClient.getUserInfo();
+        }
+        catch (e) {
+            if (e instanceof TokenRenewFailedException) {
+                let accountInfo = this.accountInfoStore.get();
+                if (!e.networkError && accountInfo.type == AccountType.anonym) {
+                    // anonymer token renew failed - wir haben ein ernstes problem
+                    // reset and duck out
+                    this.accountInfoStore.clear();
+                    window.location.reload();
+                }
+            }
+            else if (e instanceof InteractionRequiredException) {
+                this.store.dispatch(new LoginExpired());
+            }
+        }
     }
 
     async ensureAccount() {

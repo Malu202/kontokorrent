@@ -2,6 +2,7 @@ export interface AccountState {
     accountCreated: boolean,
     accountCreating: boolean,
     accountCreationFailed: boolean
+    loginExpired : boolean;
 }
 
 export interface KontokorrentsState {

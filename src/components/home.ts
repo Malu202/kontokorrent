@@ -12,6 +12,7 @@ export class Home extends HTMLElement {
     private routingActionCreator: RoutingActionCreator;
     private accountActionCreator: AccountActionCreator;
     private logoutButton: HTMLButtonElement;
+    private loginExpired: HTMLDivElement;
 
     constructor() {
         super();
@@ -27,6 +28,7 @@ export class Home extends HTMLElement {
     connectedCallback() {
         let element = this;
         this.logoutButton = element.querySelector("#logout-button");
+        this.loginExpired = element.querySelector("#login-expired");
 
         this.logoutButton.addEventListener("click", this.logout.bind(this));
         convertLinks(element.querySelectorAll("a"), this.routingActionCreator);
@@ -36,7 +38,7 @@ export class Home extends HTMLElement {
     }
 
     private applyStoreState(state: State) {
-
+        this.loginExpired.style.display = state.account.loginExpired ? "block" : "none";
     }
 
     logout() {
