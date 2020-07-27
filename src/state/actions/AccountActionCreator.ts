@@ -7,6 +7,7 @@ import { AccountType } from "../../lib/AccountType";
 import { RoutingActionCreator } from "./RoutingActionCreator";
 import { TokenRenewFailedException } from "../../api/TokenRenewFailedException";
 import { InteractionRequiredException } from "../../api/InteractionRequiredException";
+import { AccountInfo } from "../../lib/AccountInfo";
 
 export enum AccountActionNames {
     AccountCreating = "AccountCreating",
@@ -33,14 +34,14 @@ export class AccountCreationFailed implements Action {
 
 export class AccountCreated implements Action {
     readonly type = AccountActionNames.AccountCreated;
-    constructor() {
+    constructor(public info: AccountInfo) {
 
     }
 }
 
 export class AccountInitialized implements Action {
     readonly type = AccountActionNames.AccountInitialized;
-    constructor() {
+    constructor(public info: AccountInfo) {
 
     }
 }
@@ -75,10 +76,11 @@ export class AccountActionCreator {
     }
 
     initializeAccount() {
+        let info = this.accountInfoStore.get();
         if (!this.accountInfoStore.get()) {
             return false;
         }
-        this.store.dispatch(new AccountInitialized());
+        this.store.dispatch(new AccountInitialized(info));
         this.getUserInfo();
         return true;
     }
@@ -116,7 +118,7 @@ export class AccountActionCreator {
                 this.store.dispatch(new AccountCreationFailed());
             }
             else {
-                this.store.dispatch(new AccountCreated());
+                this.store.dispatch(new AccountCreated(accountInfo));
                 this.accountInfoStore.set(accountInfo);
             }
             return res.success;

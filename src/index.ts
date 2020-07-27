@@ -20,14 +20,16 @@ async function run() {
                 accountCreated: false,
                 accountCreating: false,
                 accountCreationFailed: false,
-                loginExpired: false
+                loginExpired: false,
+                accountInfo: null
             },
             kontokorrents: {
                 hinzufuegen: false,
                 hinzufuegenFailed: null,
                 creating: false,
                 creationFailed: null,
-                kontokorrents: {}
+                kontokorrents: {},
+                listeLaden: false
             }
         }
     });

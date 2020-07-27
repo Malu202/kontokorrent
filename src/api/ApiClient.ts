@@ -1,11 +1,11 @@
 import { postJson } from "./postJson";
 import { AccountType } from "../lib/AccountType";
-import { OAuth2PopupFlow } from 'oauth2-popup-flow';
 import { AccountInfoStore } from "../lib/AccountInfoStore";
 import { KontokorrentListenEintrag } from "./KontokorrentListenEintrag";
 import { NeuerKontokorrentRequest } from "./NeuerKontokorrentRequest";
 import { TokenRenewFailedException } from "./TokenRenewFailedException";
 import { InteractionRequiredException } from "./InteractionRequiredException";
+import { ApiException } from "./ApiException";
 
 const baseUrl = "https://kontokorrent-v2.azurewebsites.net";
 
@@ -53,6 +53,14 @@ export class ApiClient {
         return <KontokorrentListenEintrag[]>await res.json();
     }
 
+    async kontokorrentsAuflisten() {
+        let res = await fetch(`${baseUrl}/api/v2/kontokorrents`, { headers: await this.getAuthHeader() });
+        if (!res.ok) {
+            throw new ApiException();
+        }
+        return <KontokorrentListenEintrag[]>await res.json();
+    }
+
 
     async neuerKontokorrent(request: NeuerKontokorrentRequest) {
         let res = await postJson(`${baseUrl}/api/v2/kontokorrents`, request, await this.getAccessToken());
@@ -71,14 +79,14 @@ export class ApiClient {
             throw new Error("Keine Account Information gespeichert.");
         }
         let tokenInfo = localStorage.getItem("access_token_anonymous");
-            if (null != tokenInfo) {
-                let { token, expires } = JSON.parse(tokenInfo);
-                if (token && expires && expires >= +new Date()) {
-                    return token;
-                }
+        if (null != tokenInfo) {
+            let { token, expires } = JSON.parse(tokenInfo);
+            if (token && expires && expires >= +new Date()) {
+                return token;
             }
+        }
         if (info.type == AccountType.anonym) {
-            
+
             try {
                 let res = await postJson(`${baseUrl}/api/v2/token`, { id: info.id, secret: info.secret });
                 if (!res.ok) {

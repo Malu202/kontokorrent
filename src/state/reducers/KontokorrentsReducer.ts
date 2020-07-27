@@ -1,10 +1,38 @@
 import { Reducer } from "../lib/Reducer";
 import { KontokorrentsState, KontokorrentState } from "../State";
 import { KontokorrentsActions, KontokorrentsActionNames } from "../actions/KontokorrentsActionCreator";
+import { KontokorrentListenEintrag } from "../../api/KontokorrentListenEintrag";
 
 export class KontokorrentsReducer implements Reducer<KontokorrentsState, KontokorrentsActions> {
     onDispatch(action: KontokorrentsActions, updateStore: (a: (s: KontokorrentsState) => KontokorrentsState) => void): void {
         switch (action.type) {
+            case KontokorrentsActionNames.KontokorrentListeLaden: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        listeLaden: true
+                    };
+                })
+            }
+                break;
+            case KontokorrentsActionNames.KontokorrentListeLadenFailed: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        listeLaden: false
+                    };
+                })
+            }
+                break;
+            case KontokorrentsActionNames.KontokorrentListe: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        kontokorrents: this.extendMap(s.kontokorrents, action.kontokorrents)
+                    };
+                })
+            }
+                break;
             case KontokorrentsActionNames.KontokorrentHinzufuegen: {
                 updateStore(s => {
                     return {
@@ -17,7 +45,8 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
             case KontokorrentsActionNames.KontokorrentHinzufuegenFailed: {
                 updateStore(s => {
                     return {
-                        ...s, hinzufuegen: false,
+                        ...s,
+                        hinzufuegen: false,
                         hinzufuegenFailed: { kontokorrentNotFound: action.notFound },
                     };
                 })
@@ -25,17 +54,11 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 break;
             case KontokorrentsActionNames.KontokorrentHinzufuegenSuccess: {
                 updateStore(s => {
-                    let kontokorrents: { [id: string]: KontokorrentState } = {};
-                    for (let k of action.kontokorrents) {
-                        let kontokorrent = { ...k };
-                        if (s.kontokorrents[k.id]) {
-                            kontokorrent = { ...k, ...s.kontokorrents[k.id] }
-                        }
-                        kontokorrents[k.id] = kontokorrent;
-                    }
+
                     return {
                         ...s,
-                        kontokorrents: kontokorrents
+                        hinzufuegen: false,
+                        kontokorrents: this.extendMap(s.kontokorrents, action.kontokorrents)
                     };
                 })
             }
@@ -77,5 +100,17 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
             }
                 break;
         }
+    }
+
+    private extendMap(map: { [id: string]: KontokorrentState }, kk: KontokorrentListenEintrag[]) {
+        let kontokorrents: { [id: string]: KontokorrentState } = {};
+        for (let k of kk) {
+            let kontokorrent = { ...k };
+            if (map[k.id]) {
+                kontokorrent = { ...k, ...map[k.id] }
+            }
+            kontokorrents[k.id] = kontokorrent;
+        }
+        return kontokorrents;
     }
 }

@@ -1,13 +1,17 @@
+import { AccountInfo } from "../lib/AccountInfo";
+
 export interface AccountState {
     accountCreated: boolean,
     accountCreating: boolean,
     accountCreationFailed: boolean
-    loginExpired : boolean;
+    loginExpired: boolean;
+    accountInfo: AccountInfo
 }
 
 export interface KontokorrentsState {
     kontokorrents: { [id: string]: KontokorrentState };
     hinzufuegen: boolean;
+    listeLaden: boolean;
     hinzufuegenFailed: {
         kontokorrentNotFound: boolean
     }

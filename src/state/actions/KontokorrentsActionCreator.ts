@@ -3,6 +3,8 @@ import { ApiClient } from "../../api/ApiClient";
 import { Action } from "../lib/Action";
 import { KontokorrentListenEintrag } from "../../api/KontokorrentListenEintrag";
 import { NeuerKontokorrentRequest } from "../../api/NeuerKontokorrentRequest";
+import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
+import { InteractionRequiredException } from "../../api/InteractionRequiredException";
 
 
 export enum KontokorrentsActionNames {
@@ -11,7 +13,10 @@ export enum KontokorrentsActionNames {
     KontokorrentCreationFailed = "KontokorrentCreationFailed",
     KontokorrentHinzufuegenFailed = "KontokorrentHinzufuegenFailed",
     KontokorrentHinzufuegen = "KontokorrentHinzufuegen",
-    KontokorrentHinzufuegenSuccess = "KontokorrentHinzufuegenSuccess"
+    KontokorrentHinzufuegenSuccess = "KontokorrentHinzufuegenSuccess",
+    KontokorrentListeLaden = "KontokorrentListeLaden",
+    KontokorrentListe = "KontokorrentListe",
+    KontokorrentListeLadenFailed = "KontokorrentListeLadenFailed"
 }
 
 export class KontokorrentCreationFailed implements Action {
@@ -56,12 +61,37 @@ export class KontokorrentHinzufuegenSuccess implements Action {
     }
 }
 
+export class KontokorrentListeLaden implements Action {
+    readonly type = KontokorrentsActionNames.KontokorrentListeLaden;
+    constructor() {
+
+    }
+}
+
+export class KontokorrentListe implements Action {
+    readonly type = KontokorrentsActionNames.KontokorrentListe;
+    constructor(public kontokorrents: KontokorrentListenEintrag[]) {
+
+    }
+}
+
+export class KontokorrentListeLadenFailed implements Action {
+    readonly type = KontokorrentsActionNames.KontokorrentListeLadenFailed;
+    constructor(public interactionRequired: boolean) {
+
+    }
+}
+
+
 export type KontokorrentsActions = KontokorrentCreationFailed
     | KontokorrentCreating
     | KontokorrentCreated
     | KontokorrentHinzufuegenFailed
     | KontokorrentHinzufuegen
-    | KontokorrentHinzufuegenSuccess;
+    | KontokorrentHinzufuegenSuccess
+    | KontokorrentListeLaden
+    | KontokorrentListeLadenFailed
+    | KontokorrentListe;
 
 export class KontokorrentsActionCreator {
     constructor(private store: Store,
@@ -76,26 +106,37 @@ export class KontokorrentsActionCreator {
             oeffentlicherName,
             personen: personen.map(v => { return { name: v } })
         };
+        let db = new KontokorrentDatabase();
+        await db.initialize();
         this.store.dispatch(new KontokorrentCreating());
-        let res = await this.apiClient.neuerKontokorrent(request);
-        if (!res.success) {
-            this.store.dispatch(new KontokorrentCreationFailed(res.exists));
+        try {
+            let res = await this.apiClient.neuerKontokorrent(request);
+            if (!res.success) {
+                this.store.dispatch(new KontokorrentCreationFailed(res.exists));
+            }
+            else {
+                await db.addKontokorrent({ id: id, name: name });
+                this.store.dispatch(new KontokorrentCreated(id, name));
+                return true;
+            }
         }
-        else {
-            this.store.dispatch(new KontokorrentCreated(id, name));
-            return true;
+        finally {
+            db.close();
         }
         return false;
     }
 
     async kontokorrentHinzufuegen(oeffentlicherName: string) {
         this.store.dispatch(new KontokorrentHinzufuegen());
+        let db = new KontokorrentDatabase();
+        await db.initialize();
         try {
             let res = await this.apiClient.kontokorrentHinzufuegen(oeffentlicherName, null);
             if (null == res) {
                 this.store.dispatch(new KontokorrentHinzufuegenFailed(true));
             }
             else {
+                await db.setKontokorrents(res);
                 this.store.dispatch(new KontokorrentHinzufuegenSuccess(res));
                 return true;
             }
@@ -103,6 +144,31 @@ export class KontokorrentsActionCreator {
         catch {
             this.store.dispatch(new KontokorrentHinzufuegenFailed(false));
         }
+        db.close();
         return false;
+    }
+
+    async syncKontokorrentListe() {
+        this.store.dispatch(new KontokorrentListeLaden());
+        const db = new KontokorrentDatabase();
+        const listenTask = this.apiClient.kontokorrentsAuflisten();
+
+        await db.initialize();
+        let kontokorrents = await db.getKontokorrents();
+        this.store.dispatch(new KontokorrentListe(kontokorrents));
+        try {
+            let liste = await listenTask;
+            await db.setKontokorrents(liste);
+            this.store.dispatch(new KontokorrentListe(liste));
+        }
+        catch (e) {
+            if (e instanceof InteractionRequiredException) {
+                this.store.dispatch(new KontokorrentListeLadenFailed(true));
+            }
+            else {
+                this.store.dispatch(new KontokorrentListeLadenFailed(false));
+            }
+        }
+        db.close();
     }
 }

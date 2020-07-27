@@ -1,9 +1,10 @@
 import { Reducer } from "../lib/Reducer";
 import { State, AccountState } from "../State";
 import { AccountActions, AccountActionNames } from "../actions/AccountActionCreator";
+import { KontokorrentsActions, KontokorrentsActionNames } from "../actions/KontokorrentsActionCreator";
 
-export class AccountReducer implements Reducer<AccountState, AccountActions> {
-    onDispatch(action: AccountActions, updateStore: (a: (s: AccountState) => AccountState) => void): void {
+export class AccountReducer implements Reducer<AccountState, AccountActions | KontokorrentsActions> {
+    onDispatch(action: AccountActions | KontokorrentsActions, updateStore: (a: (s: AccountState) => AccountState) => void): void {
         switch (action.type) {
             case AccountActionNames.AccountCreating: {
                 updateStore(s => {
@@ -19,7 +20,8 @@ export class AccountReducer implements Reducer<AccountState, AccountActions> {
                 updateStore(s => {
                     return {
                         ...s, accountCreating: false,
-                        accountCreated: true
+                        accountCreated: true,
+                        accountInfo: action.info
                     };
                 })
             }
@@ -33,11 +35,13 @@ export class AccountReducer implements Reducer<AccountState, AccountActions> {
                     };
                 })
             }
+                break;
             case AccountActionNames.AccountInitialized: {
                 updateStore(s => {
                     return {
                         ...s,
-                        accountCreated: true
+                        accountCreated: true,
+                        accountInfo: action.info
                     };
                 })
             }
@@ -51,13 +55,25 @@ export class AccountReducer implements Reducer<AccountState, AccountActions> {
                 })
             }
                 break;
-            case AccountActionNames.LoginExpired: {
-                updateStore(s => {
-                    return {
-                        ...s,
-                        loginExpired: true
-                    };
-                })
+            case AccountActionNames.LoginExpired:
+                {
+                    updateStore(s => {
+                        return {
+                            ...s,
+                            loginExpired: true
+                        };
+                    })
+                }
+                break;
+            case KontokorrentsActionNames.KontokorrentListeLadenFailed: {
+                if (action.interactionRequired) {
+                    updateStore(s => {
+                        return {
+                            ...s,
+                            loginExpired: true
+                        };
+                    })
+                }
             }
                 break;
         }
