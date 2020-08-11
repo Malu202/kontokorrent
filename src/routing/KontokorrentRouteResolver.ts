@@ -6,12 +6,14 @@ import { Login } from "../components/login/login";
 import { Store } from "../state/Store";
 import { CreateKontokorrent } from "../components/CreateKontokorrent/CreateKontokorrent";
 import { AsyncRouteResolver } from "route-it/dist/router";
+import { KontokorrentPage } from "../components/KontokorrentPage/KontokorrentPage";
 
 export enum Paths {
     Login = "login",
     Info = "info",
     Home = "",
     FeaturesRequired = "features-required",
+    Kontokorrents = "kontokorrents",
     CreateEvent = "create-event"
 }
 
@@ -52,11 +54,16 @@ export class KontokorrentRouteResolver extends EventTarget implements AsyncRoute
         if (!this.store.state.account.accountCreated) {
             return false;
         }
-        switch (currentRoute) {
-            default:
-                let component = new Home();
-                component.addServices(this.serviceLocator);
-                return component;
+        let kontokorrentsRoute = /^kontokorrents\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
+        if (kontokorrentsRoute) {
+            let id: string = kontokorrentsRoute[1];
+            let component = new KontokorrentPage();
+            component.addServices(this.serviceLocator);
+            component.setKontokorrentId(id);
+            return component;
         }
+        let component = new Home();
+        component.addServices(this.serviceLocator);
+        return component;
     }
 }

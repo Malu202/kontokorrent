@@ -1,22 +1,49 @@
 import { openDB, IDBPDatabase } from "idb";
 import { StoredKontokorrent } from "./StoredKontokorrent";
+import { sortBy } from "lodash";
 
 
 const KontokorrentsStore = "KontokorrentsStore";
+const AppStateStore = "AppStateStore";
 
 export class KontokorrentDatabase {
     db: IDBPDatabase<unknown>;
     async initialize() {
-        this.db = await openDB("kontokorrent-db", 1, {
+        this.db = await openDB("kontokorrent-db", 2, {
             upgrade(db, oldVersion: number, newVersion: number) {
-                // db.createObjectStore(AccountInfoStore);
-                db.createObjectStore(KontokorrentsStore, { keyPath: "id" });
+                if (oldVersion < 1) {
+                    db.createObjectStore(KontokorrentsStore, { keyPath: "id" });
+                }
+                if (oldVersion < 2) {
+                    let store = db.createObjectStore(AppStateStore, { keyPath: "id" });
+                    store.put({ id: 0, zuletztGesehenerKontokorrentId: null });
+                }
             },
         });
     }
 
     async getKontokorrents(): Promise<StoredKontokorrent[]> {
-        return (await this.db.getAll(KontokorrentsStore)).map(v => { return { name: v.name, id: v.id } });
+        return sortBy((await this.db.getAll(KontokorrentsStore)).map(v => { return { name: v.name, id: v.id } }), i => i.name);
+    }
+
+    async getZuletztGesehenerKontokorrentId(): Promise<string> {
+        let appState = await this.db.get(AppStateStore, 0);
+        if (appState.zuletztGesehenerKontokorrentId) {
+            return appState.zuletztGesehenerKontokorrentId;
+        }
+        else {
+            let kks = await (await this.getKontokorrents());
+            if (kks.length) {
+                return kks[0].id;
+            }
+            return null;
+        }
+    }
+
+    async setZuletztGesehenerKontokorrentId(id: string): Promise<void> {
+        let appState = await this.db.get(AppStateStore, 0);
+        appState.zuletztGesehenerKontokorrentId = id;
+        await this.db.put(AppStateStore, appState);
     }
 
     async setKontokorrents(kontokorrents: StoredKontokorrent[]): Promise<void> {
@@ -35,7 +62,7 @@ export class KontokorrentDatabase {
         }
     }
 
-    async close() {
+    close() {
         this.db.close();
     }
 }

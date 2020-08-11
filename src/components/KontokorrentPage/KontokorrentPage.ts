@@ -1,4 +1,4 @@
-import template from "./home.html";
+import template from "./KontokorrentPage.html";
 import { Store } from "../../state/Store";
 import { ServiceLocator } from "../../ServiceLocator";
 import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
@@ -8,18 +8,19 @@ import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
 import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
 import { AppBar, AppBarTagName } from "../AppBar/AppBar";
 
-export class Home extends HTMLElement {
+export class KontokorrentPage extends HTMLElement {
     private store: Store;
     private subscription: () => void;
     private routingActionCreator: RoutingActionCreator;
     private accountActionCreator: AccountActionCreator;
-    private loginExpired: HTMLDivElement;
     private kontokorrentsActionCreator: KontokorrentsActionCreator;
-    private kontokorrentListe: HTMLUListElement;
+    private kontokorrentId: string;
+    private appBar: AppBar;
 
     constructor() {
         super();
         this.innerHTML = template;
+        this.appBar = this.querySelector(AppBarTagName);
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -31,29 +32,28 @@ export class Home extends HTMLElement {
 
     connectedCallback() {
         let element = this;
-        this.kontokorrentListe = element.querySelector("#kontokorrent-liste");
-        this.loginExpired = element.querySelector("#login-expired");
 
-        let appBar: AppBar = element.querySelector(AppBarTagName);
-        appBar.setRouter(this.routingActionCreator);
-        appBar.addEventListener("onlogout", async () => {
+
+        this.appBar.setRouter(this.routingActionCreator);
+        this.appBar.addEventListener("onlogout", async () => {
             await this.accountActionCreator.logout();
         });
 
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
-
-        this.kontokorrentsActionCreator.navigiereZuLetztGesehenem();
     }
 
     private applyStoreState(state: State) {
-        this.loginExpired.style.display = state.account.loginExpired ? "block" : "none";
-        this.kontokorrentListe.innerHTML = "";
-        Object.keys(state.kontokorrents.kontokorrents).forEach(id => {
-            let li = document.createElement("li");
-            li.innerText = state.kontokorrents.kontokorrents[id].name;
-            this.kontokorrentListe.appendChild(li);
-        })
+        let kontokorrent = state.kontokorrents.kontokorrents[this.kontokorrentId];
+        if (kontokorrent) {
+            this.appBar.kontokorrentSelect.setAttribute("kontokorrent-name", kontokorrent.name);
+            document.title = `${kontokorrent.name} - Kontokorrent`;
+        }
+    }
+
+    setKontokorrentId(id: string) {
+        this.kontokorrentId = id;
+        this.applyStoreState(this.store.state);
     }
 
     disconnectedCallback() {
@@ -61,4 +61,4 @@ export class Home extends HTMLElement {
     }
 }
 
-customElements.define('app-home', Home);
+customElements.define('kontokorrent-page', KontokorrentPage);

@@ -5,6 +5,7 @@ import { KontokorrentListenEintrag } from "../../api/KontokorrentListenEintrag";
 import { NeuerKontokorrentRequest } from "../../api/NeuerKontokorrentRequest";
 import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
 import { InteractionRequiredException } from "../../api/InteractionRequiredException";
+import { RoutingActionCreator } from "./RoutingActionCreator";
 
 
 export enum KontokorrentsActionNames {
@@ -95,7 +96,8 @@ export type KontokorrentsActions = KontokorrentCreationFailed
 
 export class KontokorrentsActionCreator {
     constructor(private store: Store,
-        private apiClient: ApiClient) {
+        private apiClient: ApiClient,
+        private routingActionCreator: RoutingActionCreator) {
 
     }
 
@@ -145,6 +147,18 @@ export class KontokorrentsActionCreator {
             this.store.dispatch(new KontokorrentHinzufuegenFailed(false));
         }
         db.close();
+        return false;
+    }
+
+    async navigiereZuLetztGesehenem() {
+        const db = new KontokorrentDatabase();
+        await db.initialize();
+        let id = await db.getZuletztGesehenerKontokorrentId();
+        db.close();
+        if (id) {
+            this.routingActionCreator.navigateKontokorrent(id);
+            return true;
+        }
         return false;
     }
 

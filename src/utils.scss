@@ -1,3 +1,5 @@
+@use "./theme.scss";
+
 @mixin reset-button(){
     cursor: pointer;
     background: transparent;
@@ -8,4 +10,26 @@
 
 @mixin reset-link {
     text-decoration: none;
+}
+
+@mixin button-hover {
+    position: relative;
+    &:hover {
+        &::after {
+            opacity: 0.08;
+        }
+    }
+
+    &::after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: theme.$fg-on-primary;
+        content: "";
+        opacity: 0;
+        transition: opacity 15ms linear;
+        box-sizing: border-box;
+    }
 }

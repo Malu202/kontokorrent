@@ -57,8 +57,11 @@ async function run() {
     const accountInfoStore = new AccountInfoStore();
     const apiClient = new ApiClient(accountInfoStore);
     const accountActionCreator = new AccountActionCreator(store, apiClient, accountInfoStore, routingActionCreator);
-    const kontokorrentsActionCreator = new KontokorrentsActionCreator(store, apiClient);
-    const initializationActionCreator = new InitializationActionCreator(store, routingActionCreator, accountActionCreator, router);
+    const kontokorrentsActionCreator = new KontokorrentsActionCreator(store, apiClient, routingActionCreator);
+    const initializationActionCreator = new InitializationActionCreator(store,
+        routingActionCreator,
+        accountActionCreator, kontokorrentsActionCreator,
+        router);
 
     const serviceLocator = new ServiceLocator(store,
         routingActionCreator,

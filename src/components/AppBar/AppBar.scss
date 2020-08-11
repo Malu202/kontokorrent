@@ -3,6 +3,29 @@
 
 $app-bar-size: 4em;
 
+%app-bar-button {
+    @include utils.reset-button;
+    @include utils.reset-link;
+
+    color: theme.$fg-on-primary;
+    width: 3em;
+    height: 3em;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    @include utils.button-hover;
+
+    &:after {
+        border-radius: 50%;
+    }
+}
+
+@mixin app-bar-button {
+    @extend %app-bar-button;
+}
+
 .app-bar {
     position: fixed;
     top: 0;
@@ -17,40 +40,15 @@ $app-bar-size: 4em;
     align-items: center;
 
     &__link {
-        @include utils.reset-button;
-        @include utils.reset-link;
-
-        color: white;
-        width: 3em;
-        height: 3em;
-
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-
-        &:after {
-            background-color: #fff;
-            border-radius: 50%;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            content: "";
-            opacity: 0;
-            transition: opacity 15ms linear;
-        }
-
-        &:hover {
-            &:after {
-                opacity: 0.08;
-            }
-        }
+        @include app-bar-button;
     }
 
     &__links {
         padding: 0 1em;
+    }
+
+    &__kontokorrent-select {
+        margin-left: 1em;
     }
 }
 
