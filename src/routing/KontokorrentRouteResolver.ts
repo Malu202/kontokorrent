@@ -1,5 +1,5 @@
 import { Router } from "route-it";
-import { Home } from "../components/home";
+import { Home } from "../components/Home/home";
 import { ServiceLocator } from "../ServiceLocator";
 import { FeaturesRequired } from "../components/FeaturesRequired/FeaturesRequired";
 import { Login } from "../components/login/login";
@@ -9,7 +9,7 @@ import { AsyncRouteResolver } from "route-it/dist/router";
 
 export enum Paths {
     Login = "login",
-    OpenSourceInfo = "open-source-info",
+    Info = "info",
     Home = "",
     FeaturesRequired = "features-required",
     CreateEvent = "create-event"
@@ -30,9 +30,9 @@ export class KontokorrentRouteResolver extends EventTarget implements AsyncRoute
             this.dispatchEvent(new CustomEvent("routedTo", { detail: { currentRoute } }));
         }
         switch (currentRoute) {
-            case Paths.OpenSourceInfo:
-                const { OpenSourceInfo } = await import("../components/open-source-info");
-                return new OpenSourceInfo();
+            case Paths.Info:
+                const { Info } = await import("../components/info/info");
+                return new Info();
             case Paths.FeaturesRequired: {
                 let component = new FeaturesRequired();
                 component.addServices(this.serviceLocator);

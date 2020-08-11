@@ -1,11 +1,12 @@
 import template from "./home.html";
-import { Store } from "../state/Store";
-import { ServiceLocator } from "../ServiceLocator";
-import { RoutingActionCreator } from "../state/actions/RoutingActionCreator";
-import { State } from "../state/State";
-import { convertLinks } from "./convertLinks";
-import { AccountActionCreator } from "../state/actions/AccountActionCreator";
-import { KontokorrentsActionCreator } from "../state/actions/KontokorrentsActionCreator";
+import { Store } from "../../state/Store";
+import { ServiceLocator } from "../../ServiceLocator";
+import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
+import { State } from "../../state/State";
+import { convertLinks } from "../convertLinks";
+import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
+import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
+import { AppBar, AppBarTagName } from "../AppBar/AppBar";
 
 export class Home extends HTMLElement {
     private store: Store;
@@ -36,7 +37,11 @@ export class Home extends HTMLElement {
         this.loginExpired = element.querySelector("#login-expired");
 
         this.logoutButton.addEventListener("click", this.logout.bind(this));
-        convertLinks(element.querySelectorAll("a"), this.routingActionCreator);
+        let appBar: AppBar = element.querySelector(AppBarTagName);
+        appBar.setRouter(this.routingActionCreator);
+        appBar.addEventListener("onlogout", async () => {
+            await this.accountActionCreator.logout();
+        });
 
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);

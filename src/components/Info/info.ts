@@ -1,6 +1,6 @@
-import template from "./open-source-info.html";
+import template from "./info.html";
 
-export class OpenSourceInfo extends HTMLElement {
+export class Info extends HTMLElement {
 
     constructor() {
         super();
@@ -14,4 +14,4 @@ export class OpenSourceInfo extends HTMLElement {
     }
 }
 
-customElements.define('app-open-source-info', OpenSourceInfo);
+customElements.define('app-info', Info);

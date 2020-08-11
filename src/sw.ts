@@ -1,3 +1,6 @@
+export default null;
+declare var self: ServiceWorkerGlobalScope;
+declare var serviceWorkerOption: { assets: string[] };
 self.addEventListener("install", function (event) {
     const cacheAssets = [
         "https://fonts.googleapis.com/icon?family=Material+Icons",

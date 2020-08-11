@@ -1,0 +1,59 @@
+@use "../../theme.scss";
+@use "../../utils.scss";
+
+$app-bar-size: 4em;
+
+.app-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: $app-bar-size;
+    background-color: theme.$primary;
+    @include theme.box-shadow;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &__link {
+        @include utils.reset-button;
+        @include utils.reset-link;
+
+        color: white;
+        width: 3em;
+        height: 3em;
+
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        &:after {
+            background-color: #fff;
+            border-radius: 50%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            content: "";
+            opacity: 0;
+            transition: opacity 15ms linear;
+        }
+
+        &:hover {
+            &:after {
+                opacity: 0.08;
+            }
+        }
+    }
+
+    &__links {
+        padding: 0 1em;
+    }
+}
+
+.body--app-bar {
+    margin-top: $app-bar-size;
+}

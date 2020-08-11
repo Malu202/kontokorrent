@@ -49,7 +49,18 @@ module.exports = (env, argv) => {
                             }
                         }
                     ]
-                }
+                },
+                {
+                    test: /favicons(\\|\/).+\.(svg|png|ico|xml|json)$/i,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: 'favicons/[name].[ext]',
+                            },
+                        },
+                    ],
+                },
             ],
         },
         resolve: {
@@ -72,7 +83,7 @@ module.exports = (env, argv) => {
             }),
             new CleanWebpackPlugin(),
             new ServiceWorkerWebpackPlugin({
-                entry: path.join(__dirname, 'src/sw.js'),
+                entry: path.join(__dirname, 'src/sw.ts'),
                 publicPath: base
             }),
             new DefinePlugin({
