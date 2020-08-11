@@ -12,6 +12,17 @@ import { KontokorrentsActionCreator } from "./state/actions/KontokorrentsActionC
 import { KontokorrentsReducer } from "./state/reducers/KontokorrentsReducer";
 import "./styles.scss";
 import { AsyncRouteResolver } from "route-it/dist/router";
+import runtime from "serviceworker-webpack-plugin/lib/runtime";
+
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", async () => {
+        try {
+            let registration = await runtime.register();
+        } catch (err) {
+            console.error('ServiceWorker registration failed: ', err);
+        };
+    });
+}
 
 async function run() {
     const store = new Store(() => {
