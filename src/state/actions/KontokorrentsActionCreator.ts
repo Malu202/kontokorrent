@@ -6,6 +6,7 @@ import { NeuerKontokorrentRequest } from "../../api/NeuerKontokorrentRequest";
 import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
 import { InteractionRequiredException } from "../../api/InteractionRequiredException";
 import { RoutingActionCreator } from "./RoutingActionCreator";
+import { SrvRecord } from "dns";
 
 
 export enum KontokorrentsActionNames {
@@ -17,7 +18,8 @@ export enum KontokorrentsActionNames {
     KontokorrentHinzufuegenSuccess = "KontokorrentHinzufuegenSuccess",
     KontokorrentListeLaden = "KontokorrentListeLaden",
     KontokorrentListe = "KontokorrentListe",
-    KontokorrentListeLadenFailed = "KontokorrentListeLadenFailed"
+    KontokorrentListeLadenFailed = "KontokorrentListeLadenFailed",
+    KontokorrentGeoeffnet = "KontokorrentGeoeffnet"
 }
 
 export class KontokorrentCreationFailed implements Action {
@@ -83,6 +85,13 @@ export class KontokorrentListeLadenFailed implements Action {
     }
 }
 
+export class KontokorrentGeoeffnet implements Action {
+    readonly type = KontokorrentsActionNames.KontokorrentGeoeffnet;
+    constructor(public id: string) {
+
+    }
+}
+
 
 export type KontokorrentsActions = KontokorrentCreationFailed
     | KontokorrentCreating
@@ -92,7 +101,8 @@ export type KontokorrentsActions = KontokorrentCreationFailed
     | KontokorrentHinzufuegenSuccess
     | KontokorrentListeLaden
     | KontokorrentListeLadenFailed
-    | KontokorrentListe;
+    | KontokorrentListe
+    | KontokorrentGeoeffnet;
 
 export class KontokorrentsActionCreator {
     constructor(private store: Store,
@@ -183,6 +193,14 @@ export class KontokorrentsActionCreator {
                 this.store.dispatch(new KontokorrentListeLadenFailed(false));
             }
         }
+        db.close();
+    }
+
+    async kontokorrentOeffnen(id: string) {
+        this.store.dispatch(new KontokorrentGeoeffnet(id));
+        const db = new KontokorrentDatabase();
+        await db.initialize();
+        await db.setZuletztGesehenerKontokorrentId(id);
         db.close();
     }
 }

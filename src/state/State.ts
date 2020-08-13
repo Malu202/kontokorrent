@@ -17,6 +17,7 @@ export interface KontokorrentsState {
     }
     creating: boolean;
     creationFailed: { exists: boolean };
+    activeKontokorrentId: string;
 }
 
 export interface KontokorrentState {

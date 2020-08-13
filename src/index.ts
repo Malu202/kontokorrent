@@ -41,7 +41,8 @@ async function run() {
                 creating: false,
                 creationFailed: null,
                 kontokorrents: {},
-                listeLaden: false
+                listeLaden: false,
+                activeKontokorrentId: null
             }
         }
     });

@@ -1,6 +1,6 @@
 import { openDB, IDBPDatabase } from "idb";
 import { StoredKontokorrent } from "./StoredKontokorrent";
-import { sortBy } from "lodash";
+import { sortByAlphabetically } from "../utils/sortBy";
 
 
 const KontokorrentsStore = "KontokorrentsStore";
@@ -23,7 +23,7 @@ export class KontokorrentDatabase {
     }
 
     async getKontokorrents(): Promise<StoredKontokorrent[]> {
-        return sortBy((await this.db.getAll(KontokorrentsStore)).map(v => { return { name: v.name, id: v.id } }), i => i.name);
+        return sortByAlphabetically((await this.db.getAll(KontokorrentsStore)).map(v => { return { name: v.name, id: v.id } }), k => k.name);
     }
 
     async getZuletztGesehenerKontokorrentId(): Promise<string> {

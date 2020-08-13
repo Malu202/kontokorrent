@@ -1,5 +1,12 @@
-body {
+@import "./components/button.scss";
+
+body,
+button {
     font-family: 'Roboto', sans-serif;
+}
+
+body {
+
     margin: 0;
     padding: 0;
 }

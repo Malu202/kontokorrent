@@ -15,11 +15,12 @@ export class Home extends HTMLElement {
     private accountActionCreator: AccountActionCreator;
     private loginExpired: HTMLDivElement;
     private kontokorrentsActionCreator: KontokorrentsActionCreator;
-    private kontokorrentListe: HTMLUListElement;
+    private appBar: AppBar;
 
     constructor() {
         super();
         this.innerHTML = template;
+        this.appBar = this.querySelector(AppBarTagName);
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -27,18 +28,12 @@ export class Home extends HTMLElement {
         this.routingActionCreator = serviceLocator.routingActionCreator;
         this.accountActionCreator = serviceLocator.accountActionCreator;
         this.kontokorrentsActionCreator = serviceLocator.kontokorrentsActionCreator;
+        this.appBar.addServices(serviceLocator);
     }
 
     connectedCallback() {
         let element = this;
-        this.kontokorrentListe = element.querySelector("#kontokorrent-liste");
         this.loginExpired = element.querySelector("#login-expired");
-
-        let appBar: AppBar = element.querySelector(AppBarTagName);
-        appBar.setRouter(this.routingActionCreator);
-        appBar.addEventListener("onlogout", async () => {
-            await this.accountActionCreator.logout();
-        });
 
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
@@ -48,12 +43,6 @@ export class Home extends HTMLElement {
 
     private applyStoreState(state: State) {
         this.loginExpired.style.display = state.account.loginExpired ? "block" : "none";
-        this.kontokorrentListe.innerHTML = "";
-        Object.keys(state.kontokorrents.kontokorrents).forEach(id => {
-            let li = document.createElement("li");
-            li.innerText = state.kontokorrents.kontokorrents[id].name;
-            this.kontokorrentListe.appendChild(li);
-        })
     }
 
     disconnectedCallback() {

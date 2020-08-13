@@ -98,6 +98,14 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                     };
                 })
             }
+            case KontokorrentsActionNames.KontokorrentGeoeffnet: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        activeKontokorrentId: action.id
+                    };
+                })
+            }
                 break;
         }
     }

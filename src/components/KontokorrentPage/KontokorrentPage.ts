@@ -14,7 +14,6 @@ export class KontokorrentPage extends HTMLElement {
     private routingActionCreator: RoutingActionCreator;
     private accountActionCreator: AccountActionCreator;
     private kontokorrentsActionCreator: KontokorrentsActionCreator;
-    private kontokorrentId: string;
     private appBar: AppBar;
 
     constructor() {
@@ -28,32 +27,26 @@ export class KontokorrentPage extends HTMLElement {
         this.routingActionCreator = serviceLocator.routingActionCreator;
         this.accountActionCreator = serviceLocator.accountActionCreator;
         this.kontokorrentsActionCreator = serviceLocator.kontokorrentsActionCreator;
+        this.appBar.addServices(serviceLocator);
     }
 
     connectedCallback() {
         let element = this;
 
-
-        this.appBar.setRouter(this.routingActionCreator);
-        this.appBar.addEventListener("onlogout", async () => {
-            await this.accountActionCreator.logout();
-        });
-
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
+        
     }
 
     private applyStoreState(state: State) {
-        let kontokorrent = state.kontokorrents.kontokorrents[this.kontokorrentId];
+        let kontokorrent = state.kontokorrents.kontokorrents[state.kontokorrents.activeKontokorrentId];
         if (kontokorrent) {
-            this.appBar.kontokorrentSelect.setAttribute("kontokorrent-name", kontokorrent.name);
             document.title = `${kontokorrent.name} - Kontokorrent`;
         }
     }
 
     setKontokorrentId(id: string) {
-        this.kontokorrentId = id;
-        this.applyStoreState(this.store.state);
+        this.kontokorrentsActionCreator.kontokorrentOeffnen(id);
     }
 
     disconnectedCallback() {

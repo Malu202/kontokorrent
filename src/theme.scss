@@ -1,6 +1,11 @@
+@use "sass:color";
+
 $primary: #6200ee;
 $fg-on-primary : #fff;
 $input-radius : 3px;
+$button-radius : 4px;
+$hover-on-container: color.adjust($color: $primary, $alpha: -0.96);
+$active-on-container: color.adjust($color: $primary, $alpha: -0.82);
 
 @mixin box-shadow {
     box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);

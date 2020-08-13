@@ -16,11 +16,13 @@
         font-size: 1.5em;
         padding: 0;
         margin: 0;
+        min-width: 6em;
     }
 
     &__choose {
         @include utils.reset-button;
         color: theme.$fg-on-primary;
+        width: 1em;
     }
 
     &::after {
@@ -31,12 +33,18 @@
 
     &__popup {
         position: absolute;
-        min-height: 10em;
+        min-height: 3em;
         background-color: white;
         @include theme.box-shadow;
         border-bottom-left-radius: theme.$input-radius;
         border-bottom-right-radius: theme.$input-radius;
         margin-top: -1px;
+        min-width: 15em;
+    }
+
+    &__buttons{
+        text-align: center;
+        padding: 0.5em;
     }
 }
 

@@ -1,12 +1,17 @@
 import template from "./KontokorrentSelect.html";
 import "./KontokorrentSelect.scss";
-import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
 import "./KontokorrentSelectList";
+import { KontokorrentState } from "../../state/State";
+import { KontokorrentSelectListTagName, KontokorrentSelectList } from "./KontokorrentSelectList";
 
 export class KontokorrentSelect extends HTMLElement {
     private kontokorrentName: HTMLHeadingElement;
     private popupShown: boolean = false;
     private popup: HTMLDivElement;
+    private kontokorrentSelectList: KontokorrentSelectList;
+    private addButton: HTMLButtonElement;
+    private activeKontokorrentId: string;
+    private _kontokorrents: KontokorrentState[];
 
     constructor() {
         super();
@@ -14,6 +19,9 @@ export class KontokorrentSelect extends HTMLElement {
         this.keyListener = this.keyListener.bind(this);
         this.touchListener = this.touchListener.bind(this);
         this.kontokorrentName = this.querySelector(`[data-ref="kontokorrent-name"]`);
+        this.kontokorrentSelectList = this.querySelector(KontokorrentSelectListTagName);
+        this.addButton = this.querySelector(`#add-kontokorrent`);
+        this._kontokorrents = null;
     }
 
     connectedCallback() {
@@ -24,7 +32,12 @@ export class KontokorrentSelect extends HTMLElement {
                 this.togglePopup();
             }
         });
-
+        this.addButton.addEventListener("click", e => {
+            this.dispatchEvent(new CustomEvent("addkontokorrent"));
+        });
+        this.kontokorrentSelectList.addEventListener("gotokontokorrent", () => {
+            this.togglePopup();
+        })
     }
 
     private keyListener(ev: KeyboardEvent) {
@@ -58,20 +71,36 @@ export class KontokorrentSelect extends HTMLElement {
 
     }
 
-    setRouter(routingActionCreator: RoutingActionCreator) {
-
-    }
-
     attributeChangedCallback() {
         this.updateAttributes();
     }
 
     private updateAttributes() {
-        this.kontokorrentName.innerText = this.getAttribute("kontokorrent-name");
+        this.activeKontokorrentId = this.getAttribute("active-kontokorrent-id");
+        this.kontokorrentSelectList.activeKontokorrentId = this.activeKontokorrentId;
+        this.updatesStyle();
     }
 
     static get observedAttributes() {
-        return ["kontokorrent-name"];
+        return ["active-kontokorrent-id"];
+    }
+
+    set kontokorrents(kontokorrents: KontokorrentState[]) {
+        this.kontokorrentSelectList.kontokorrents = kontokorrents;
+        this._kontokorrents = kontokorrents;
+        this.updatesStyle();
+    }
+
+    private updatesStyle() {
+        if (this._kontokorrents && this._kontokorrents.length) {
+            let activeKontokorrent = this._kontokorrents.find(k => k.id == this.activeKontokorrentId);
+            if (activeKontokorrent) {
+                this.kontokorrentName.innerText = activeKontokorrent.name;
+            }
+            else {
+                this.kontokorrentName.innerText = "(Kontokorrent wählen)";
+            }
+        }
     }
 
 }
