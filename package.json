@@ -9,7 +9,7 @@
     "gulp-autoprefixer": "^6.1.0",
     "gulp-sass": "*",
     "material-components-web": "^0.41.1",
-    "node-sass": "^4.12.0"
+    "node-sass": "^4.13.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
