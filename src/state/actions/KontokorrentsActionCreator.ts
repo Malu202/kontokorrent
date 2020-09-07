@@ -6,8 +6,6 @@ import { NeuerKontokorrentRequest } from "../../api/NeuerKontokorrentRequest";
 import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
 import { InteractionRequiredException } from "../../api/InteractionRequiredException";
 import { RoutingActionCreator } from "./RoutingActionCreator";
-import { SrvRecord } from "dns";
-
 
 export enum KontokorrentsActionNames {
     KontokorrentCreating = "KontokorrentCreating",
@@ -107,7 +105,8 @@ export type KontokorrentsActions = KontokorrentCreationFailed
 export class KontokorrentsActionCreator {
     constructor(private store: Store,
         private apiClient: ApiClient,
-        private routingActionCreator: RoutingActionCreator) {
+        private routingActionCreator: RoutingActionCreator,
+        private db: KontokorrentDatabase) {
 
     }
 
@@ -118,37 +117,28 @@ export class KontokorrentsActionCreator {
             oeffentlicherName,
             personen: personen.map(v => { return { name: v } })
         };
-        let db = new KontokorrentDatabase();
-        await db.initialize();
         this.store.dispatch(new KontokorrentCreating());
-        try {
-            let res = await this.apiClient.neuerKontokorrent(request);
-            if (!res.success) {
-                this.store.dispatch(new KontokorrentCreationFailed(res.exists));
-            }
-            else {
-                await db.addKontokorrent({ id: id, name: name });
-                this.store.dispatch(new KontokorrentCreated(id, name));
-                return true;
-            }
+        let res = await this.apiClient.neuerKontokorrent(request);
+        if (!res.success) {
+            this.store.dispatch(new KontokorrentCreationFailed(res.exists));
         }
-        finally {
-            db.close();
+        else {
+            await this.db.addKontokorrent({ id: id, name: name });
+            this.store.dispatch(new KontokorrentCreated(id, name));
+            return true;
         }
         return false;
     }
 
     async kontokorrentHinzufuegen(oeffentlicherName: string) {
         this.store.dispatch(new KontokorrentHinzufuegen());
-        let db = new KontokorrentDatabase();
-        await db.initialize();
         try {
             let res = await this.apiClient.kontokorrentHinzufuegen(oeffentlicherName, null);
             if (null == res) {
                 this.store.dispatch(new KontokorrentHinzufuegenFailed(true));
             }
             else {
-                await db.setKontokorrents(res);
+                await this.db.setKontokorrents(res);
                 this.store.dispatch(new KontokorrentHinzufuegenSuccess(res));
                 return true;
             }
@@ -156,15 +146,11 @@ export class KontokorrentsActionCreator {
         catch {
             this.store.dispatch(new KontokorrentHinzufuegenFailed(false));
         }
-        db.close();
         return false;
     }
 
     async navigiereZuLetztGesehenem() {
-        const db = new KontokorrentDatabase();
-        await db.initialize();
-        let id = await db.getZuletztGesehenerKontokorrentId();
-        db.close();
+        let id = await this.db.getZuletztGesehenerKontokorrentId();
         if (id) {
             this.routingActionCreator.navigateKontokorrent(id);
             return true;
@@ -174,15 +160,13 @@ export class KontokorrentsActionCreator {
 
     async syncKontokorrentListe() {
         this.store.dispatch(new KontokorrentListeLaden());
-        const db = new KontokorrentDatabase();
         const listenTask = this.apiClient.kontokorrentsAuflisten();
 
-        await db.initialize();
-        let kontokorrents = await db.getKontokorrents();
+        let kontokorrents = await this.db.getKontokorrents();
         this.store.dispatch(new KontokorrentListe(kontokorrents));
         try {
             let liste = await listenTask;
-            await db.setKontokorrents(liste);
+            await this.db.setKontokorrents(liste);
             this.store.dispatch(new KontokorrentListe(liste));
         }
         catch (e) {
@@ -193,14 +177,10 @@ export class KontokorrentsActionCreator {
                 this.store.dispatch(new KontokorrentListeLadenFailed(false));
             }
         }
-        db.close();
     }
 
     async kontokorrentOeffnen(id: string) {
         this.store.dispatch(new KontokorrentGeoeffnet(id));
-        const db = new KontokorrentDatabase();
-        await db.initialize();
-        await db.setZuletztGesehenerKontokorrentId(id);
-        db.close();
+        await this.db.setZuletztGesehenerKontokorrentId(id);
     }
 }

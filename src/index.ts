@@ -15,6 +15,7 @@ import "./favicons";
 import "../favicons/site.webmanifest";
 import { AsyncRouteResolver } from "route-it/dist/router";
 import runtime from "serviceworker-webpack-plugin/lib/runtime";
+import { KontokorrentDatabase } from "./lib/KontokorrentDatabase";
 
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", async () => {
@@ -59,7 +60,8 @@ async function run() {
     const accountInfoStore = new AccountInfoStore();
     const apiClient = new ApiClient(accountInfoStore);
     const accountActionCreator = new AccountActionCreator(store, apiClient, accountInfoStore, routingActionCreator);
-    const kontokorrentsActionCreator = new KontokorrentsActionCreator(store, apiClient, routingActionCreator);
+    const db = new KontokorrentDatabase();
+    const kontokorrentsActionCreator = new KontokorrentsActionCreator(store, apiClient, routingActionCreator, db);
     const initializationActionCreator = new InitializationActionCreator(store,
         routingActionCreator,
         accountActionCreator, kontokorrentsActionCreator,
