@@ -61,6 +61,17 @@ module.exports = (env, argv) => {
                         },
                     ],
                 },
+                {
+                    test: /\.(webmanifest)$/i,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: '[name].[ext]',
+                            },
+                        },
+                    ],
+                }
             ],
         },
         resolve: {

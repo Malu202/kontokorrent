@@ -1,6 +1,7 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Kontokorrent",
+    "short_name": "Kontokorrent",
+    "description": "Rechnungen easy teilen",
     "icons": [
         {
             "src": "/favicons/android-chrome-192x192.png",
@@ -13,7 +14,8 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
+    "start_url": "./",
+    "theme_color": "#6200ee",
     "background_color": "#ffffff",
     "display": "standalone"
 }
