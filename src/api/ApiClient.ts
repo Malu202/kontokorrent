@@ -1,11 +1,12 @@
 import { postJson } from "./postJson";
 import { AccountType } from "../lib/AccountType";
 import { AccountInfoStore } from "../lib/AccountInfoStore";
-import { KontokorrentListenEintrag } from "./KontokorrentListenEintrag";
+import { KontokorrentInfo } from "./KontokorrentInfo";
 import { NeuerKontokorrentRequest } from "./NeuerKontokorrentRequest";
 import { TokenRenewFailedException } from "./TokenRenewFailedException";
 import { InteractionRequiredException } from "./InteractionRequiredException";
 import { ApiException } from "./ApiException";
+import { Aktion } from "./Aktion";
 
 const baseUrl = "https://kontokorrent-v2.azurewebsites.net";
 
@@ -50,7 +51,7 @@ export class ApiClient {
         if (res.status == 404) {
             return null;
         }
-        return <KontokorrentListenEintrag[]>await res.json();
+        return <KontokorrentInfo[]>await res.json();
     }
 
     async kontokorrentsAuflisten() {
@@ -58,7 +59,7 @@ export class ApiClient {
         if (!res.ok) {
             throw new ApiException();
         }
-        return <KontokorrentListenEintrag[]>await res.json();
+        return <KontokorrentInfo[]>await res.json();
     }
 
 
@@ -71,6 +72,24 @@ export class ApiClient {
             return { success: true };
         }
         return { success: false };
+    }
+
+    async getAktionen(kontokorrentId: string, ab?: number) {
+        let query = ab ? `?ab=${ab}` : "";
+        let res = await fetch(`${baseUrl}/api/v2/kontokorrents/${kontokorrentId}/aktionen${query}`, { headers: await this.getAuthHeader() });
+        if (res.status == 404) {
+            return {
+                success: false,
+                notfound: true
+            };
+        }
+        else if (res.ok) {
+            let aktionen: Aktion[] = await res.json();
+            return {
+                success: true,
+                aktionen
+            }
+        }
     }
 
     private async getAccessToken() {

@@ -3,7 +3,7 @@ export class Popup extends HTMLElement {
     constructor() {
         super();
         this.keyListener = this.keyListener.bind(this);
-        this.touchListener = this.touchListener.bind(this);
+        this.clickListener = this.clickListener.bind(this);
     }
 
     connectedCallback() {
@@ -16,7 +16,7 @@ export class Popup extends HTMLElement {
         }
     }
 
-    private touchListener(ev: MouseEvent | TouchEvent) {
+    private clickListener(ev: MouseEvent | TouchEvent) {
         if (!this.contains(<Element>(event.target))) {
             this.hide();
         }
@@ -25,8 +25,7 @@ export class Popup extends HTMLElement {
     public hide() {
         if (this.popupShown) {
             document.removeEventListener("keydown", this.keyListener);
-            document.removeEventListener("click", this.touchListener);
-            document.removeEventListener("touchend", this.touchListener);
+            document.removeEventListener("click", this.clickListener);
             this.popupShown = false;
             this.updateStyles();
         }
@@ -35,8 +34,7 @@ export class Popup extends HTMLElement {
     public show() {
         if (!this.popupShown) {
             document.addEventListener("keydown", this.keyListener);
-            document.addEventListener("click", this.touchListener);
-            document.addEventListener("touchend", this.touchListener);
+            document.addEventListener("click", this.clickListener);
             this.popupShown = true;
             this.updateStyles();
         }

@@ -1,7 +1,7 @@
 import { Reducer } from "../lib/Reducer";
 import { KontokorrentsState, KontokorrentState } from "../State";
 import { KontokorrentsActions, KontokorrentsActionNames } from "../actions/KontokorrentsActionCreator";
-import { KontokorrentListenEintrag } from "../../api/KontokorrentListenEintrag";
+import { KontokorrentInfo } from "../../api/KontokorrentInfo";
 
 export class KontokorrentsReducer implements Reducer<KontokorrentsState, KontokorrentsActions> {
     onDispatch(action: KontokorrentsActions, updateStore: (a: (s: KontokorrentsState) => KontokorrentsState) => void): void {
@@ -110,7 +110,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
         }
     }
 
-    private extendMap(map: { [id: string]: KontokorrentState }, kk: KontokorrentListenEintrag[]) {
+    private extendMap(map: { [id: string]: KontokorrentState }, kk: KontokorrentInfo[]) {
         let kontokorrents: { [id: string]: KontokorrentState } = {};
         for (let k of kk) {
             let kontokorrent = { ...k };

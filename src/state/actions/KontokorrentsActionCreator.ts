@@ -1,11 +1,12 @@
 import { Store } from "../Store";
 import { ApiClient } from "../../api/ApiClient";
 import { Action } from "../lib/Action";
-import { KontokorrentListenEintrag } from "../../api/KontokorrentListenEintrag";
+import { KontokorrentInfo } from "../../api/KontokorrentInfo";
 import { NeuerKontokorrentRequest } from "../../api/NeuerKontokorrentRequest";
 import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
 import { InteractionRequiredException } from "../../api/InteractionRequiredException";
 import { RoutingActionCreator } from "./RoutingActionCreator";
+import { v4 as uuid } from "uuid";
 
 export enum KontokorrentsActionNames {
     KontokorrentCreating = "KontokorrentCreating",
@@ -57,7 +58,7 @@ export class KontokorrentHinzufuegen implements Action {
 
 export class KontokorrentHinzufuegenSuccess implements Action {
     readonly type = KontokorrentsActionNames.KontokorrentHinzufuegenSuccess;
-    constructor(public kontokorrents: KontokorrentListenEintrag[]) {
+    constructor(public kontokorrents: KontokorrentInfo[]) {
 
     }
 }
@@ -71,7 +72,7 @@ export class KontokorrentListeLaden implements Action {
 
 export class KontokorrentListe implements Action {
     readonly type = KontokorrentsActionNames.KontokorrentListe;
-    constructor(public kontokorrents: KontokorrentListenEintrag[]) {
+    constructor(public kontokorrents: KontokorrentInfo[]) {
 
     }
 }
@@ -115,7 +116,7 @@ export class KontokorrentsActionCreator {
             name,
             id,
             oeffentlicherName,
-            personen: personen.map(v => { return { name: v } })
+            personen: personen.map(v => { return { name: v, id: uuid() } })
         };
         this.store.dispatch(new KontokorrentCreating());
         let res = await this.apiClient.neuerKontokorrent(request);
@@ -123,7 +124,7 @@ export class KontokorrentsActionCreator {
             this.store.dispatch(new KontokorrentCreationFailed(res.exists));
         }
         else {
-            await this.db.addKontokorrent({ id: id, name: name });
+            await this.db.addKontokorrent({ id: id, name: name, laufendeNummer: 0, personen: request.personen });
             this.store.dispatch(new KontokorrentCreated(id, name));
             return true;
         }
@@ -138,7 +139,14 @@ export class KontokorrentsActionCreator {
                 this.store.dispatch(new KontokorrentHinzufuegenFailed(true));
             }
             else {
-                await this.db.setKontokorrents(res);
+                await this.db.setKontokorrents(res.map(v => {
+                    return {
+                        id: v.id,
+                        laufendeNummer: null,
+                        name: v.name,
+                        personen: v.personen
+                    };
+                }));
                 this.store.dispatch(new KontokorrentHinzufuegenSuccess(res));
                 return true;
             }
@@ -166,7 +174,14 @@ export class KontokorrentsActionCreator {
         this.store.dispatch(new KontokorrentListe(kontokorrents));
         try {
             let liste = await listenTask;
-            await this.db.setKontokorrents(liste);
+            await this.db.setKontokorrents(liste.map(e => {
+                return {
+                    id: e.id,
+                    laufendeNummer: null,
+                    name: e.name,
+                    personen: e.personen
+                }
+            }));
             this.store.dispatch(new KontokorrentListe(liste));
         }
         catch (e) {
@@ -180,7 +195,16 @@ export class KontokorrentsActionCreator {
     }
 
     async kontokorrentOeffnen(id: string) {
-        this.store.dispatch(new KontokorrentGeoeffnet(id));
-        await this.db.setZuletztGesehenerKontokorrentId(id);
+        let kk = await this.db.getKontokorrent(id);
+        if (null != kk) {
+            let tasks = [];
+            this.store.dispatch(new KontokorrentGeoeffnet(id));
+            tasks.push(this.db.setZuletztGesehenerKontokorrentId(id));
+            let res = await this.apiClient.getAktionen(id, kk.laufendeNummer);
+            if (res.success) {
+
+            }
+            await Promise.all(tasks);
+        }
     }
 }

@@ -1,15 +1,32 @@
-import { openDB, IDBPDatabase } from "idb";
-import { StoredKontokorrent } from "./StoredKontokorrent";
+import { openDB, IDBPDatabase, DBSchema } from "idb";
+import { KontokorrentDbModel } from "./KontokorrentDbModel";
 import { sortByAlphabetically } from "../utils/sortBy";
+import { Store } from "../state/Store";
 
 
 const KontokorrentsStore = "KontokorrentsStore";
 const AppStateStore = "AppStateStore";
 
+interface KontokorrentDbSchema extends DBSchema {
+    KontokorrentsStore: {
+        key: string;
+        value: KontokorrentDbModel;
+    };
+    AppStateStore: {
+        value: {
+            id: number;
+            zuletztGesehenerKontokorrentId: string
+        };
+        key: number;
+        indexes: { 'by-price': number };
+    };
+}
+
+
 export class KontokorrentDatabase {
 
-    private async withInitialized<T>(cb: (db: IDBPDatabase<unknown>) => Promise<T>) {
-        let db = await openDB("kontokorrent-db", 2, {
+    private async withInitialized<T>(cb: (db: IDBPDatabase<KontokorrentDbSchema>) => Promise<T>) {
+        let db = await openDB<KontokorrentDbSchema>("kontokorrent-db", 2, {
             upgrade(db, oldVersion: number, newVersion: number) {
                 if (oldVersion < 1) {
                     db.createObjectStore(KontokorrentsStore, { keyPath: "id" });
@@ -28,9 +45,9 @@ export class KontokorrentDatabase {
         }
     }
 
-    async getKontokorrents(): Promise<StoredKontokorrent[]> {
+    async getKontokorrents(): Promise<KontokorrentDbModel[]> {
         return await this.withInitialized(async db => {
-            return sortByAlphabetically((await db.getAll(KontokorrentsStore)).map(v => { return { name: v.name, id: v.id } }), k => k.name);
+            return sortByAlphabetically((await db.getAll(KontokorrentsStore)), k => k.name);
         });
     }
 
@@ -58,23 +75,31 @@ export class KontokorrentDatabase {
         });
     }
 
-    async setKontokorrents(kontokorrents: StoredKontokorrent[]): Promise<void> {
+    async setKontokorrents(kontokorrents: { name: string, id: string, personen: { name: string, id: string }[] }[]): Promise<void> {
         return await this.withInitialized(async db => {
-            let existing: StoredKontokorrent[] = (await db.getAll(KontokorrentsStore));
+            let existing: KontokorrentDbModel[] = (await db.getAll(KontokorrentsStore));
             for (let v of existing.filter(e => !kontokorrents.some(d => e.id === d.id))) {
                 await db.delete(KontokorrentsStore, v.id);
             }
-            for (let v of kontokorrents.filter(e => !existing.some(d => e.id === d.id))) {
-                await db.add(KontokorrentsStore, v);
+            for (let v of kontokorrents) {
+                let ex = existing.find(d => d.id == v.id);
+                let combined = { ...ex, ...v };
+                await db.put(KontokorrentsStore, combined);
             }
         });
     }
 
-    async addKontokorrent(kk: StoredKontokorrent): Promise<void> {
+    async addKontokorrent(kk: KontokorrentDbModel): Promise<void> {
         return await this.withInitialized(async db => {
             if (!await db.get(KontokorrentsStore, kk.id)) {
                 await db.add(KontokorrentsStore, kk);
             }
+        });
+    }
+
+    async getKontokorrent(id: string): Promise<KontokorrentDbModel> {
+        return await this.withInitialized(async db => {
+            return <KontokorrentDbModel>await db.get(KontokorrentsStore, id);
         });
     }
 }
