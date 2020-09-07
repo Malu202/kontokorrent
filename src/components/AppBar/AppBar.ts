@@ -1,5 +1,6 @@
 import template from "./AppBar.html";
 import "./AppBar.scss";
+import "../dialog.scss";
 import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
 import { convertLinks } from "../convertLinks";
 import "../KontokorrentSelect/KontokorrentSelect";
@@ -10,6 +11,7 @@ import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsAct
 import { Store } from "../../state/Store";
 import { State } from "../../state/State";
 import { stat } from "fs";
+import { Popup } from "../../utils/Popup";
 
 export class AppBar extends HTMLElement {
     private kontokorrentSelect: KontokorrentSelect;
@@ -17,6 +19,7 @@ export class AppBar extends HTMLElement {
     private routingActionCreator: RoutingActionCreator;
     private accountActionCreator: AccountActionCreator;
     private kontokorrentsActionCreator: KontokorrentsActionCreator;
+    private logoutDialog: Popup;
     private subscription: () => void;
 
 
@@ -24,12 +27,20 @@ export class AppBar extends HTMLElement {
         super();
         this.innerHTML = template;
         this.kontokorrentSelect = this.querySelector(KontokorrentSelectTagName);
+        this.logoutDialog = this.querySelector("#logout-dialog");
     }
 
     connectedCallback() {
         document.body.classList.add("body--app-bar");
-        this.querySelector("#logout-button").addEventListener("click", async () => {
+        this.querySelector("#logout-button").addEventListener("click", (e: MouseEvent) => {
+            this.logoutDialog.toggle();
+            e.stopPropagation();
+        });
+        this.querySelector("#confirm-logout").addEventListener("click", async () => {
             await this.accountActionCreator.logout();
+        });
+        this.querySelector("#abort-logout").addEventListener("click", () => {
+            this.logoutDialog.hide();
         });
         convertLinks(this.querySelectorAll("a"), this.routingActionCreator);
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));

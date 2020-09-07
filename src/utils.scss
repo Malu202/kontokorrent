@@ -1,6 +1,6 @@
 @use "./theme.scss";
 
-@mixin reset-button(){
+@mixin reset-button() {
     cursor: pointer;
     background: transparent;
     border: none;
@@ -15,6 +15,7 @@
 
 @mixin button-hover {
     position: relative;
+
     &:hover {
         &::after {
             opacity: 0.08;
@@ -32,5 +33,22 @@
         opacity: 0;
         transition: opacity 15ms linear;
         box-sizing: border-box;
+    }
+}
+
+@mixin open-popup {
+    animation: surface-open 0.08s cubic-bezier(0, 0, 0.2, 1);
+    will-change: transform, opacity;
+
+    @keyframes surface-open {
+        0% {
+            opacity: 0.6;
+            transform: scale(0.9)
+        }
+
+        100% {
+            opacity: 1;
+            transform: scale(1)
+        }
     }
 }

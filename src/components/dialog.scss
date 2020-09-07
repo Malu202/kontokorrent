@@ -1,0 +1,21 @@
+@use "../theme.scss";
+@use "../utils.scss";
+
+.dialog {
+    position: fixed;
+    top: 50vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    @include theme.box-shadow;
+    border-bottom-left-radius: theme.$input-radius;
+    border-bottom-right-radius: theme.$input-radius;
+    margin-top: -1px;
+    min-width: 15em;
+    padding: 0 1em 0.5em 1em;
+    &__button-pane {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+}
