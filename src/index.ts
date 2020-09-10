@@ -50,17 +50,17 @@ async function run() {
     });
     const routeResolver = new KontokorrentRouteResolver(store);
     const router = new Router(routeResolver as AsyncRouteResolver<HTMLElement>, new BodyChildRouteRenderer());
-
+    const db = new KontokorrentDatabase();
     store.addReducer("account", new AccountReducer());
     store.addReducer("kontokorrents", new KontokorrentsReducer());
 
-
+    
     const routingActionCreator = new RoutingActionCreator(router);
 
     const accountInfoStore = new AccountInfoStore();
     const apiClient = new ApiClient(accountInfoStore);
-    const accountActionCreator = new AccountActionCreator(store, apiClient, accountInfoStore, routingActionCreator);
-    const db = new KontokorrentDatabase();
+    const accountActionCreator = new AccountActionCreator(store, apiClient, accountInfoStore, routingActionCreator, db);
+    
     const kontokorrentsActionCreator = new KontokorrentsActionCreator(store, apiClient, routingActionCreator, db);
     const initializationActionCreator = new InitializationActionCreator(store,
         routingActionCreator,

@@ -1,7 +1,6 @@
 import { openDB, IDBPDatabase, DBSchema } from "idb";
 import { KontokorrentDbModel } from "./KontokorrentDbModel";
 import { sortByAlphabetically } from "../utils/sortBy";
-import { Store } from "../state/Store";
 import { Aktion } from "../api/Aktion";
 import { AktionDbModel } from "./AktionDbModel";
 
@@ -10,16 +9,18 @@ const KontokorrentsStore = "KontokorrentsStore";
 const AppStateStore = "AppStateStore";
 const AktionenStore = "AktionenStore";
 
+interface AppSettings {
+    id: number;
+    zuletztGesehenerKontokorrentId: string
+}
+
 interface KontokorrentDbSchema extends DBSchema {
     KontokorrentsStore: {
         key: string;
         value: KontokorrentDbModel;
     };
     AppStateStore: {
-        value: {
-            id: number;
-            zuletztGesehenerKontokorrentId: string
-        };
+        value: AppSettings;
         key: number;
     };
     AktionenStore: {
@@ -30,6 +31,7 @@ interface KontokorrentDbSchema extends DBSchema {
 }
 
 
+const initialSettings: (() => AppSettings) = () => { return { id: 0, zuletztGesehenerKontokorrentId: null } };
 export class KontokorrentDatabase {
 
 
@@ -41,7 +43,7 @@ export class KontokorrentDatabase {
                 }
                 if (oldVersion < 2) {
                     let store = db.createObjectStore(AppStateStore, { keyPath: "id" });
-                    store.put({ id: 0, zuletztGesehenerKontokorrentId: null });
+                    store.put(initialSettings());
                 }
                 if (oldVersion < 3) {
                     let store = db.createObjectStore(AktionenStore, { keyPath: ["laufendeNummer", "kontokorrentId"] });
@@ -142,6 +144,14 @@ export class KontokorrentDatabase {
     async getAktionen(id: string): Promise<AktionDbModel[]> {
         return await this.withInitialized(async db => {
             return await db.getAllFromIndex(AktionenStore, "kontokorrentId", id);
+        });
+    }
+
+    async clear() {
+        return await this.withInitialized(async db => {
+            await db.clear(AktionenStore);
+            await db.clear(KontokorrentsStore);
+            await db.put(AppStateStore, initialSettings());
         });
     }
 }

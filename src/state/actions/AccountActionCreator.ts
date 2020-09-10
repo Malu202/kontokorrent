@@ -8,6 +8,7 @@ import { RoutingActionCreator } from "./RoutingActionCreator";
 import { TokenRenewFailedException } from "../../api/TokenRenewFailedException";
 import { InteractionRequiredException } from "../../api/InteractionRequiredException";
 import { AccountInfo } from "../../lib/AccountInfo";
+import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
 
 export enum AccountActionNames {
     AccountCreating = "AccountCreating",
@@ -71,7 +72,8 @@ export class AccountActionCreator {
     constructor(private store: Store,
         private apiClient: ApiClient,
         private accountInfoStore: AccountInfoStore,
-        private routingActionCreator: RoutingActionCreator) {
+        private routingActionCreator: RoutingActionCreator,
+        private db: KontokorrentDatabase) {
 
     }
 
@@ -128,6 +130,7 @@ export class AccountActionCreator {
 
     async logout() {
         this.accountInfoStore.clear();
+        await this.db.clear();
         this.store.dispatch(new LoggedOut());
         this.routingActionCreator.navigateLogin();
     }
