@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
 const { DefinePlugin } = require("webpack");
+const WorkerPlugin = require('worker-plugin');
 
 const path = require('path');
 
@@ -80,7 +81,8 @@ module.exports = (env, argv) => {
         output: {
             path: path.resolve(__dirname, 'dist'),
             filename: '[contenthash].bundle.js',
-            publicPath: base
+            publicPath: base,
+            globalObject : "self"
         },
         plugins: [
             new HtmlWebpackPlugin({
@@ -99,7 +101,8 @@ module.exports = (env, argv) => {
             }),
             new DefinePlugin({
                 __ENVIRONMENT: environment
-            })
+            }),
+            new WorkerPlugin()
         ],
         mode: "development",
         devServer: {

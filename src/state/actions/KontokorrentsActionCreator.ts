@@ -8,6 +8,9 @@ import { InteractionRequiredException } from "../../api/InteractionRequiredExcep
 import { RoutingActionCreator } from "./RoutingActionCreator";
 import { v4 as uuid } from "uuid";
 import { Bezahlung } from "../State";
+type KontokorrentWorkerApi = import("../../worker/KontokorrentWorker").KontokorrentWorkerApi;
+import { wrap } from "comlink";
+import { filterBezahlungen } from "../../lib/filterBezahlungen";
 
 export enum KontokorrentsActionNames {
     KontokorrentCreating = "KontokorrentCreating",
@@ -228,19 +231,7 @@ export class KontokorrentsActionCreator {
 
     private async refreshBezahlungen(id: string) {
         let aktionen = await this.db.getAktionen(id);
-        let bezahlungenMap: { [id: string]: Bezahlung } = {};
-        for (let b of aktionen) {
-            if (b.bearbeiteteBezahlungId) {
-                delete bezahlungenMap[b.bearbeiteteBezahlungId];
-            }
-            if (b.geloeschteBezahlungId) {
-                delete bezahlungenMap[b.bearbeiteteBezahlungId];
-            }
-            else {
-                bezahlungenMap[b.bezahlung.id] = b.bezahlung;
-            }
-        }
-        this.store.dispatch(new KontokorrentBezahlungen(id, Object.values(bezahlungenMap)));
+        this.store.dispatch(new KontokorrentBezahlungen(id, filterBezahlungen(aktionen)));
     }
 
     private async kontokorrentSynchronisieren(id: string, laufendeNummer: number) {
@@ -255,6 +246,18 @@ export class KontokorrentsActionCreator {
         this.store.dispatch(new KontokorrentSynchronisiert(id));
     }
 
+    private async calculateBalance(id: string) {
+        // @ts-ignore - Typescript doesn't know about the 2nd param to new Worker, and the
+        // definition can't be overwritten.
+        const worker = new Worker(
+            "../../worker/KontokorrentWorker",
+            { name: 'kontokorrent-worker', type: "module" },
+        ) as Worker;
+        // Need to do some TypeScript trickery to make the type match.
+        const workerApi = wrap<KontokorrentWorkerApi>(worker);
+        console.log(await workerApi.calculateBalance(id));
+    }
+
     async kontokorrentOeffnen(id: string) {
         let kk = await this.db.getKontokorrent(id);
         if (null != kk) {
@@ -263,6 +266,7 @@ export class KontokorrentsActionCreator {
             tasks.push(this.db.setZuletztGesehenerKontokorrentId(id));
             tasks.push(this.refreshBezahlungen(id));
             tasks.push(this.kontokorrentSynchronisieren(id, kk.laufendeNummer));
+            tasks.push(this.calculateBalance(id));
             await Promise.all(tasks);
         }
     }
