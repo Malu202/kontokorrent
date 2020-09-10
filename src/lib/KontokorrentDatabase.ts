@@ -2,10 +2,13 @@ import { openDB, IDBPDatabase, DBSchema } from "idb";
 import { KontokorrentDbModel } from "./KontokorrentDbModel";
 import { sortByAlphabetically } from "../utils/sortBy";
 import { Store } from "../state/Store";
+import { Aktion } from "../api/Aktion";
+import { AktionDbModel } from "./AktionDbModel";
 
 
 const KontokorrentsStore = "KontokorrentsStore";
 const AppStateStore = "AppStateStore";
+const AktionenStore = "AktionenStore";
 
 interface KontokorrentDbSchema extends DBSchema {
     KontokorrentsStore: {
@@ -18,15 +21,20 @@ interface KontokorrentDbSchema extends DBSchema {
             zuletztGesehenerKontokorrentId: string
         };
         key: number;
-        indexes: { 'by-price': number };
+    };
+    AktionenStore: {
+        key: [number, string],
+        value: AktionDbModel,
+        indexes: { "kontokorrentId": string };
     };
 }
 
 
 export class KontokorrentDatabase {
 
+
     private async withInitialized<T>(cb: (db: IDBPDatabase<KontokorrentDbSchema>) => Promise<T>) {
-        let db = await openDB<KontokorrentDbSchema>("kontokorrent-db", 2, {
+        let db = await openDB<KontokorrentDbSchema>("kontokorrent-db", 3, {
             upgrade(db, oldVersion: number, newVersion: number) {
                 if (oldVersion < 1) {
                     db.createObjectStore(KontokorrentsStore, { keyPath: "id" });
@@ -34,6 +42,10 @@ export class KontokorrentDatabase {
                 if (oldVersion < 2) {
                     let store = db.createObjectStore(AppStateStore, { keyPath: "id" });
                     store.put({ id: 0, zuletztGesehenerKontokorrentId: null });
+                }
+                if (oldVersion < 3) {
+                    let store = db.createObjectStore(AktionenStore, { keyPath: ["laufendeNummer", "kontokorrentId"] });
+                    store.createIndex("kontokorrentId", "kontokorrentId");
                 }
             },
         });
@@ -48,6 +60,30 @@ export class KontokorrentDatabase {
     async getKontokorrents(): Promise<KontokorrentDbModel[]> {
         return await this.withInitialized(async db => {
             return sortByAlphabetically((await db.getAll(KontokorrentsStore)), k => k.name);
+        });
+    }
+
+    async addAktionen(id: string, aktionen: Aktion[]): Promise<void> {
+        if (!aktionen.length) {
+            return;
+        }
+        return await this.withInitialized(async db => {
+            const tx = db.transaction(AktionenStore, "readwrite");
+            let tasks = aktionen.map(v => {
+                let a: AktionDbModel = {
+                    ...v,
+                    kontokorrentId: id
+                };
+                return a;
+            }).map(a => tx.store.add(a));
+            await Promise.all(tasks);
+            await tx.done;
+            const tx2 = db.transaction(KontokorrentsStore, "readwrite");
+            let kk = await tx2.store.get(id);
+            let max = Math.max(...aktionen.map(v => v.laufendeNummer));
+            kk.laufendeNummer = max;
+            await tx2.store.put(kk);
+            await tx2.done;
         });
     }
 
@@ -83,7 +119,7 @@ export class KontokorrentDatabase {
             }
             for (let v of kontokorrents) {
                 let ex = existing.find(d => d.id == v.id);
-                let combined = { ...ex, ...v };
+                let combined = { ...ex, name: v.name, personen: v.personen, id: v.id };
                 await db.put(KontokorrentsStore, combined);
             }
         });
@@ -100,6 +136,12 @@ export class KontokorrentDatabase {
     async getKontokorrent(id: string): Promise<KontokorrentDbModel> {
         return await this.withInitialized(async db => {
             return <KontokorrentDbModel>await db.get(KontokorrentsStore, id);
+        });
+    }
+
+    async getAktionen(id: string): Promise<AktionDbModel[]> {
+        return await this.withInitialized(async db => {
+            return await db.getAllFromIndex(AktionenStore, "kontokorrentId", id);
         });
     }
 }

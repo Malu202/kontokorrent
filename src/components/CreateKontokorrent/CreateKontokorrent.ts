@@ -103,7 +103,7 @@ export class CreateKontokorrent extends HTMLElement {
         if (eventName && personCountOk && !personNameError && !oeffentlicherNameError && !personNameDuplicateError) {
             if (await this.accountActionCreator.ensureAccount()) {
                 if (await this.kontokorrentsActionCreator.kontokorrentErstellen(this.kontokorrentId, this.eventName.value, this.oeffentlich.checked ? this.oeffentlicherName.value : null, personNames)) {
-                    this.routingActionCreator.navigateHome();
+                    this.routingActionCreator.navigateKontokorrent(this.kontokorrentId);
                 };
             }
         }

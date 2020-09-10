@@ -6,3 +6,4 @@ export interface KontokorrentDbModel {
     laufendeNummer: number;
     personen : {name:string, id:string}[]
 }
+

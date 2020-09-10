@@ -1,4 +1,5 @@
-export interface Bezahlung {
+
+export interface BezahlungDbModel {
     id: string;
     zeitpunkt: Date;
     bezahlendePersonId: string;

@@ -7,6 +7,7 @@ import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
 import { InteractionRequiredException } from "../../api/InteractionRequiredException";
 import { RoutingActionCreator } from "./RoutingActionCreator";
 import { v4 as uuid } from "uuid";
+import { Bezahlung } from "../State";
 
 export enum KontokorrentsActionNames {
     KontokorrentCreating = "KontokorrentCreating",
@@ -18,7 +19,10 @@ export enum KontokorrentsActionNames {
     KontokorrentListeLaden = "KontokorrentListeLaden",
     KontokorrentListe = "KontokorrentListe",
     KontokorrentListeLadenFailed = "KontokorrentListeLadenFailed",
-    KontokorrentGeoeffnet = "KontokorrentGeoeffnet"
+    KontokorrentGeoeffnet = "KontokorrentGeoeffnet",
+    KontokorrentBezahlungen = "KontokorrentBezahlungen",
+    KontokorrentSynchronisieren = "KontokorrentSynchronisieren",
+    KontokorrentSynchronisiert = "KontokorrentSynchronisiert"
 }
 
 export class KontokorrentCreationFailed implements Action {
@@ -37,7 +41,7 @@ export class KontokorrentCreating implements Action {
 
 export class KontokorrentCreated implements Action {
     readonly type = KontokorrentsActionNames.KontokorrentCreated;
-    constructor(public id: string, public name: string) {
+    constructor(public kontokorrent: KontokorrentInfo) {
 
     }
 }
@@ -91,6 +95,27 @@ export class KontokorrentGeoeffnet implements Action {
     }
 }
 
+export class KontokorrentBezahlungen implements Action {
+    readonly type = KontokorrentsActionNames.KontokorrentBezahlungen;
+    constructor(public kontokorrentId: string, public bezahlungen: Bezahlung[]) {
+
+    }
+}
+
+export class KontokorrentSynchronisieren implements Action {
+    readonly type = KontokorrentsActionNames.KontokorrentSynchronisieren;
+    constructor(public kontokorrentId: string) {
+
+    }
+}
+
+export class KontokorrentSynchronisiert implements Action {
+    readonly type = KontokorrentsActionNames.KontokorrentSynchronisiert;
+    constructor(public kontokorrentId: string) {
+
+    }
+}
+
 
 export type KontokorrentsActions = KontokorrentCreationFailed
     | KontokorrentCreating
@@ -101,7 +126,10 @@ export type KontokorrentsActions = KontokorrentCreationFailed
     | KontokorrentListeLaden
     | KontokorrentListeLadenFailed
     | KontokorrentListe
-    | KontokorrentGeoeffnet;
+    | KontokorrentGeoeffnet
+    | KontokorrentBezahlungen
+    | KontokorrentSynchronisieren
+    | KontokorrentSynchronisiert;
 
 export class KontokorrentsActionCreator {
     constructor(private store: Store,
@@ -125,7 +153,11 @@ export class KontokorrentsActionCreator {
         }
         else {
             await this.db.addKontokorrent({ id: id, name: name, laufendeNummer: 0, personen: request.personen });
-            this.store.dispatch(new KontokorrentCreated(id, name));
+            this.store.dispatch(new KontokorrentCreated({
+                id: id,
+                name: name,
+                personen: request.personen
+            }));
             return true;
         }
         return false;
@@ -194,16 +226,43 @@ export class KontokorrentsActionCreator {
         }
     }
 
+    private async refreshBezahlungen(id: string) {
+        let aktionen = await this.db.getAktionen(id);
+        let bezahlungenMap: { [id: string]: Bezahlung } = {};
+        for (let b of aktionen) {
+            if (b.bearbeiteteBezahlungId) {
+                delete bezahlungenMap[b.bearbeiteteBezahlungId];
+            }
+            if (b.geloeschteBezahlungId) {
+                delete bezahlungenMap[b.bearbeiteteBezahlungId];
+            }
+            else {
+                bezahlungenMap[b.bezahlung.id] = b.bezahlung;
+            }
+        }
+        this.store.dispatch(new KontokorrentBezahlungen(id, Object.values(bezahlungenMap)));
+    }
+
+    private async kontokorrentSynchronisieren(id: string, laufendeNummer: number) {
+        this.store.dispatch(new KontokorrentSynchronisieren(id));
+        let res = await this.apiClient.getAktionen(id, laufendeNummer);
+        if (res.success) {
+            await this.db.addAktionen(id, res.aktionen);
+            if (res.aktionen.length > 0) {
+                await this.refreshBezahlungen(id);
+            }
+        }
+        this.store.dispatch(new KontokorrentSynchronisiert(id));
+    }
+
     async kontokorrentOeffnen(id: string) {
         let kk = await this.db.getKontokorrent(id);
         if (null != kk) {
-            let tasks = [];
             this.store.dispatch(new KontokorrentGeoeffnet(id));
+            let tasks = [];
             tasks.push(this.db.setZuletztGesehenerKontokorrentId(id));
-            let res = await this.apiClient.getAktionen(id, kk.laufendeNummer);
-            if (res.success) {
-
-            }
+            tasks.push(this.refreshBezahlungen(id));
+            tasks.push(this.kontokorrentSynchronisieren(id, kk.laufendeNummer));
             await Promise.all(tasks);
         }
     }

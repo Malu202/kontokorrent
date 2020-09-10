@@ -20,9 +20,27 @@ export interface KontokorrentsState {
     activeKontokorrentId: string;
 }
 
+export interface Person {
+    name: string;
+    id: string;
+    balance: number;
+}
+
+export interface Bezahlung {
+    id: string;
+    zeitpunkt: Date;
+    bezahlendePersonId: string;
+    empfaengerIds: string[];
+    wert: number;
+    beschreibung: string;
+}
+
 export interface KontokorrentState {
     id: string;
     name: string;
+    personen: Person[];
+    bezahlungen: Bezahlung[];
+    synchronisieren: boolean;
 }
 
 export interface State {

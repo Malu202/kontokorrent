@@ -46,12 +46,22 @@ export class BaseStore<TState> {
                     updatedAreas.push("");
                 };
             }
-            s.reducer.onDispatch(action, applyUpdateFn);
+            try {
+                s.reducer.onDispatch(action, applyUpdateFn);
+            }
+            catch (err) {
+                console.error(`Error while dispatching ${action.type}.`, err);
+            }
         }
         if (updatedAreas.length) {
             for (let s of this.subscriptions) {
                 if (!s.area || updatedAreas.indexOf(s.area) > -1) {
-                    s.call(this.state);
+                    try {
+                        s.call(this.state);
+                    }
+                    catch (err) {
+                        console.error(`Error while updating on ${s.area || "global"} after ${action.type}.`, err);
+                    }
                 }
             }
         }

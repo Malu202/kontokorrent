@@ -85,6 +85,11 @@ export class ApiClient {
         }
         else if (res.ok) {
             let aktionen: Aktion[] = await res.json();
+            for (let a of aktionen) {
+                if (a.bezahlung) {
+                    a.bezahlung.zeitpunkt = new Date(a.bezahlung.zeitpunkt);
+                }
+            }
             return {
                 success: true,
                 aktionen

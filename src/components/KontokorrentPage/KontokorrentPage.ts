@@ -35,13 +35,15 @@ export class KontokorrentPage extends HTMLElement {
 
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
-        
+
     }
 
     private applyStoreState(state: State) {
         let kontokorrent = state.kontokorrents.kontokorrents[state.kontokorrents.activeKontokorrentId];
         if (kontokorrent) {
+            (<HTMLSpanElement>(this.querySelector("#laden"))).style.display = kontokorrent.synchronisieren ? "inline" : "none";
             document.title = `${kontokorrent.name} - Kontokorrent`;
+            this.querySelector("#bezahlungen-debug").innerHTML = JSON.stringify(kontokorrent.bezahlungen, null, 2);
         }
     }
 

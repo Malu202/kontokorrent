@@ -1,5 +1,5 @@
 import { Reducer } from "../lib/Reducer";
-import { KontokorrentsState, KontokorrentState } from "../State";
+import { KontokorrentsState, KontokorrentState, Bezahlung } from "../State";
 import { KontokorrentsActions, KontokorrentsActionNames } from "../actions/KontokorrentsActionCreator";
 import { KontokorrentInfo } from "../../api/KontokorrentInfo";
 
@@ -90,13 +90,22 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                         ...s,
                         creating: false,
                         kontokorrents: {
-                            ...s.kontokorrents, [action.id]: {
-                                id: action.id,
-                                name: action.name
+                            ...s.kontokorrents, [action.kontokorrent.id]: {
+                                id: action.kontokorrent.id,
+                                name: action.kontokorrent.name,
+                                synchronisieren: false,
+                                personen: action.kontokorrent.personen.map(p => {
+                                    return {
+                                        balance: 0,
+                                        ...p
+                                    }
+                                }),
+                                bezahlungen: []
                             }
                         }
                     };
-                })
+                });
+                break;
             }
             case KontokorrentsActionNames.KontokorrentGeoeffnet: {
                 updateStore(s => {
@@ -104,19 +113,71 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                         ...s,
                         activeKontokorrentId: action.id
                     };
-                })
-            }
+                });
                 break;
+            }
+            case KontokorrentsActionNames.KontokorrentBezahlungen: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        kontokorrents: {
+                            ...s.kontokorrents, [action.kontokorrentId]: {
+                                ...s.kontokorrents[action.kontokorrentId],
+                                bezahlungen: action.bezahlungen
+                            }
+                        }
+                    };
+                });
+                break;
+            }
+            case KontokorrentsActionNames.KontokorrentSynchronisieren: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        kontokorrents: {
+                            ...s.kontokorrents, [action.kontokorrentId]: {
+                                ...s.kontokorrents[action.kontokorrentId],
+                                synchronisieren: true
+                            }
+                        }
+                    };
+                });
+                break;
+            }
+            case KontokorrentsActionNames.KontokorrentSynchronisiert: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        kontokorrents: {
+                            ...s.kontokorrents, [action.kontokorrentId]: {
+                                ...s.kontokorrents[action.kontokorrentId],
+                                synchronisieren: false
+                            }
+                        }
+                    };
+                });
+                break;
+            }
         }
     }
 
     private extendMap(map: { [id: string]: KontokorrentState }, kk: KontokorrentInfo[]) {
         let kontokorrents: { [id: string]: KontokorrentState } = {};
         for (let k of kk) {
-            let kontokorrent = { ...k };
-            if (map[k.id]) {
-                kontokorrent = { ...k, ...map[k.id] }
-            }
+            let kontokorrent = {
+                ...k,
+                synchronisieren: false,
+                bezahlungen: <Bezahlung[]>[],
+                ...map[k.id],
+                personen: k.personen.map(v => {
+                    let p = map[k.id]?.personen?.find(p => p.id == v.id);
+                    return {
+                        ...v,
+                        balance: 0,
+                        ...p
+                    }
+                })
+            };
             kontokorrents[k.id] = kontokorrent;
         }
         return kontokorrents;
