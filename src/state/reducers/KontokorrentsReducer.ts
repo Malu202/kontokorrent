@@ -158,6 +158,25 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 });
                 break;
             }
+            case KontokorrentsActionNames.KontokorrentBalanceAktualisiert: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        kontokorrents: {
+                            ...s.kontokorrents, [action.kontokorrentId]: {
+                                ...s.kontokorrents[action.kontokorrentId],
+                                personen: s.kontokorrents[action.kontokorrentId].personen.map(p => {
+                                    return {
+                                        ...p,
+                                        balance: action.balance[p.id]
+                                    };
+                                })
+                            }
+                        }
+                    };
+                });
+                break;
+            }
         }
     }
 

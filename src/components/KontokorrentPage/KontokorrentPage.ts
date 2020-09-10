@@ -31,8 +31,6 @@ export class KontokorrentPage extends HTMLElement {
     }
 
     connectedCallback() {
-        let element = this;
-
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
 
@@ -43,7 +41,7 @@ export class KontokorrentPage extends HTMLElement {
         if (kontokorrent) {
             (<HTMLSpanElement>(this.querySelector("#laden"))).style.display = kontokorrent.synchronisieren ? "inline" : "none";
             document.title = `${kontokorrent.name} - Kontokorrent`;
-            this.querySelector("#bezahlungen-debug").innerHTML = JSON.stringify(kontokorrent.bezahlungen, null, 2);
+            this.querySelector("#bezahlungen-debug").innerHTML = JSON.stringify(kontokorrent.personen, null, 2);
         }
     }
 

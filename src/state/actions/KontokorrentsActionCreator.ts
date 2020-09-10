@@ -11,6 +11,7 @@ import { Bezahlung } from "../State";
 type KontokorrentWorkerApi = import("../../worker/KontokorrentWorker").KontokorrentWorkerApi;
 import { wrap } from "comlink";
 import { filterBezahlungen } from "../../lib/filterBezahlungen";
+import { KontokorrentBalance } from "../../lib/KontokorrentBalance";
 
 export enum KontokorrentsActionNames {
     KontokorrentCreating = "KontokorrentCreating",
@@ -25,7 +26,8 @@ export enum KontokorrentsActionNames {
     KontokorrentGeoeffnet = "KontokorrentGeoeffnet",
     KontokorrentBezahlungen = "KontokorrentBezahlungen",
     KontokorrentSynchronisieren = "KontokorrentSynchronisieren",
-    KontokorrentSynchronisiert = "KontokorrentSynchronisiert"
+    KontokorrentSynchronisiert = "KontokorrentSynchronisiert",
+    KontokorrentBalanceAktualisiert = "KontokorrentBalanceAktualisiert"
 }
 
 export class KontokorrentCreationFailed implements Action {
@@ -119,6 +121,13 @@ export class KontokorrentSynchronisiert implements Action {
     }
 }
 
+export class KontokorrentBalanceAktualisiert implements Action {
+    readonly type = KontokorrentsActionNames.KontokorrentBalanceAktualisiert;
+    constructor(public kontokorrentId: string, public balance: KontokorrentBalance) {
+
+    }
+}
+
 
 export type KontokorrentsActions = KontokorrentCreationFailed
     | KontokorrentCreating
@@ -132,9 +141,11 @@ export type KontokorrentsActions = KontokorrentCreationFailed
     | KontokorrentGeoeffnet
     | KontokorrentBezahlungen
     | KontokorrentSynchronisieren
-    | KontokorrentSynchronisiert;
+    | KontokorrentSynchronisiert
+    | KontokorrentBalanceAktualisiert;
 
 export class KontokorrentsActionCreator {
+    private workerApi: KontokorrentWorkerApi;
     constructor(private store: Store,
         private apiClient: ApiClient,
         private routingActionCreator: RoutingActionCreator,
@@ -234,29 +245,40 @@ export class KontokorrentsActionCreator {
         this.store.dispatch(new KontokorrentBezahlungen(id, filterBezahlungen(aktionen)));
     }
 
+    private async calculateBalance(id: string) {
+        let balance = await (await this.getWorkerApi()).calculateBalance(id);
+        this.store.dispatch(new KontokorrentBalanceAktualisiert(id, balance));
+    }
+
+    private async refreshKontokorrent(id: string) {
+        await Promise.all([this.refreshBezahlungen(id), this.calculateBalance(id)]);
+    }
+
     private async kontokorrentSynchronisieren(id: string, laufendeNummer: number) {
         this.store.dispatch(new KontokorrentSynchronisieren(id));
         let res = await this.apiClient.getAktionen(id, laufendeNummer);
         if (res.success) {
             await this.db.addAktionen(id, res.aktionen);
             if (res.aktionen.length > 0) {
-                await this.refreshBezahlungen(id);
+                await this.refreshKontokorrent(id);
             }
         }
         this.store.dispatch(new KontokorrentSynchronisiert(id));
     }
 
-    private async calculateBalance(id: string) {
-        // @ts-ignore - Typescript doesn't know about the 2nd param to new Worker, and the
-        // definition can't be overwritten.
+    private async getWorkerApi() {
+        if (this.workerApi) {
+            return this.workerApi;
+        }
         const worker = new Worker(
             "../../worker/KontokorrentWorker",
             { name: 'kontokorrent-worker', type: "module" },
         ) as Worker;
-        // Need to do some TypeScript trickery to make the type match.
-        const workerApi = wrap<KontokorrentWorkerApi>(worker);
-        console.log(await workerApi.calculateBalance(id));
+        this.workerApi = wrap<KontokorrentWorkerApi>(worker);
+        return this.workerApi;
     }
+
+
 
     async kontokorrentOeffnen(id: string) {
         let kk = await this.db.getKontokorrent(id);
@@ -264,9 +286,8 @@ export class KontokorrentsActionCreator {
             this.store.dispatch(new KontokorrentGeoeffnet(id));
             let tasks = [];
             tasks.push(this.db.setZuletztGesehenerKontokorrentId(id));
-            tasks.push(this.refreshBezahlungen(id));
+            tasks.push(this.refreshKontokorrent(id));
             tasks.push(this.kontokorrentSynchronisieren(id, kk.laufendeNummer));
-            tasks.push(this.calculateBalance(id));
             await Promise.all(tasks);
         }
     }
