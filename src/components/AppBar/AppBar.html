@@ -13,12 +13,15 @@
         </a>
     </nav>
 </header>
-<app-popup class="dialog" id="logout-dialog">
-    <p>
-        Wirklich aus allen Kontokorrents ausloggen?
-    </p>
-    <div class="dialog__button-pane">
-        <button id="abort-logout" class="button">Abbrechen</button>
-        <button id="confirm-logout" class="button">Ausloggen</button>
+<app-popup id="logout-dialog">
+    <div class="dialog__backdrop"></div>
+    <div class="dialog">
+        <p>
+            Wirklich aus allen Kontokorrents ausloggen?
+        </p>
+        <div class="dialog__button-pane">
+            <button id="abort-logout" class="button">Abbrechen</button>
+            <button id="confirm-logout" class="button">Ausloggen</button>
+        </div>
     </div>
 </app-popup>
