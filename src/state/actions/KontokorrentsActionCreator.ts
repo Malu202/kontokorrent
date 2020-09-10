@@ -171,7 +171,7 @@ export class KontokorrentsActionCreator {
                 this.store.dispatch(new KontokorrentHinzufuegenFailed(true));
             }
             else {
-                await this.db.setKontokorrents(res.map(v => {
+                let newIds = await this.db.setKontokorrents(res.map(v => {
                     return {
                         id: v.id,
                         laufendeNummer: null,
@@ -180,7 +180,7 @@ export class KontokorrentsActionCreator {
                     };
                 }));
                 this.store.dispatch(new KontokorrentHinzufuegenSuccess(res));
-                return true;
+                return newIds[0];
             }
         }
         catch {

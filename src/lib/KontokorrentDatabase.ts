@@ -113,17 +113,22 @@ export class KontokorrentDatabase {
         });
     }
 
-    async setKontokorrents(kontokorrents: { name: string, id: string, personen: { name: string, id: string }[] }[]): Promise<void> {
+    async setKontokorrents(kontokorrents: { name: string, id: string, personen: { name: string, id: string }[] }[]): Promise<string[]> {
         return await this.withInitialized(async db => {
             let existing: KontokorrentDbModel[] = (await db.getAll(KontokorrentsStore));
             for (let v of existing.filter(e => !kontokorrents.some(d => e.id === d.id))) {
                 await db.delete(KontokorrentsStore, v.id);
             }
+            let newIds: string[] = [];
             for (let v of kontokorrents) {
                 let ex = existing.find(d => d.id == v.id);
+                if (!ex) {
+                    newIds.push(v.id);
+                }
                 let combined = { ...ex, name: v.name, personen: v.personen, id: v.id };
                 await db.put(KontokorrentsStore, combined);
             }
+            return newIds;
         });
     }
 

@@ -54,8 +54,9 @@ export class Login extends HTMLElement {
         this.eventMissingError.style.display = event ? "none" : "block";
         if (event) {
             if (await this.accountActionCreator.ensureAccount()) {
-                if (await this.kontokorrentsActionCreator.kontokorrentHinzufuegen(event)) {
-                    this.routingActionCreator.navigateHome();
+                let id = await this.kontokorrentsActionCreator.kontokorrentHinzufuegen(event);
+                if (id) {
+                    this.routingActionCreator.navigateKontokorrent(id);
                 };
             }
         }
