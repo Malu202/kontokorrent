@@ -3,10 +3,10 @@
 @use "sass:color";
 
 .spinner {
-    width: 1em;
-    margin: 0 0.2em;
-    height: 1em;
-    border: 0.1em solid;
+    width: 1.1em;
+    margin: 0 0.3em;
+    height: 1.1em;
+    border: 0.14em solid;
     border-radius: 50%;
     border-color: theme.$primary;
     border-left-color: color.adjust($color: theme.$primary, $alpha: -0.96);
