@@ -1,0 +1,15 @@
+@import "../spinner.scss";
+
+.kontokorrentpage-menu {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 1em;
+    margin: 0.5em 0.5em;
+
+    &__sync-display {
+        font-size: 0.8em;
+        display: flex;
+        align-items: center;
+    }
+}

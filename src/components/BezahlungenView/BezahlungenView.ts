@@ -16,6 +16,8 @@ export class BezahlungenView extends HTMLElement {
     private all: boolean;
     private bezahlungen: Bezahlung[];
     private personen: Person[];
+    private bezahlungenContainer: HTMLDivElement;
+    private showMoreButton: HTMLButtonElement;
 
     constructor() {
         super();
@@ -23,14 +25,28 @@ export class BezahlungenView extends HTMLElement {
         this.minEintraege = 20;
         this.all = false;
         this.innerHTML = template;
+        this.bezahlungenContainer = this.querySelector("#bezahlungen-container");
+        this.showMoreButton = this.querySelector("#show-more");
+        this.showMoreClick = this.showMoreClick.bind(this);
     }
 
     connectedCallback() {
-
+        this.showMoreButton.addEventListener("click", this.showMoreClick);
     }
 
     disconnectedCallback() {
 
+    }
+
+    private setShowMoreButtonDisplay() {
+        if (this.bezahlungen) {
+            this.showMoreButton.style.display = this.bezahlungen.length > this.anzahlEintraege ? "inline" : "none";
+        }
+    }
+
+    showMoreClick() {
+        this.anzahlEintraege += 20;
+        this.setShowMoreButtonDisplay();
     }
 
     private formatEmpfaenger(z: Bezahlung, personen: Person[]) {
@@ -43,6 +59,7 @@ export class BezahlungenView extends HTMLElement {
     setBezahlungen(bezahlungen: Bezahlung[], personen: Person[]) {
         this.bezahlungen = bezahlungen;
         this.personen = personen;
+        this.setShowMoreButtonDisplay();
         this.render();
     }
 
@@ -78,7 +95,7 @@ export class BezahlungenView extends HTMLElement {
             isWeek = true;
         }
         let sortedGroups = grouped.sort((a, b) => b[0] - a[0]);
-        syncToChildren(this,
+        syncToChildren(this.bezahlungenContainer,
             sortedGroups,
             s => "" + s[0], () => new BezahlungenGroup(),
             (e, d) => {

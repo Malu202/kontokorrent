@@ -13,6 +13,7 @@
     margin-top: -1px;
     min-width: 15em;
     padding: 0 1em 0.5em 1em;
+    z-index: 1;
 
     &__button-pane {
         display: flex;
@@ -30,6 +31,7 @@
         opacity: 0.1;
         animation: backdrop-open 0.08s cubic-bezier(0, 0, 0.2, 1);
         will-change: opacity;
+        z-index: 1;
 
         @keyframes backdrop-open {
             0% {
