@@ -10,6 +10,8 @@ import { AppBar, AppBarTagName } from "../AppBar/AppBar";
 import "../BalanceAnzeige/BalanceAnzeigeElement";
 import { BalanceAnzeige } from "../BalanceAnzeige/BalanceAnzeige";
 import "../BalanceAnzeige/BalanceAnzeige";
+import "../BezahlungenView/BezahlungenView";
+import { BezahlungenView } from "../BezahlungenView/BezahlungenView";
 
 export class KontokorrentPage extends HTMLElement {
     private store: Store;
@@ -19,12 +21,14 @@ export class KontokorrentPage extends HTMLElement {
     private kontokorrentsActionCreator: KontokorrentsActionCreator;
     private appBar: AppBar;
     private balanceAnzeige: BalanceAnzeige;
+    private bezahlungenView: BezahlungenView;
 
     constructor() {
         super();
         this.innerHTML = template;
         this.appBar = this.querySelector(AppBarTagName);
         this.balanceAnzeige = this.querySelector("#balance-anzeige");
+        this.bezahlungenView = this.querySelector("#bezahlungen-view");
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -46,9 +50,9 @@ export class KontokorrentPage extends HTMLElement {
         if (kontokorrent) {
             (<HTMLSpanElement>(this.querySelector("#laden"))).style.display = kontokorrent.synchronisieren ? "inline" : "none";
             document.title = `${kontokorrent.name} - Kontokorrent`;
-            this.querySelector("#bezahlungen-debug").innerHTML = JSON.stringify(kontokorrent.personen, null, 2);
             if (kontokorrent.personen) {
                 this.balanceAnzeige.setBalance(kontokorrent.personen);
+                this.bezahlungenView.setBezahlungen(kontokorrent.bezahlungen, kontokorrent.personen);
             }
         }
     }

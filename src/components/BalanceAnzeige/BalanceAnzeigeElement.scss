@@ -16,7 +16,6 @@ balance-anzeige-element {
         height: $size;
         min-width: $size;
         position: relative;
-        z-index: -1;
     }
 
     &__text-container {
@@ -76,5 +75,7 @@ balance-anzeige {
     display: flex;
     flex-wrap: wrap;
     padding: 1em 0;
-    @include theme.box-shadow;
+    justify-content: center;
+    background-color: theme.$bg-container;
+    // @include theme.box-shadow;
 }

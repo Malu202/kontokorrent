@@ -4,9 +4,19 @@ $primary: #6200ee;
 $fg-on-primary : #fff;
 $input-radius : 3px;
 $button-radius : 4px;
+$card-radius: 3px;
+$card-padding: 0.4em;
 $hover-on-container: color.adjust($color: $primary, $alpha: -0.96);
 $active-on-container: color.adjust($color: $primary, $alpha: -0.82);
+$fg-on-container-subtle: rgba(0, 0, 0, 0.54);
+$bg-container: #fff;
+$bg:  rgb(243, 243, 243);
+$grouptitle: $primary;
 
 @mixin box-shadow {
     box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+}
+
+@mixin card-shadow {
+    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, .12);
 }

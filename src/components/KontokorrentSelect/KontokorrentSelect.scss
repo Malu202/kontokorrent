@@ -34,7 +34,7 @@
     &__popup {
         position: absolute;
         min-height: 3em;
-        background-color: white;
+        background-color: theme.$bg-container;
         @include theme.box-shadow;
         border-bottom-left-radius: theme.$input-radius;
         border-bottom-right-radius: theme.$input-radius;
