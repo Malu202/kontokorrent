@@ -2,7 +2,7 @@ import template from "./KontokorrentPage.html";
 import { Store } from "../../state/Store";
 import { ServiceLocator } from "../../ServiceLocator";
 import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
-import { State } from "../../state/State";
+import { KontokorrentState, State } from "../../state/State";
 import { convertLinks } from "../convertLinks";
 import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
 import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
@@ -22,6 +22,8 @@ export class KontokorrentPage extends HTMLElement {
     private appBar: AppBar;
     private balanceAnzeige: BalanceAnzeige;
     private bezahlungenView: BezahlungenView;
+    private showMoreButton: HTMLButtonElement;
+    private kontokorrent: KontokorrentState;
 
     constructor() {
         super();
@@ -29,6 +31,8 @@ export class KontokorrentPage extends HTMLElement {
         this.appBar = this.querySelector(AppBarTagName);
         this.balanceAnzeige = this.querySelector("#balance-anzeige");
         this.bezahlungenView = this.querySelector("#bezahlungen-view");
+        this.showMoreButton = this.querySelector("#show-more");
+        this.showMoreClick = this.showMoreClick.bind(this);
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -39,21 +43,33 @@ export class KontokorrentPage extends HTMLElement {
         this.appBar.addServices(serviceLocator);
     }
 
+
+    showMoreClick() {
+        this.bezahlungenView.anzahlEintraege += 20;
+        this.setShowMoreButtonDisplay();
+    }
+
     connectedCallback() {
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
-
+        this.showMoreButton.addEventListener("click", this.showMoreClick);
+    }
+    private setShowMoreButtonDisplay() {
+        if (this.kontokorrent && this.kontokorrent.bezahlungen) {
+        this.showMoreButton.style.display = this.kontokorrent.bezahlungen.length > this.bezahlungenView.anzahlEintraege ? "inline" : "none";
+        }
     }
 
     private applyStoreState(state: State) {
-        let kontokorrent = state.kontokorrents.kontokorrents[state.kontokorrents.activeKontokorrentId];
-        if (kontokorrent) {
-            (<HTMLSpanElement>(this.querySelector("#laden"))).style.display = kontokorrent.synchronisieren ? "inline" : "none";
-            document.title = `${kontokorrent.name} - Kontokorrent`;
-            if (kontokorrent.personen) {
-                this.balanceAnzeige.setBalance(kontokorrent.personen);
-                this.bezahlungenView.setBezahlungen(kontokorrent.bezahlungen, kontokorrent.personen);
+        this.kontokorrent = state.kontokorrents.kontokorrents[state.kontokorrents.activeKontokorrentId];
+        if (this.kontokorrent) {
+            (<HTMLSpanElement>(this.querySelector("#laden"))).style.display = this.kontokorrent.synchronisieren ? "inline" : "none";
+            document.title = `${this.kontokorrent.name} - Kontokorrent`;
+            if (this.kontokorrent.personen) {
+                this.balanceAnzeige.setBalance(this.kontokorrent.personen);
+                this.bezahlungenView.setBezahlungen(this.kontokorrent.bezahlungen, this.kontokorrent.personen);
             }
+            this.setShowMoreButtonDisplay();
         }
     }
 

@@ -93,6 +93,15 @@ export class BezahlungenView extends HTMLElement {
 
     }
 
+    get anzahlEintraege() {
+        return this.minEintraege;
+    }
+
+    set anzahlEintraege(val: number) {
+        this.minEintraege = val;
+        this.render();
+    }
+
 
     private formatWeek(date: Date) {
         let endWeek = endOfWeek(date);
