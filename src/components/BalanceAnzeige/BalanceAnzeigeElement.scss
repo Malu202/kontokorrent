@@ -1,0 +1,80 @@
+@use "../../utils.scss";
+@use "../../theme.scss";
+
+$size : 4em;
+$bar-gap: 0.1em;
+$bar-width: 17.5%;
+
+balance-anzeige-element {
+    display: block;
+}
+
+.balance-anzeige-element {
+
+    &__graphic-container {
+        width: 100%;
+        height: $size;
+        min-width: $size;
+        position: relative;
+        z-index: -1;
+    }
+
+    &__text-container {
+        text-align: center;
+    }
+
+    &__balance {
+        position: absolute;
+        font-size: 0.6em;
+        width: 100%;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        text-align: center;
+        background: #ffffff99;
+    }
+
+    &__name {
+        font-size: 0.8em;
+    }
+
+    &__horizontal-line {
+        border-top: 0.1em solid #555;
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        user-select: none;
+    }
+
+    &__bar {
+        background-color: #eee;
+        position: absolute;
+        top: 50%;
+        left: (100% - $bar-width) / 2;
+        width: $bar-width;
+        height: $size/2 - $bar-gap;
+        margin: 0;
+        padding: 0;
+        user-select: none;
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform 0.3s ease-out, background-color 0.2s ease-in-out;
+
+        &--positive {
+            background-color: #8BC34A;
+        }
+
+        &--negative {
+            background-color: #FF5252;
+        }
+    }
+}
+
+balance-anzeige {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 1em 0;
+    @include theme.box-shadow;
+}

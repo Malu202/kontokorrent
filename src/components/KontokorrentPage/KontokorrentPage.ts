@@ -7,6 +7,9 @@ import { convertLinks } from "../convertLinks";
 import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
 import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
 import { AppBar, AppBarTagName } from "../AppBar/AppBar";
+import "../BalanceAnzeige/BalanceAnzeigeElement";
+import { BalanceAnzeige } from "../BalanceAnzeige/BalanceAnzeige";
+import "../BalanceAnzeige/BalanceAnzeige";
 
 export class KontokorrentPage extends HTMLElement {
     private store: Store;
@@ -15,11 +18,13 @@ export class KontokorrentPage extends HTMLElement {
     private accountActionCreator: AccountActionCreator;
     private kontokorrentsActionCreator: KontokorrentsActionCreator;
     private appBar: AppBar;
+    private balanceAnzeige: BalanceAnzeige;
 
     constructor() {
         super();
         this.innerHTML = template;
         this.appBar = this.querySelector(AppBarTagName);
+        this.balanceAnzeige = this.querySelector("#balance-anzeige");
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -42,6 +47,9 @@ export class KontokorrentPage extends HTMLElement {
             (<HTMLSpanElement>(this.querySelector("#laden"))).style.display = kontokorrent.synchronisieren ? "inline" : "none";
             document.title = `${kontokorrent.name} - Kontokorrent`;
             this.querySelector("#bezahlungen-debug").innerHTML = JSON.stringify(kontokorrent.personen, null, 2);
+            if (kontokorrent.personen) {
+                this.balanceAnzeige.setBalance(kontokorrent.personen);
+            }
         }
     }
 
