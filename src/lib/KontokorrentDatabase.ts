@@ -18,6 +18,7 @@ interface KontokorrentDbSchema extends DBSchema {
     KontokorrentsStore: {
         key: string;
         value: KontokorrentDbModel;
+        indexes: { "oeffentlicherName": string };
     };
     AppStateStore: {
         value: AppSettings;
@@ -34,12 +35,12 @@ interface KontokorrentDbSchema extends DBSchema {
 const initialSettings: (() => AppSettings) = () => { return { id: 0, zuletztGesehenerKontokorrentId: null } };
 export class KontokorrentDatabase {
 
-
     private async withInitialized<T>(cb: (db: IDBPDatabase<KontokorrentDbSchema>) => Promise<T>) {
         let db = await openDB<KontokorrentDbSchema>("kontokorrent-db", 3, {
             upgrade(db, oldVersion: number, newVersion: number) {
                 if (oldVersion < 1) {
-                    db.createObjectStore(KontokorrentsStore, { keyPath: "id" });
+                    let store = db.createObjectStore(KontokorrentsStore, { keyPath: "id" });
+                    store.createIndex("oeffentlicherName", "oeffentlicherName");
                 }
                 if (oldVersion < 2) {
                     let store = db.createObjectStore(AppStateStore, { keyPath: "id" });
@@ -113,7 +114,10 @@ export class KontokorrentDatabase {
         });
     }
 
-    async setKontokorrents(kontokorrents: { name: string, id: string, personen: { name: string, id: string }[] }[]): Promise<string[]> {
+    async setKontokorrents(kontokorrents: {
+        name: string, id: string, personen: { name: string, id: string }[],
+        oeffentlicherName: string
+    }[]): Promise<string[]> {
         return await this.withInitialized(async db => {
             let existing: KontokorrentDbModel[] = (await db.getAll(KontokorrentsStore));
             for (let v of existing.filter(e => !kontokorrents.some(d => e.id === d.id))) {
@@ -125,7 +129,10 @@ export class KontokorrentDatabase {
                 if (!ex) {
                     newIds.push(v.id);
                 }
-                let combined = { ...ex, name: v.name, personen: v.personen, id: v.id };
+                let combined = {
+                    ...ex, name: v.name, personen: v.personen, id: v.id,
+                    oeffentlicherName: v.oeffentlicherName
+                };
                 await db.put(KontokorrentsStore, combined);
             }
             return newIds;
@@ -143,6 +150,12 @@ export class KontokorrentDatabase {
     async getKontokorrent(id: string): Promise<KontokorrentDbModel> {
         return await this.withInitialized(async db => {
             return <KontokorrentDbModel>await db.get(KontokorrentsStore, id);
+        });
+    }
+
+    async getPerOeffentlichName(id: string): Promise<KontokorrentDbModel> {
+        return await this.withInitialized(async db => {
+            return <KontokorrentDbModel>await db.getFromIndex(KontokorrentsStore, "oeffentlicherName", id);
         });
     }
 

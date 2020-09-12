@@ -2,9 +2,10 @@ import { Reducer } from "../lib/Reducer";
 import { KontokorrentsState, KontokorrentState, Bezahlung } from "../State";
 import { KontokorrentsActions, KontokorrentsActionNames } from "../actions/KontokorrentsActionCreator";
 import { KontokorrentInfo } from "../../api/KontokorrentInfo";
+import { AccountActionNames, AccountActions } from "../actions/AccountActionCreator";
 
-export class KontokorrentsReducer implements Reducer<KontokorrentsState, KontokorrentsActions> {
-    onDispatch(action: KontokorrentsActions, updateStore: (a: (s: KontokorrentsState) => KontokorrentsState) => void): void {
+export class KontokorrentsReducer implements Reducer<KontokorrentsState, KontokorrentsActions | AccountActions> {
+    onDispatch(action: KontokorrentsActions | AccountActions, updateStore: (a: (s: KontokorrentsState) => KontokorrentsState) => void): void {
         switch (action.type) {
             case KontokorrentsActionNames.KontokorrentListeLaden: {
                 updateStore(s => {
@@ -173,6 +174,26 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                                 })
                             }
                         }
+                    };
+                });
+                break;
+            }
+            case KontokorrentsActionNames.LoginPageGeoeffnet: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        hinzufuegen: false,
+                        hinzufuegenFailed: null
+                    };
+                });
+                break;
+            }
+            case AccountActionNames.LoggedOut: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        activeKontokorrentId: null,
+                        kontokorrents: {}
                     };
                 });
                 break;

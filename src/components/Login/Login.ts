@@ -6,6 +6,9 @@ import { State } from "../../state/State";
 import { convertLinks } from "../convertLinks";
 import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
 import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
+import "./Login.scss";
+import "../../utils/Popup";
+import "../../utils/TipButton";
 
 export class Login extends HTMLElement {
     store: Store;
@@ -19,6 +22,8 @@ export class Login extends HTMLElement {
     private notFoundError: HTMLDivElement;
     private kontokorrentsActionCreator: KontokorrentsActionCreator;
     private processing: HTMLDivElement;
+    private homeButton: HTMLButtonElement;
+    private loginBox: HTMLDivElement;
 
     constructor() {
         super();
@@ -37,6 +42,8 @@ export class Login extends HTMLElement {
         convertLinks(element.querySelectorAll("a"), this.routingActionCreator);
         this.eventInput = element.querySelector("#eventInput");
         this.loginButton = element.querySelector("#loginButton");
+        this.homeButton = element.querySelector("#home-button");
+        this.loginBox = element.querySelector("#login-box");
         this.eventMissingError = element.querySelector("#eventMissingError");
         this.accountCreationFailed = element.querySelector("#account-creation-failed");
         this.notFoundError = element.querySelector("#notFoundError");
@@ -47,6 +54,7 @@ export class Login extends HTMLElement {
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
         this.accountActionCreator.initializeAccount();
+        this.kontokorrentsActionCreator.loginPageGeoeffnet();
     }
 
     async loginFuerEvent() {
@@ -67,7 +75,11 @@ export class Login extends HTMLElement {
             "block" : "none";
         this.notFoundError.style.display = !state.kontokorrents.hinzufuegen && state.kontokorrents.hinzufuegenFailed && state.kontokorrents.hinzufuegenFailed.kontokorrentNotFound ?
             "block" : "none";
-        this.processing.style.display = state.kontokorrents.hinzufuegen || state.account.accountCreating ? "block" : "none";
+        let processing = state.kontokorrents.hinzufuegen || state.account.accountCreating;
+        this.processing.style.display = processing ? "flex" : "none";
+        this.homeButton.style.visibility = state.account.accountCreated &&
+            Object.keys(state.kontokorrents.kontokorrents).length ? "visible" : "hidden";
+        this.loginButton.style.display = !processing ? "inline-flex" : "none";
     }
 
     disconnectedCallback() {

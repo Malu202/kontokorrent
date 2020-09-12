@@ -13,6 +13,7 @@ import { wrap } from "comlink";
 import { filterBezahlungen } from "../../lib/filterBezahlungen";
 import { KontokorrentBalance } from "../../lib/KontokorrentBalance";
 
+
 export enum KontokorrentsActionNames {
     KontokorrentCreating = "KontokorrentCreating",
     KontokorrentCreated = "KontokorrentCreated",
@@ -27,7 +28,8 @@ export enum KontokorrentsActionNames {
     KontokorrentBezahlungen = "KontokorrentBezahlungen",
     KontokorrentSynchronisieren = "KontokorrentSynchronisieren",
     KontokorrentSynchronisiert = "KontokorrentSynchronisiert",
-    KontokorrentBalanceAktualisiert = "KontokorrentBalanceAktualisiert"
+    KontokorrentBalanceAktualisiert = "KontokorrentBalanceAktualisiert",
+    LoginPageGeoeffnet = "LoginPageGeoeffnet"
 }
 
 export class KontokorrentCreationFailed implements Action {
@@ -128,6 +130,13 @@ export class KontokorrentBalanceAktualisiert implements Action {
     }
 }
 
+export class LoginPageGeoeffnet implements Action {
+    readonly type = KontokorrentsActionNames.LoginPageGeoeffnet;
+    constructor() {
+
+    }
+}
+
 
 export type KontokorrentsActions = KontokorrentCreationFailed
     | KontokorrentCreating
@@ -142,7 +151,8 @@ export type KontokorrentsActions = KontokorrentCreationFailed
     | KontokorrentBezahlungen
     | KontokorrentSynchronisieren
     | KontokorrentSynchronisiert
-    | KontokorrentBalanceAktualisiert;
+    | KontokorrentBalanceAktualisiert
+    | LoginPageGeoeffnet;
 
 export class KontokorrentsActionCreator {
     private workerApi: KontokorrentWorkerApi;
@@ -151,6 +161,10 @@ export class KontokorrentsActionCreator {
         private routingActionCreator: RoutingActionCreator,
         private db: KontokorrentDatabase) {
 
+    }
+
+    loginPageGeoeffnet() {
+        this.store.dispatch(new LoginPageGeoeffnet());
     }
 
     async kontokorrentErstellen(id: string, name: string, oeffentlicherName: string, personen: string[]) {
@@ -166,11 +180,18 @@ export class KontokorrentsActionCreator {
             this.store.dispatch(new KontokorrentCreationFailed(res.exists));
         }
         else {
-            await this.db.addKontokorrent({ id: id, name: name, laufendeNummer: 0, personen: request.personen });
+            await this.db.addKontokorrent({
+                id: id,
+                name: name,
+                laufendeNummer: 0,
+                personen: request.personen,
+                oeffentlicherName: oeffentlicherName
+            });
             this.store.dispatch(new KontokorrentCreated({
                 id: id,
                 name: name,
-                personen: request.personen
+                personen: request.personen,
+                oeffentlicherName: oeffentlicherName
             }));
             return true;
         }
@@ -178,6 +199,10 @@ export class KontokorrentsActionCreator {
     }
 
     async kontokorrentHinzufuegen(oeffentlicherName: string) {
+        let kk = await this.db.getPerOeffentlichName(oeffentlicherName);
+        if (null != kk) {
+            return kk.id;
+        }
         this.store.dispatch(new KontokorrentHinzufuegen());
         try {
             let res = await this.apiClient.kontokorrentHinzufuegen(oeffentlicherName, null);
@@ -190,7 +215,8 @@ export class KontokorrentsActionCreator {
                         id: v.id,
                         laufendeNummer: null,
                         name: v.name,
-                        personen: v.personen
+                        personen: v.personen,
+                        oeffentlicherName: v.oeffentlicherName
                     };
                 }));
                 this.store.dispatch(new KontokorrentHinzufuegenSuccess(res));
@@ -203,10 +229,10 @@ export class KontokorrentsActionCreator {
         return false;
     }
 
-    async navigiereZuLetztGesehenem() {
+    async navigiereZuLetztGesehenem(redirect?: boolean) {
         let id = await this.db.getZuletztGesehenerKontokorrentId();
         if (id) {
-            this.routingActionCreator.navigateKontokorrent(id);
+            this.routingActionCreator.navigateKontokorrent(id, redirect);
             return true;
         }
         return false;
@@ -225,7 +251,8 @@ export class KontokorrentsActionCreator {
                     id: e.id,
                     laufendeNummer: null,
                     name: e.name,
-                    personen: e.personen
+                    personen: e.personen,
+                    oeffentlicherName: e.oeffentlicherName
                 }
             }));
             this.store.dispatch(new KontokorrentListe(liste));

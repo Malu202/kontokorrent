@@ -4,4 +4,5 @@ export interface KontokorrentInfo {
     name: string;
     id: string;
     personen: Person[];
+    oeffentlicherName : string;
 }

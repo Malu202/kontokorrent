@@ -1,0 +1,14 @@
+@use "../theme.scss";
+
+.alert {
+    border: 2px solid;
+    border-radius: theme.$card-radius;
+    padding: 0.2em;
+    margin: 0.1em;
+    box-sizing: border-box;
+
+    &--error {
+        border-color: theme.$error-alert-border;
+        background-color: theme.$error-alert-bg;
+    }
+}

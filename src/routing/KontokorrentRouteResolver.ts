@@ -34,7 +34,9 @@ export class KontokorrentRouteResolver extends EventTarget implements AsyncRoute
         switch (currentRoute) {
             case Paths.Info:
                 const { Info } = await import("../components/info/info");
-                return new Info();
+                let component = new Info();
+                component.addServices(this.serviceLocator);
+                return component;
             case Paths.FeaturesRequired: {
                 let component = new FeaturesRequired();
                 component.addServices(this.serviceLocator);

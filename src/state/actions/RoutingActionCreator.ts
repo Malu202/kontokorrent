@@ -15,7 +15,7 @@ export class RoutingActionCreator {
     navigate(path: string) {
         this.router.navigate(path, null);
     }
-    navigateKontokorrent(id: string) {
-        this.router.navigate(`${Paths.Kontokorrents}/${id}`, null);
+    navigateKontokorrent(id: string, redirect?: boolean) {
+        this.router.navigate(`${Paths.Kontokorrents}/${id}`, null, redirect);
     }
 }

@@ -1,0 +1,60 @@
+@use "../../theme.scss";
+@use "../../utils.scss";
+
+app-login {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    background-color: theme.$bg-container;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+@mixin box-width {
+    width: 75%;
+    max-width: 16em;
+}
+
+.login-error-box {
+    @include box-width;
+    display: flex;
+    flex-direction: column-reverse;
+    flex: 2 0 0px;
+    & > .alert {
+        width: 100%;
+    }
+}
+
+.login-box {
+    @include box-width;
+    flex: 3 0 0px;
+
+    &__login-button,
+    &__event-input {
+        width: 100%;
+    }
+
+    &__processing {
+        height: 2.1875em;
+
+        &>.spinner {
+            font-size: 1.2em;
+        }
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__event-input {
+        display: flex;
+        align-items: center;
+        position: relative;
+
+        &>input {
+            flex-grow: 1;
+            margin-right: 0.5em;
+        }
+    }
+}

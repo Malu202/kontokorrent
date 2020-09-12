@@ -38,7 +38,7 @@ export class Home extends HTMLElement {
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
 
-        this.kontokorrentsActionCreator.navigiereZuLetztGesehenem();
+        this.kontokorrentsActionCreator.navigiereZuLetztGesehenem(true);
     }
 
     private applyStoreState(state: State) {
