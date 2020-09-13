@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+    <link rel="manifest" href="favicons/site.webmanifest">
+    <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#297027">
+    <link rel="shortcut icon" href="favicons/favicon.ico">
+    <meta name="msapplication-TileColor" content="#2b5797">
+    <meta name="msapplication-config" content="favicons/browserconfig.xml">
+    <meta name="theme-color" content="#6200ee">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no, width = device-width, height = device-height">
+    <title>Kontokorrent</title>
+    <meta charset="utf-8">
+</head>
+
+<body class="mdc-typography">
+
+    <div id="loadScreen" class="loadScreen page">
+        <div id="loadingInformation">Loading something...</div>
+        <div id="progressBar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate page loadScreen">
+            <div class="mdc-linear-progress__buffering-dots"></div>
+            <div class="mdc-linear-progress__buffer"></div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="splashScreen" class="page splashScreen">
+        <div id="errorText" class="errorText">Error</div>
+        <div id="loginBox">
+            <div id="eventTextField" class="mdc-text-field mdc-text-field--fullwidth">
+                <input type="text" class="mdc-text-field__input" id="eventInput" placeholder="Event eingeben">
+            </div>
+            <button id="loginButton" class="mdc-button mdc-button--raised">
+                Login
+            </button>
+            <button id="createEventButton" class="mdc-button mdc-button--compact mdc-button--dense">
+                Event erstellen
+            </button>
+        </div>
+
+        <div id="createEventBox">
+            <div id="newEventTextField" class="mdc-text-field  mdc-text-field--fullwidth">
+                <input type="text" class="mdc-text-field__input" id="newEventInput" placeholder="Neues Event eingeben">
+            </div>
+            <ul id="createPersonsList" class="mdc-list mdc-list--non-interactive">
+
+            </ul>
+            <button id="addNewPersonButton" class="mdc-button">
+                <a class="mdc-list-item__meta material-icons">&#xE148;</a>
+            </button>
+            <button id="createNewEventButton" class="mdc-button mdc-button--raised">
+                Erstellen
+            </button>
+            <button id="backToLoginButton" class="mdc-button mdc-button--compact mdc-button--dense">
+                zurück
+            </button>
+        </div>
+    </div>
+
+
+
+    <div class="mdc-toolbar mdc-toolbar--fixed page homeScreen deletedScreen">
+        <div class="mdc-toolbar__row">
+            <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+                <!-- <button class="menu material-icons mdc-toolbar__menu-icon">&#xE5D2;</button> -->
+                <span id="Toolbar" class="mdc-toolbar__title catalog-title">Kontokorrent</span>
+            </section>
+            <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
+                <!-- <a class="material-icons mdc-toolbar__icon homeScreen" id="deletedButton">&#xE872;</a> -->
+                <a class="material-icons mdc-toolbar__icon" id="logOutButton">&#xE879;</a>
+            </section>
+        </div>
+    </div>
+    <div class="mdc-toolbar-fixed-adjust contentPage page deletedScreen" id="deleted">
+        <div class="mdc-card">
+            <h2 class="mdc-typography--headline5">Gelöschte Transaktionen</h2>
+            <div id="deletedPayments"></div>
+        </div>
+    </div>
+    <div class="mdc-toolbar-fixed-adjust contentPage page homeScreen" id="page">
+
+        <div class="mdc-card" id="overview">
+            <ul class="mdc-list mdc-list--two-line" id="overviewList">
+            </ul>
+        </div>
+        <div class="mdc-card" id="newTransaction">
+            <h2 class="mdc-typography--headline5">Neue Transaktion</h2>
+            <div id="transactionsDetails" class="transactionsDetails">
+                <div id="transactionError" class="errorText"></div>
+                <h4>Betreff:</h4>
+                <div id="betreffTextField" class="mdc-text-field mdc-text-field--fullwidth">
+                    <input id="betreffInput" type="text" class="mdc-text-field__input">
+                    <div class="mdc-line-ripple"></div>
+                </div>
+
+                <h4>Diese Person zahlt:</h4>
+                <!-- <div id="payingPerson" class="payingPerson">Bitte Person in der Übersicht auswählen</div> -->
+
+                <!-- <div class="mdc-select mdc-select--box">
+                <select class="mdc-select__native-control">
+                    <option value="payedFor">
+                        Rechnung bezahlt
+                    </option>
+                    <option value="gaveMoney">
+                        Geld gegeben
+                    </option>
+                    <option value="gaveMoney">
+                        Geld bekommen
+                    </option>
+                </select>
+                <div class="mdc-line-ripple"></div>
+            </div> -->
+                <div id="payerSelectContainer" class="transactionContainer">
+                    <div class="mdc-select">
+                        <i class="mdc-select__dropdown-icon"></i>
+                        <select id="payerSelect" class="mdc-select__native-control">
+                        </select>
+                        <label class="mdc-floating-label"></label>
+                        <div class="mdc-line-ripple"></div>
+                    </div>
+
+                </div>
+                <h4>für diese Personen:</h4>
+
+                <div id="alle" class="mdc-form-field">
+                    <div class="mdc-checkbox">
+                        <input id="payedForAllCheckboxInput" type="checkbox" class="mdc-checkbox__native-control" />
+                        <div class="mdc-checkbox__background">
+                            <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                <path class="mdc-checkbox__checkmark-path" fill="none" stroke="white" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path> />
+                            </svg>
+                            <div class="mdc-checkbox__mixedmark"></div>
+                        </div>
+                    </div>
+                    <label for="payedForAllCheckboxInput">Alle</label>
+                </div>
+
+                <div id="payedPersons"></div>
+
+                <h4>diesen Betrag:</h4>
+                <div id="amountTextField" class="mdc-text-field mdc-text-field--fullwidth mdc-text-field--with-trailing-icon">
+                    <input id="amountInput" type="number" novalidate step="any" class="mdc-text-field__input">
+                    <div class="mdc-line-ripple"></div>
+                    <i class="material-icons mdc-text-field__icon">&#xE926;</i>
+                </div>
+            </div>
+            <div class="mdc-card__actions">
+                <div class="mdc-card__action-buttons">
+                    <button id="confirmTransactionButton" class="mdc-button mdc-card__action mdc-card__action--button">Bestätigen</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mdc-card" id="history">
+            <ul class="mdc-list mdc-list--two-line" id="transactions">
+            </ul>
+            <div id="loadMoreBar">
+                <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+                    <div class="mdc-linear-progress__buffering-dots"></div>
+                    <div class="mdc-linear-progress__buffer"></div>
+                    <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                        <span class="mdc-linear-progress__bar-inner"></span>
+                    </div>
+                    <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                        <span class="mdc-linear-progress__bar-inner"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdc-card__actions">
+                <div class="mdc-card__action-buttons">
+                    <button id="loadMoreTransactionsButton" class="mdc-button mdc-card__action mdc-card__action--button">
+                        Mehr Laden
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mdc-dialog" id="dialog" role="alertdialog">
+        <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface">
+                <!-- Title cannot contain leading whitespace due to mdc-typography-baseline-top() -->
+                <h2 class="mdc-dialog__title" id="dialogTitel"></h2>
+                <div class="mdc-dialog__content" id="dialogText"></div>
+                <footer class="mdc-dialog__actions">
+                    <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="no" id="dialogCancelButton">Abbrechen</button>
+                    <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="yes" id="dialogAcceptButton">Ok</button>
+                </footer>
+            </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+    </div>
+
+    <aside id="customDialog" class="mdc-dialog">
+        <div class="mdc-dialog__container">
+            <div id="customDialogSurface" class="mdc-dialog__surface">
+                <div id="customDialogContent"></div>
+                <footer class="mdc-dialog__actions">
+                    <button id="customDialogCancelButton" type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="no">Abbrechen</button>
+                    <button id="customDialogAcceptButton" type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="yes">Ok</button>
+                </footer>
+            </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+    </aside>
+
+    <script src="pageSwitcher.js"></script>
+    <script src="script.js"></script>
+</body>
+
+
+</html>
