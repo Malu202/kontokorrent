@@ -7,8 +7,9 @@ import { TokenRenewFailedException } from "./TokenRenewFailedException";
 import { InteractionRequiredException } from "./InteractionRequiredException";
 import { ApiException } from "./ApiException";
 import { Aktion } from "./Aktion";
+import { environment } from "../environment";
 
-const baseUrl = "https://kontokorrent-v2.azurewebsites.net";
+const baseUrl = environment.API_URL;
 
 export class ApiClient {
 
@@ -120,7 +121,7 @@ export class ApiClient {
                 localStorage.setItem("access_token_anonymous", JSON.stringify(tokenResponse));
                 return tokenResponse.token;
             }
-            catch{
+            catch {
                 throw new TokenRenewFailedException(true);
             }
         }

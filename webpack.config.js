@@ -10,11 +10,13 @@ const path = require('path');
 
 module.exports = (env, argv) => {
     const production = argv.mode == "production";
-    const isGithubPages = env && env.githubpages;
+    const environment = (env ? env.environment : null) || "local";
 
-    const environment = isGithubPages ? "'gh-pages'" : "'local'";
-
-    const base = "/";
+    const base = {
+        "gh-pages": "/",
+        "local": "/",
+        "gh-pagesv2": "/v2/"
+    }[environment];
     return {
         entry: {
             index: './src/index.ts'
@@ -82,7 +84,7 @@ module.exports = (env, argv) => {
             path: path.resolve(__dirname, 'dist'),
             filename: '[contenthash].bundle.js',
             publicPath: base,
-            globalObject : "self"
+            globalObject: "self"
         },
         plugins: [
             new HtmlWebpackPlugin({
