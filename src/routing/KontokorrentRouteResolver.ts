@@ -2,7 +2,7 @@ import { Router } from "route-it";
 import { Home } from "../components/Home/home";
 import { ServiceLocator } from "../ServiceLocator";
 import { FeaturesRequired } from "../components/FeaturesRequired/FeaturesRequired";
-import { Login } from "../components/login/login";
+import { Login } from "../components/Login/Login";
 import { Store } from "../state/Store";
 import { CreateKontokorrent } from "../components/CreateKontokorrent/CreateKontokorrent";
 import { AsyncRouteResolver } from "route-it/dist/router";
@@ -33,7 +33,7 @@ export class KontokorrentRouteResolver extends EventTarget implements AsyncRoute
         }
         switch (currentRoute) {
             case Paths.Info:
-                const { Info } = await import("../components/info/info");
+                const { Info } = await import("../components/Info/info");
                 let component = new Info();
                 component.addServices(this.serviceLocator);
                 return component;
