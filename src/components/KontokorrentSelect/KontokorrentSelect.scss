@@ -17,6 +17,9 @@
         padding: 0;
         margin: 0;
         min-width: 6em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     &__choose {
@@ -43,7 +46,7 @@
         @include utils.open-popup();
     }
 
-    &__buttons{
+    &__buttons {
         text-align: center;
         padding: 0.5em;
     }

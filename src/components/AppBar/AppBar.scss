@@ -45,11 +45,12 @@ $app-bar-size: 4em;
     }
 
     &__links {
-        padding: 0 1em;
+        flex-shrink: 0;
     }
 
     &__kontokorrent-select {
         margin-left: 1em;
+        min-width: 6em;
     }
 }
 
