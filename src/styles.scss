@@ -1,0 +1,36 @@
+@use "./theme.scss";
+@import "./components/button.scss";
+@import "./components/input.scss";
+@import "./components/tip.scss";
+@import "./components/alert.scss";
+
+body,
+button,
+input,
+ul,
+ol {
+    font-family: 'Roboto', sans-serif;
+}
+
+ul,
+ol {
+    margin: 0;
+    padding: 0;
+    padding-inline-start: 2em;
+    margin-block-start: 0.5em;
+    margin-block-end: 0.5em;
+}
+
+body {
+
+    margin: 0;
+    padding: 0;
+    background-color: theme.$bg;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+}

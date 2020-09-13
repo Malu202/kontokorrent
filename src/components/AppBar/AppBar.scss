@@ -1,0 +1,58 @@
+@use "../../theme.scss";
+@use "../../utils.scss";
+
+$app-bar-size: 4em;
+
+%app-bar-button {
+    @include utils.reset-button;
+    @include utils.reset-link;
+
+    color: theme.$fg-on-primary;
+    width: 3em;
+    height: 3em;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    @include utils.button-hover;
+
+    &:after {
+        border-radius: 50%;
+    }
+}
+
+@mixin app-bar-button {
+    @extend %app-bar-button;
+}
+
+.app-bar {
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: $app-bar-size;
+    background-color: theme.$primary;
+    @include theme.box-shadow;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &__link {
+        @include app-bar-button;
+    }
+
+    &__links {
+        padding: 0 1em;
+    }
+
+    &__kontokorrent-select {
+        margin-left: 1em;
+    }
+}
+
+.body--app-bar {
+    margin-top: $app-bar-size;
+}

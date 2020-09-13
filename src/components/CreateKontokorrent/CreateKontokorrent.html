@@ -1,0 +1,20 @@
+<h1>Event erstellen</h1>
+<label for="event-name">Eventname</label>
+<input type="text" id="event-name" name="event-name">
+<label for="event-name">Oeffentlich</label>
+<input type="checkbox" id="oeffentlich" name="oeffentlich" checked="checked">
+<div id="oeffentlich-box">
+    <label for="oeffentlicher-name">Öffentlicher Name</label>
+    <input type="text" id="oeffentlicher-name" name="oeffentlicher-name">
+</div>
+<div id="empty-name-error" style="display: none;">Für alle Personen Namen angeben</div>
+<div id="person-count-error" style="display: none;">Mindestens zwei Personen angeben</div>
+<div id="event-create-error" style="display: none;">Kontokorrent konnte nicht erstellt werden</div>
+<div id="event-name-duplicate" style="display: none;">Ein Kontokorrent mit diesem Namen exisitert bereits</div>
+<div id="event-name-error" style="display: none;">Eventname angeben</div>
+<div id="oeffentlicher-name-error" style="display: none;">Öfferntlicher Name: Nur Kleinbuchstaben und Zahlen</div>
+<div id="person-name-duplicate-error" style="display: none;">Personennamen müssen unterschiedlich sein</div>
+<div id="creating" style="display: none;">Wird erstellt</div>
+<div id="account-creation-failed" style="display: none;">Account konnte nicht erstellt werden</div>
+<app-personen-liste id="personen-liste"></app-personen-liste>
+<button id="create-button">Erstellen</button>

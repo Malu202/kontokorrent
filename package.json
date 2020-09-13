@@ -3,17 +3,58 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.html",
-  "dependencies": {},
+  "dependencies": {
+    "@material/linear-progress": "^7.0.0",
+    "@material/textfield": "^7.0.0",
+    "comlink": "^4.3.0",
+    "core-js": "^3.6.5",
+    "date-fns": "^2.16.1",
+    "idb": "^5.0.4",
+    "lodash": "^4.17.19",
+    "oauth2-popup-flow": "^1.1.0",
+    "route-it": "^1.2.0",
+    "uuid": "^8.3.0"
+  },
   "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@types/lodash": "^4.14.159",
+    "@types/node": "^14.0.22",
+    "@types/serviceworker-webpack-plugin": "^1.0.1",
+    "@types/uuid": "^8.0.0",
+    "@types/webpack-env": "^1.15.2",
+    "autoprefixer": "^9.8.5",
+    "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^3.6.0",
+    "file-loader": "^6.0.0",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^6.1.0",
     "gulp-sass": "*",
-    "material-components-web": "^0.41.1",
-    "node-sass": "^4.12.0"
+    "html-loader": "^1.1.0",
+    "html-webpack-plugin": "^4.3.0",
+    "license-webpack-plugin": "^2.2.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "postcss-loader": "^3.0.0",
+    "sass": "^1.26.10",
+    "sass-loader": "^9.0.2",
+    "serviceworker-webpack-plugin": "^1.0.1",
+    "ts-loader": "^8.0.0",
+    "typescript": "^3.9.6",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0",
+    "worker-plugin": "^5.0.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "serve": "webpack-dev-server"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "browserslist": [
+    "defaults",
+    "last 2 ios major versions"
+  ]
 }

@@ -1,0 +1,30 @@
+@use "../../utils.scss";
+@use "../../theme.scss";
+
+$second-color : theme.$fg-on-container-subtle;
+
+bezahlung-card {
+    display: inline-flex;
+    align-items: center;
+    @include theme.card-shadow;
+    border-radius: theme.$card-radius;
+    padding: theme.$card-padding;
+    background-color: theme.$bg-container;
+}
+
+.bezahlung-card {
+    &__beschreibung {
+        flex-grow: 1;
+    }
+
+    &__personen {
+        color: $second-color;
+        font-size: 0.875em;
+        padding-top: 0.4em;
+    }
+
+    &__wert {
+        color: $second-color;
+        margin-left: 1em;
+    }
+}

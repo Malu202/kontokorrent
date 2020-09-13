@@ -1,0 +1,27 @@
+<header class="app-bar">
+    <kontokorrent-select class="app-bar__kontokorrent-select"></kontokorrent-select>
+    <nav class="app-bar__links">
+        <button id="logout-button" class="app-bar__link" title="Logout">
+            <span class="material-icons">
+                exit_to_app
+            </span>
+        </button>
+        <a href="info" class="app-bar__link" title="Informationen über diese App">
+            <span class="material-icons">
+                info
+            </span>
+        </a>
+    </nav>
+</header>
+<app-popup id="logout-dialog">
+    <div class="dialog__backdrop"></div>
+    <div class="dialog">
+        <p>
+            Wirklich aus allen Kontokorrents ausloggen?
+        </p>
+        <div class="dialog__button-pane">
+            <button id="abort-logout" class="button">Abbrechen</button>
+            <button id="confirm-logout" class="button">Ausloggen</button>
+        </div>
+    </div>
+</app-popup>

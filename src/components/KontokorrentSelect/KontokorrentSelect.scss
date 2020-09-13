@@ -1,0 +1,54 @@
+@use "../../utils.scss";
+@use "../../theme.scss";
+@use "sass:color";
+
+.kontokorrent-select {
+    border-bottom: 1px solid theme.$fg-on-primary;
+    display: flex;
+    align-items: center;
+    padding: 0.2em;
+    box-sizing: border-box;
+    cursor: pointer;
+    color: theme.$fg-on-primary;
+
+    &__name {
+        font-weight: normal;
+        font-size: 1.5em;
+        padding: 0;
+        margin: 0;
+        min-width: 6em;
+    }
+
+    &__choose {
+        @include utils.reset-button;
+        color: theme.$fg-on-primary;
+        width: 1em;
+    }
+
+    &::after {
+        border-radius: theme.$input-radius;
+    }
+
+    @include utils.button-hover;
+
+    &__popup {
+        position: absolute;
+        min-height: 3em;
+        background-color: theme.$bg-container;
+        @include theme.box-shadow;
+        border-bottom-left-radius: theme.$input-radius;
+        border-bottom-right-radius: theme.$input-radius;
+        margin-top: -1px;
+        min-width: 15em;
+        @include utils.open-popup();
+    }
+
+    &__buttons{
+        text-align: center;
+        padding: 0.5em;
+    }
+}
+
+.kontokorrent-select-wrapper {
+    position: relative;
+}

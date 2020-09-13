@@ -1,0 +1,31 @@
+@use "../../theme.scss";
+
+.kontokorrent-select-list {
+    padding: 0;
+    margin: 0;
+
+    &>li {
+
+        list-style-type: none;
+    }
+
+    &__entry {
+        padding: 0.5em;
+        text-decoration: none;
+        color: #000;
+        width: 100%;
+        display: block;
+        box-sizing: border-box;
+
+        &:hover {
+            background-color: theme.$hover-on-container;
+        }
+
+        &--active {
+            &:hover {
+                background-color: theme.$active-on-container;
+            }
+            background-color: theme.$active-on-container;
+        }
+    }
+}

@@ -1,0 +1,44 @@
+<div class="login-error-box">
+    <div id="eventMissingError" class="alert alert--error" style="display: none;">Kontokorrentnamen eingeben</div>
+    <div id="notFoundError" class="alert alert--error" style="display: none;">Kontokorrent wurde nicht gefunden</div>
+    <div id="account-creation-failed" class="alert alert--error" style="display: none;">Account konnte nicht erstellt
+        werden</div>
+</div>
+<div class="login-box" id="login-box">
+    <div class="login-box__event-input">
+        <input type="text" id="eventInput" placeholder="Kontokorrentname">
+        <tip-button popup-id="oeffentlicherNameExplainer" title="öffentlicher Name Erklärung">
+            <span class="material-icons">
+                info
+            </span>
+        </tip-button>
+        <app-popup id="oeffentlicherNameExplainer" class="tip tip--with-input">
+            Gib hier den Namen des öffentlichen Kontokorrents ein.
+            <ul>
+                <li>frag die anderen Event-/Gruppen- Teilnehmer nach dem Namen</li>
+                <li>such in eurem Chat</li>
+                <li>oder lass dir einen Einladungslink schicken</li>
+            </ul>
+        </app-popup>
+    </div>
+    <div>
+        <button id="loginButton" class="button button--raised login-box__login-button">
+            Login
+        </button>
+        <div id="processing" class="login-box__processing" style="display: none;">
+            <span class="spinner"></span>
+        </div>
+    </div>
+    <a id="createEventButton" class="button" href="create-event">
+        <span class="material-icons">
+            add
+        </span>
+        Gruppe erstellen
+    </a>
+    <a id="home-button" class="button" href="">
+        <span class="material-icons">
+            home
+        </span>
+        zurück
+    </a>
+</div>

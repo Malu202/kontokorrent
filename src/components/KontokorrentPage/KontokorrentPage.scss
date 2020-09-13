@@ -1,0 +1,17 @@
+@use "../../theme.scss";
+@import "../spinner.scss";
+
+.kontokorrentpage-menu {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 1em;
+    padding: 0.2em 0.5em;
+    background-color: theme.$bg-container;
+
+    &__sync-display {
+        font-size: 0.8em;
+        display: flex;
+        align-items: center;
+    }
+}
