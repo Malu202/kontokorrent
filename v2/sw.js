@@ -17,7 +17,7 @@ var serviceWorkerOption = {
     "/v2/favicons/mstile-70x70.png",
     "/v2/favicons/safari-pinned-tab.svg",
     "/v2/site.webmanifest",
-    "/v2/index.9273992ce0c6e856cd88.css",
+    "/v2/index.5be93e9f0853bcc15ec3.css",
     "/v2/5e24d730d98c187debd0.bundle.js",
     "/v2/1.ca888c566506a9ee8493.bundle.js",
     "/v2/index.licenses.txt",
