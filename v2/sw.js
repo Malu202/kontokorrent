@@ -1,7 +1,7 @@
 var serviceWorkerOption = {
   "assets": [
     "/v2/mini-css-extract-plugin.licenses.txt",
-    "/v2/0.150e5485e9deb3cfeedb.bundle.worker.js",
+    "/v2/0.e593a3ade81151b88948.bundle.worker.js",
     "/v2/kontokorrent-worker.licenses.txt",
     "/v2/favicons/android-chrome-192x192.png",
     "/v2/favicons/android-chrome-512x512.png",
@@ -17,8 +17,8 @@ var serviceWorkerOption = {
     "/v2/favicons/mstile-70x70.png",
     "/v2/favicons/safari-pinned-tab.svg",
     "/v2/site.webmanifest",
-    "/v2/index.ccc4b526acc749254ee7.css",
-    "/v2/d061054a6f30e6592634.bundle.js",
+    "/v2/index.9273992ce0c6e856cd88.css",
+    "/v2/5e24d730d98c187debd0.bundle.js",
     "/v2/1.ca888c566506a9ee8493.bundle.js",
     "/v2/index.licenses.txt",
     "/v2/index.html"
