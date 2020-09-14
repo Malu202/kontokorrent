@@ -4,9 +4,9 @@
 bezahlungen-view {
     margin: 0 1em;
     display: block;
+    // ausscrollen auf mobile bei fab
+    margin-bottom: 3em;
 }
-
-bezahlungen-view {}
 
 .bezahlungen-group {
     &__title {
