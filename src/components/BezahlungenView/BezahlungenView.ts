@@ -6,7 +6,7 @@ import { addDays, startOfToday, startOfDay, startOfWeek, format, endOfWeek } fro
 import { groupBy } from "../../utils/groupBy";
 import "./BezahlungenGroup";
 import { BezahlungViewModel } from "./BezahlungViewModel";
-import { syncToChildren } from "../../utils/syncToList";
+import { ArrayToElementRenderer } from "../../utils/ArrayToElementRenderer";
 import { BezahlungenGroup } from "./BezahlungenGroup";
 import { de } from "date-fns/locale";
 
@@ -18,6 +18,7 @@ export class BezahlungenView extends HTMLElement {
     private personen: Person[];
     private bezahlungenContainer: HTMLDivElement;
     private showMoreButton: HTMLButtonElement;
+    private groupRenderer: ArrayToElementRenderer<[number, BezahlungViewModel[]], BezahlungenGroup, string>;
 
     constructor() {
         super();
@@ -28,6 +29,8 @@ export class BezahlungenView extends HTMLElement {
         this.bezahlungenContainer = this.querySelector("#bezahlungen-container");
         this.showMoreButton = this.querySelector("#show-more");
         this.showMoreClick = this.showMoreClick.bind(this);
+        this.groupRenderer = new ArrayToElementRenderer(this.bezahlungenContainer,
+            (s: [number, BezahlungViewModel[]]) => "" + s[0], () => new BezahlungenGroup());
     }
 
     connectedCallback() {
@@ -95,9 +98,7 @@ export class BezahlungenView extends HTMLElement {
             isWeek = true;
         }
         let sortedGroups = grouped.sort((a, b) => b[0] - a[0]);
-        syncToChildren(this.bezahlungenContainer,
-            sortedGroups,
-            s => "" + s[0], () => new BezahlungenGroup(),
+        this.groupRenderer.update(sortedGroups,
             (e, d) => {
                 e.setBezahlungen(d[1]);
                 if (isWeek) {

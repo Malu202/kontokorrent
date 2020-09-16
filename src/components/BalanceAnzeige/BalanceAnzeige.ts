@@ -1,16 +1,19 @@
 import template from "./BalanceAnzeige.html";
-import { syncToList, syncToChildren } from "../../utils/syncToList";
+import { ArrayToElementRenderer } from "../../utils/ArrayToElementRenderer";
 import { BalanceAnzeigeElement, PersonNameAttribute, BalanceAttribute, BalanceRangeAttribute } from "./BalanceAnzeigeElement";
 import { Person } from "../../state/State";
 
 export class BalanceAnzeige extends HTMLElement {
     private balanceRange: number;
     private personen: Person[];
+    private personenRenderer: ArrayToElementRenderer<Person, HTMLElement, string>;
 
     constructor() {
         super();
         this.innerHTML = template;
-
+        this.personenRenderer = new ArrayToElementRenderer(this,
+            (b: Person) => b.id,
+            b => new BalanceAnzeigeElement());
     }
 
     connectedCallback() {
@@ -28,9 +31,7 @@ export class BalanceAnzeige extends HTMLElement {
     }
 
     private updatesStyle() {
-        syncToChildren(this, this.personen,
-            b => b.id,
-            b => new BalanceAnzeigeElement(),
+        this.personenRenderer.update(this.personen,
             (e, b) => {
                 e.setAttribute(PersonNameAttribute, b.name);
                 e.setAttribute(BalanceAttribute, "" + b.balance);

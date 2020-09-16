@@ -2,13 +2,14 @@ import template from "./KontokorrentSelectList.html";
 import "./KontokorrentSelectList.scss";
 import { KontokorrentState } from "../../state/State";
 import { sortByAlphabetically } from "../../utils/sortBy";
-import { syncToList } from "../../utils/syncToList";
+import { ArrayToElementRenderer } from "../../utils/ArrayToElementRenderer";
 import { KontokorrentSelectListEntry } from "./KontokorrentSelectListEntry";
 
 export class KontokorrentSelectList extends HTMLElement {
     private list: HTMLOListElement;
     private _kontokorrents: KontokorrentState[];
     private _activeKontokorrentId: string;
+    private kontokorrentsRenderer: ArrayToElementRenderer<KontokorrentState, HTMLLIElement, string>;
 
 
     constructor() {
@@ -16,6 +17,13 @@ export class KontokorrentSelectList extends HTMLElement {
         this.innerHTML = template;
         this.list = this.querySelector(`[data-ref="list"]`);
         this._kontokorrents = [];
+        this.kontokorrentsRenderer = new ArrayToElementRenderer(this.list,
+            (k: KontokorrentState) => k.id,
+            () => {
+                let li = document.createElement("li");
+                li.appendChild(new KontokorrentSelectListEntry());
+                return li;
+            });
     }
 
     connectedCallback() {
@@ -26,11 +34,11 @@ export class KontokorrentSelectList extends HTMLElement {
     }
 
     private update() {
-        syncToList(this.list,
-            this._kontokorrents,
-            k => k.id,
-            () => new KontokorrentSelectListEntry(),
-            (e, kontokorrent) => e.update(kontokorrent, this._activeKontokorrentId == kontokorrent.id));
+        this.kontokorrentsRenderer.update(this._kontokorrents,
+            (li, kontokorrent) => {
+                let x: KontokorrentSelectListEntry = <KontokorrentSelectListEntry>li.firstChild;
+                x.update(kontokorrent, this._activeKontokorrentId == kontokorrent.id);
+            });
     }
 
     set kontokorrents(kontokorrents: KontokorrentState[]) {
