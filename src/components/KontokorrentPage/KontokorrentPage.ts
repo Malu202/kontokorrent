@@ -45,7 +45,6 @@ export class KontokorrentPage extends HTMLElement {
 
     connectedCallback() {
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
-        this.applyStoreState(this.store.state);
     }
 
     private applyStoreState(state: State) {

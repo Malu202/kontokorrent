@@ -48,7 +48,11 @@ export class BezahlungenView extends HTMLElement {
     }
 
     showMoreClick() {
+        let last: BezahlungenGroup = <BezahlungenGroup>this.bezahlungenContainer.lastElementChild;
         this.anzahlEintraege += 20;
+        if (last) {
+            last.scrollIntoView();
+        }
         this.setShowMoreButtonDisplay();
     }
 
@@ -93,7 +97,7 @@ export class BezahlungenView extends HTMLElement {
         let isWeek = false;
         let grouped = Array.of(...groupBy(mapped, "tag").entries());
         let avgGroupSize = grouped.reduce((p, c) => p + c[1].length, 0) / grouped.length;
-        if (avgGroupSize < 2) {
+        if (avgGroupSize < 3) {
             grouped = Array.of(...groupBy(mapped, "woche").entries());
             isWeek = true;
         }
