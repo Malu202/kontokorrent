@@ -15,7 +15,7 @@ export class ArrayToElementRenderer<T, E extends HTMLElement, K>{
             keyCache.set(d, key);
             return key;
         })();
-        for (let x of this.listElement.children) {
+        for (let x of Array.from(this.listElement.children)) {
             let el: E = <E>x;
             let data = list.find(i => this.elementToKey.get(el) == getKey(i));
             if (data) {
@@ -33,6 +33,7 @@ export class ArrayToElementRenderer<T, E extends HTMLElement, K>{
             if (!childElement) {
                 childElement = this.createElement(t);
                 updateElement(childElement, t);
+                this.elementToKey.set(childElement, key);
             }
             nextKeyToElement.set(key, childElement);
             if (null == before && childElement != this.listElement.firstElementChild) {
