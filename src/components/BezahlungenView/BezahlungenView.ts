@@ -2,13 +2,12 @@ import template from "./BezahlungenView.html";
 import "./BezahlungenView.scss";
 import "../BezahlungCard/BezahlungCard";
 import { Bezahlung, Person } from "../../state/State";
-import { addDays, startOfToday, startOfDay, startOfWeek, format, endOfWeek } from "date-fns";
+import { addDays, startOfToday, startOfDay, startOfWeek, endOfWeek } from "date-fns";
 import { groupBy } from "../../utils/groupBy";
 import "./BezahlungenGroup";
 import { BezahlungViewModel } from "./BezahlungViewModel";
 import { ArrayToElementRenderer } from "../../utils/ArrayToElementRenderer";
 import { BezahlungenGroup } from "./BezahlungenGroup";
-import { de } from "date-fns/locale";
 
 export class BezahlungenView extends HTMLElement {
     private minEintraege: number;
@@ -109,7 +108,8 @@ export class BezahlungenView extends HTMLElement {
                     e.title = this.formatWeek(new Date(d[0]));
                 }
                 else {
-                    e.title = format(new Date(d[0]), "EEEEEE, d.MM.yyyy", { locale: de });
+
+                    e.title = this.formatDay(new Date(d[0]));
                 }
             });
 
@@ -128,13 +128,18 @@ export class BezahlungenView extends HTMLElement {
     private formatWeek(date: Date) {
         let endWeek = endOfWeek(date);
         let weekformat: string;
+        const dayAndMonth = (d:Date) => new Intl.DateTimeFormat(["de-AT"], { day: "numeric", month: "long" }).format(d);
         if (endWeek.getMonth() == date.getMonth()) {
-            weekformat = `${format(date, "d.", { locale: de })} - ${format(endWeek, "d. MMMM", { locale: de })}`;
+            weekformat = `${new Intl.DateTimeFormat(["de-AT"], { day: "numeric" }).format(date)}. - ${dayAndMonth(endWeek)}`;
         }
         else {
-            weekformat = `${format(date, "d. MMMM", { locale: de })} - ${format(endWeek, "d. MMMM", { locale: de })}`;
+            weekformat = `${dayAndMonth(date)} - ${dayAndMonth(endWeek)}`;
         }
         return weekformat;
+    }
+
+    private formatDay(date: Date) {
+        return new Intl.DateTimeFormat(["de-AT"], { weekday: "short", year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
     }
 }
 export const BezahlungenViewTagName = "bezahlungen-view";

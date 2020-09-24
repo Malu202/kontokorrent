@@ -4,7 +4,7 @@ declare var serviceWorkerOption: { assets: string[] };
 self.addEventListener("install", function (event) {
     const cacheAssets = [
         "https://fonts.googleapis.com/icon?family=Material+Icons",
-        "https://fonts.googleapis.com/css?family=Roboto:300,400,500"];
+        "https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap"];
     for (let asset of serviceWorkerOption.assets) {
         cacheAssets.push(asset);
     }

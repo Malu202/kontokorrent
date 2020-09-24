@@ -5,12 +5,14 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
 const { DefinePlugin } = require("webpack");
 const WorkerPlugin = require('worker-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const path = require('path');
 
 module.exports = (env, argv) => {
     const production = argv.mode == "production";
     const environment = (env ? env.environment : null) || "local";
+    const analyze = env && env.analyze;
 
     const base = {
         "gh-pages": "/",
@@ -31,6 +33,7 @@ module.exports = (env, argv) => {
                 },
                 {
                     test: /\.html$/,
+                    exclude: /index\.html$/,
                     use: [{
                         loader: "html-loader",
                         options: {
@@ -89,9 +92,12 @@ module.exports = (env, argv) => {
         plugins: [
             new HtmlWebpackPlugin({
                 base: base, title: "Kontokorrent",
-                template: 'src/index.html'
+                template: 'src/index.html',
+                inject: false
             }),
-            new LicenseWebpackPlugin(),
+            new LicenseWebpackPlugin({
+                perChunkOutput: false
+            }),
             new MiniCssExtractPlugin({
                 filename: '[name].[contenthash].css',
                 chunkFilename: '[id].[contenthash].css',
@@ -104,8 +110,14 @@ module.exports = (env, argv) => {
             new DefinePlugin({
                 __ENVIRONMENT: `"${environment}"`
             }),
-            new WorkerPlugin()
+            new WorkerPlugin(),
+            ...(analyze ? [new BundleAnalyzerPlugin()] : [])
         ],
+        optimization: {
+            splitChunks: {
+                chunks: "all",
+            },
+        },
         mode: "development",
         devServer: {
             compress: true,

@@ -1,12 +1,10 @@
 import { Router } from "route-it";
-import { Home } from "../components/Home/home";
 import { ServiceLocator } from "../ServiceLocator";
+import "../components/FeaturesRequired/FeaturesRequired";
 import { FeaturesRequired } from "../components/FeaturesRequired/FeaturesRequired";
-import { Login } from "../components/Login/Login";
 import { Store } from "../state/Store";
-import { CreateKontokorrent } from "../components/CreateKontokorrent/CreateKontokorrent";
 import { AsyncRouteResolver } from "route-it/dist/router";
-import { KontokorrentPage } from "../components/KontokorrentPage/KontokorrentPage";
+
 
 export enum Paths {
     Login = "login",
@@ -43,11 +41,13 @@ export class KontokorrentRouteResolver extends EventTarget implements AsyncRoute
                 return component;
             }
             case Paths.Login: {
+                const { Login } = await import("../components/Login/Login");
                 let component = new Login();
                 component.addServices(this.serviceLocator);
                 return component;
             }
             case Paths.CreateEvent: {
+                const { CreateKontokorrent } = await import( "../components/CreateKontokorrent/CreateKontokorrent");
                 let component = new CreateKontokorrent();
                 component.addServices(this.serviceLocator);
                 return component;
@@ -59,11 +59,13 @@ export class KontokorrentRouteResolver extends EventTarget implements AsyncRoute
         let kontokorrentsRoute = /^kontokorrents\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
         if (kontokorrentsRoute) {
             let id: string = kontokorrentsRoute[1];
+            const { KontokorrentPage } = await import("../components/KontokorrentPage/KontokorrentPage");
             let component = new KontokorrentPage();
             component.addServices(this.serviceLocator);
             component.setKontokorrentId(id);
             return component;
         }
+        const { Home } = await import("../components/Home/home");
         let component = new Home();
         component.addServices(this.serviceLocator);
         return component;

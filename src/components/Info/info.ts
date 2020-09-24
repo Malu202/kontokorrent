@@ -15,7 +15,7 @@ export class Info extends HTMLElement {
     }
 
     async connectedCallback() {
-        let res = await fetch("index.licenses.txt");
+        let res = await fetch("licenses.txt");
         let text = await res.text();
         (<HTMLDivElement>this.querySelector("#third-party")).innerText = text;
         convertLinks(this.querySelectorAll("a[data-internal]"), this.routingActionCreator);
