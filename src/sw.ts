@@ -1,6 +1,9 @@
 export default null;
 declare var self: ServiceWorkerGlobalScope;
 declare var serviceWorkerOption: { assets: string[] };
+
+const cacheName = "v2";
+
 self.addEventListener("install", function (event) {
     const cacheAssets = [
         "https://fonts.googleapis.com/icon?family=Material+Icons",
@@ -8,24 +11,39 @@ self.addEventListener("install", function (event) {
     for (let asset of serviceWorkerOption.assets) {
         cacheAssets.push(asset);
     }
-    self.skipWaiting();
     event.waitUntil(
-        caches.open("v1")
+        caches.open(cacheName)
             .then(function (cache) {
                 return cache.addAll(cacheAssets);
             })
     );
 });
 
+self.addEventListener("activate", event => {
+    event.waitUntil(
+        caches.keys().then(function (cacheNames) {
+            return Promise.all(cacheNames.map(function (thisCacheName) {
+                if (thisCacheName !== cacheName) {
+                    return caches.delete(thisCacheName);
+                }
+            }));
+        }));
+})
+
 
 self.addEventListener("fetch", function (event) {
+    if (event.request.mode === "navigate") {
+        if (event.request.method !== "GET") {
+            return;
+        }
+        event.respondWith(caches.match("index.html", { cacheName: cacheName }).then(response => {
+            return response || fetch(event.request);
+        }));
+        return;
+    }
     event.respondWith(
-        fetch(event.request).catch(function () {
-            return caches.match(event.request);
+        caches.match(event.request).then(function (response) {
+            return response || fetch(event.request);
         })
     );
-});
-
-self.addEventListener("activate", function (event) {
-
 });
