@@ -1,0 +1,29 @@
+@use "../theme";
+@use "sass:color";
+
+@mixin core-styles {
+
+    .spinner {
+        width: 1.1em;
+        margin: 0 0.3em;
+        height: 1.1em;
+        border: 0.14em solid;
+        border-radius: 50%;
+        @include theme.property(border-color, primary);
+        border-left-color: color.adjust($color: theme.value(primary), $alpha: -0.96);
+        box-sizing: border-box;
+        will-change: transform;
+        animation: spinner-in-progress-animation .6s cubic-bezier(0.38, 0.22, 0.63, 0.8) infinite;
+
+        @keyframes spinner-in-progress-animation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    }
+
+}

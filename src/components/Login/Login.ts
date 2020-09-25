@@ -7,8 +7,8 @@ import { convertLinks } from "../convertLinks";
 import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
 import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
 import "./Login.scss";
-import "../../utils/Popup";
-import "../../utils/TipButton";
+import "../ui-components/popup/popup";
+import "../ui-components/tip-button/tip-button";
 
 export class Login extends HTMLElement {
     store: Store;

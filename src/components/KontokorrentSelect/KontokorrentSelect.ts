@@ -3,8 +3,8 @@ import "./KontokorrentSelect.scss";
 import "./KontokorrentSelectList";
 import { KontokorrentState } from "../../state/State";
 import { KontokorrentSelectListTagName, KontokorrentSelectList } from "./KontokorrentSelectList";
-import { Popup } from "../../utils/Popup";
-import "../../utils/Popup";
+import { Popup } from "../ui-components/popup/popup";
+import "../ui-components/popup/popup";
 
 export class KontokorrentSelect extends HTMLElement {
     private kontokorrentName: HTMLHeadingElement;

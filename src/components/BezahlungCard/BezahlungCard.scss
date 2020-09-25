@@ -1,15 +1,10 @@
-@use "../../utils.scss";
-@use "../../theme.scss";
-
-$second-color : theme.$fg-on-container-subtle;
+@use "../ui-components/theme";
+@use "../ui-components/card";
 
 bezahlung-card {
+    @extend %card;
     display: inline-flex;
     align-items: center;
-    @include theme.card-shadow;
-    border-radius: theme.$card-radius;
-    padding: theme.$card-padding;
-    background-color: theme.$bg-container;
 }
 
 .bezahlung-card {
@@ -18,13 +13,13 @@ bezahlung-card {
     }
 
     &__personen {
-        color: $second-color;
+        @include theme.property(color, fg-on-container-subtle);
         font-size: 0.875em;
         padding-top: 0.4em;
     }
 
-    &__wert {
-        color: $second-color;
+    &__wert {        
+        @include theme.property(color, fg-on-container-subtle);
         margin-left: 1em;
     }
 }

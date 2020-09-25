@@ -1,4 +1,4 @@
-@use "../../theme.scss";
+@use "../ui-components/theme";
 
 .kontokorrent-select-list {
     padding: 0;
@@ -12,20 +12,21 @@
     &__entry {
         padding: 0.5em;
         text-decoration: none;
-        color: #000;
+        color: inherit;
         width: 100%;
         display: block;
         box-sizing: border-box;
 
         &:hover {
-            background-color: theme.$hover-on-container;
+            @include theme.property(background-color, hover-on-container);
         }
 
         &--active {
             &:hover {
-                background-color: theme.$active-on-container;
+                @include theme.property(background-color, active-on-container);
             }
-            background-color: theme.$active-on-container;
+
+            @include theme.property(background-color, active-on-container);
         }
     }
 }

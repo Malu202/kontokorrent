@@ -1,0 +1,33 @@
+@use "sass:color";
+
+$primary: #6200ee !default;
+$fg-on-primary : #fff !default;
+$hover-on-container: color.adjust($color: $primary, $alpha: -0.96) !default;
+$hover-on-primary: color.adjust($color: $primary, $alpha: -0.96) !default;
+$active-on-container: color.adjust($color: $primary, $alpha: -0.82) !default;
+$fg-on-container: #fff;
+$fg-on-container-subtle: color.adjust($color: $fg-on-container, $alpha: 0.54) !default;
+$bg-container: #1e1e1e !default;
+$bg: #121212 !default;
+$fg-on-bg: #fff;
+$grouptitle: $fg-on-bg !default;
+$input-line: rgba(0, 0, 0, 0.42) !default;
+$input-line--hover: rgba(0, 0, 0, 0.87) !default;
+$error-alert-border: #FF5252 !default;
+$error-alert-bg: color.adjust($color: #FF5252, $lightness: 20) !default;
+
+$theme-props : (primary: $primary,
+    fg-on-primary :$fg-on-primary,
+    hover-on-container: $hover-on-container,
+    hover-on-primary: $hover-on-primary,
+    active-on-container: $active-on-container,
+    fg-on-container-subtle:$fg-on-container-subtle,
+    fg-on-container: $fg-on-container,
+    bg-container:$bg-container,
+    bg:$bg,
+    fg-on-bg: $fg-on-bg,
+    grouptitle:$grouptitle,
+    input-line:$input-line,
+    input-line--hover:$input-line--hover,
+    error-alert-border:$error-alert-border,
+    error-alert-bg: $error-alert-bg);

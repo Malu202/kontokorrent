@@ -1,0 +1,15 @@
+@mixin reset-button() {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-size: 1em;
+    outline: none;
+    padding: 0;
+    text-decoration: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+@mixin reset-link {
+    text-decoration: none;
+}

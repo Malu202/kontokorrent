@@ -1,6 +1,5 @@
-@use "../../theme.scss";
-@use "../../utils.scss";
-@import "../spinner.scss";
+@use "../ui-components/theme";
+@use "../ui-components/utils";
 
 .kontokorrentpage-menu {
     display: flex;
@@ -8,8 +7,9 @@
     align-items: center;
     height: 1em;
     padding: 0.2em 0.5em;
-    background-color: theme.$bg-container;
-    @include utils.media-desktop(){ 
+    @include theme.property(background-color, bg-container);
+
+    @include utils.media-desktop() {
         margin-bottom: 2em;
     }
 
@@ -22,13 +22,14 @@
 
 #eintragen-desktop {
     margin-top: 1em;
-    @include utils.media-mobile(){
+
+    @include utils.media-mobile() {
         display: none;
     }
 }
 
 #eintragen-mobile {
-    @include utils.media-desktop(){
+    @include utils.media-desktop() {
         display: none;
     }
 }

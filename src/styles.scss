@@ -1,9 +1,28 @@
-@use "./theme.scss";
-@import "./components/button.scss";
-@import "./components/input.scss";
-@import "./components/tip.scss";
-@import "./components/alert.scss";
-@import "./components/floating-action-button.scss";
+@use "./components/ui-components/theme";
+@use "./components/ui-components/theme/dark"as dark-theme;
+@use "./components/ui-components/alert";
+@use "./components/ui-components/button";
+@use "./components/ui-components/floating-action-button";
+@use "./components/ui-components/dialog";
+@use "./components/ui-components/spinner";
+@use "./components/ui-components/input";
+@use "./components/ui-components/tip";
+@use "./components/ui-components/tip-button";
+
+@include theme.core-styles;
+@include alert.core-styles;
+@include button.core-styles;
+@include dialog.core-styles;
+@include floating-action-button.core-styles;
+@include input.core-styles;
+@include spinner.core-styles;
+@include tip.core-styles;
+@include tip-button.core-styles;
+
+
+[data-theme="dark"] {
+    @include theme.declare(dark-theme.$theme-props);
+}
 
 body,
 button,
@@ -25,7 +44,8 @@ ol {
 body {
     margin: 0;
     padding: 0;
-    background-color: theme.$bg;
+    @include theme.property(background-color, bg);
+    @include theme.property(color, fg-on-bg);
     font-size: 16px;
 }
 

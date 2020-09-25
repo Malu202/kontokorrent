@@ -1,13 +1,14 @@
-@use "../../theme.scss";
-@use "../../utils.scss";
+@use "../ui-components/theme";
+@use "../ui-components/reset";
+@use "../ui-components/utils";
 
 $app-bar-size: 4em;
 
 %app-bar-button {
-    @include utils.reset-button;
-    @include utils.reset-link;
+    @include reset.reset-button;
+    @include reset.reset-link;
 
-    color: theme.$fg-on-primary;
+    @include theme.property(color, fg-on-primary);
     width: 3em;
     height: 3em;
 
@@ -15,7 +16,7 @@ $app-bar-size: 4em;
     align-items: center;
     justify-content: center;
 
-    @include utils.button-hover;
+    @include utils.hover-effect;
 
     &:after {
         border-radius: 50%;
@@ -33,8 +34,8 @@ $app-bar-size: 4em;
     left: 0;
     right: 0;
     height: $app-bar-size;
-    background-color: theme.$primary;
-    @include theme.box-shadow;
+    @include theme.property(background-color, primary);
+    @include utils.default-shadow;
 
     display: flex;
     justify-content: space-between;

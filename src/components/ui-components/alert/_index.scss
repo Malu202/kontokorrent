@@ -1,0 +1,16 @@
+@use "../theme";
+
+@mixin core-styles {
+    .alert {
+        border: 2px solid;
+        border-radius: 3px;
+        padding: 0.2em;
+        margin: 0.1em;
+        box-sizing: border-box;
+
+        &--error {
+            @include theme.property(border-color, error-alert-border);
+            @include theme.property(background-color, error-alert-bg);
+        }
+    }
+}

@@ -1,4 +1,4 @@
-import { Popup } from "./Popup";
+import { Popup } from "../popup/popup";
 
 export const PopupIdAttribute = "popup-id";
 

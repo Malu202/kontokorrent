@@ -1,0 +1,9 @@
+@use "./_properties.scss"as *;
+@use "./_utils";
+@forward "./_utils";
+
+@mixin core-styles {
+    :root {
+        @include utils.declare($theme-props);
+    }
+}

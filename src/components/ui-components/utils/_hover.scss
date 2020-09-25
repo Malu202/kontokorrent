@@ -1,0 +1,32 @@
+@use "../theme";
+
+@mixin hover-effect {
+    position: relative;
+
+    &:hover {
+        &::after {
+            opacity: 0.08;
+        }
+    }
+
+    &:active,
+    &:focus {
+        &::after {
+            transition-duration: 75ms;
+            opacity: .12;
+        }
+    }
+
+    &::after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        @include theme.property(background-color, fg-on-primary);
+        content: "";
+        opacity: 0;
+        transition: opacity 15ms linear;
+        box-sizing: border-box;
+    }
+}

@@ -1,0 +1,25 @@
+@use "../theme";
+@use "../popup";
+@use "../utils";
+
+@mixin core-styles {
+
+    .tip {
+        position: absolute;
+        @include theme.property(background-color, bg-container);
+        @include utils.default-shadow;
+        border-radius: popup.$border-radius;
+        padding: 0.5em;
+        @include popup.open-animation();
+        z-index: 1;
+        font-size: 0.8em;
+        user-select: none;
+        box-sizing: border-box;
+
+        &--with-input {
+            top: 2em;
+            width: 100%;
+        }
+    }
+
+}

@@ -1,0 +1,45 @@
+@use "sass:map";
+@use "./_properties.scss"as *;
+
+@mixin declare($props) {
+    @each $style in map.keys($props) {
+        --theme-#{$style}: #{map.get($props, $style)};
+    }
+}
+
+@mixin declaration($property,
+    $value,
+    $fallback-value: null) {
+    @if $value !=null {
+        @if $fallback-value {
+            #{$property}: #{$fallback-value};
+        }
+
+        #{$property}: #{$value};
+    }
+}
+
+@mixin property($property,
+    $value) {
+    @if map.has-key($theme-props, $value) {
+        $fallback: map.get($theme-props, $value);
+        $custom-prop: var(--theme-#{$value}, $fallback);
+        @include declaration($property,
+            $custom-prop,
+            $fallback-value: $fallback);
+    }
+
+    @else {
+        @error 'mdc-theme: Invalid theme variable #{$value}.';
+    }
+}
+
+@function value($value) {
+    @if map.has-key($theme-props, $value) {
+        @return map.get($theme-props, $value);
+    }
+
+    @else {
+        @error 'mdc-theme: Invalid theme variable #{$value}.';
+    }
+}

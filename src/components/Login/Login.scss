@@ -1,12 +1,11 @@
-@use "../../theme.scss";
-@use "../../utils.scss";
+@use "../ui-components/theme";
 
 app-login {
     display: flex;
     flex-direction: column;
     width: 100vw;
     height: 100vh;
-    background-color: theme.$bg-container;
+    @include theme.property(background-color, bg-container);
     justify-content: space-evenly;
     align-items: center;
 }
@@ -21,7 +20,8 @@ app-login {
     display: flex;
     flex-direction: column-reverse;
     flex: 2 0 0px;
-    & > .alert {
+
+    &>.alert {
         width: 100%;
     }
 }

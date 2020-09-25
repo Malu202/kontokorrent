@@ -1,5 +1,5 @@
-@use "../../utils.scss";
-@use "../../theme.scss";
+@use "../ui-components/theme";
+@use "sass:color";
 
 $size : 4em;
 $bar-gap: 0.1em;
@@ -76,6 +76,5 @@ balance-anzeige {
     flex-wrap: wrap;
     padding: 1em 0 0 0;
     justify-content: center;
-    background-color: theme.$bg-container;
-    // @include theme.box-shadow;
+    @include theme.property(background-color, bg-container);
 }

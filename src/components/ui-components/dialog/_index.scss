@@ -1,0 +1,48 @@
+@use "../utils";
+@use "../popup";
+
+@mixin core-styles {
+    .dialog {
+        position: fixed;
+        top: 50vh;
+        left: 50vw;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        @include utils.default-shadow;
+        border-bottom-left-radius: popup.$border-radius;
+        border-bottom-right-radius: popup.$border-radius;
+        margin-top: -1px;
+        min-width: 15em;
+        padding: 0 1em 0.5em 1em;
+        z-index: 1;
+
+        &__button-pane {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+        }
+
+        &__backdrop {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #000;
+            opacity: 0.1;
+            animation: backdrop-open 0.08s cubic-bezier(0, 0, 0.2, 1);
+            will-change: opacity;
+            z-index: 1;
+
+            @keyframes backdrop-open {
+                0% {
+                    opacity: 0;
+                }
+
+                100% {
+                    opacity: 0.1;
+                }
+            }
+        }
+    }
+}

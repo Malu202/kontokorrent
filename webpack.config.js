@@ -45,11 +45,16 @@ module.exports = (env, argv) => {
                     test: /\.s[ac]ss$/i,
                     use: [
                         MiniCssExtractPlugin.loader,
-                        { loader: "css-loader", options: {} },
+                        {
+                            loader: "css-loader", options: {
+                                
+                            }
+                        },
                         { loader: "postcss-loader", options: {} },
                         {
                             loader: "sass-loader", options: {
-                                implementation: require('sass'), sassOptions: {
+                                implementation: require('sass'),
+                                sassOptions: {
                                     includePaths: ["node_modules"],
                                 },
                             }

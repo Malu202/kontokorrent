@@ -1,0 +1,44 @@
+@use "../theme";
+@use "../reset";
+@use "../utils";
+@use "./button-shadow"as *;
+@forward "./button-shadow";
+
+$button-radius : 4px;
+
+@mixin core-styles {
+    .button {
+        @include reset.reset-button;
+        @include theme.property(color, primary);
+        text-transform: uppercase;
+        border-radius: $button-radius;
+        font-size: .875em;
+        font-weight: 500;
+        letter-spacing: .08929em;
+        height: 2.5em;
+        padding: 0 0.5em;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+
+        &:hover {
+            @include theme.property(background-color, hover-on-container);
+        }
+
+        &>.material-icons {
+            font-size: 1.2em;
+            margin: 0 0.2em;
+        }
+
+        &--raised {
+            @include theme.property(background-color, primary);
+            @include theme.property(color, fg-on-primary);
+            @include button-shadow;
+            @include utils.hover-effect;
+
+            &:hover {
+                @include theme.property(background-color, primary);
+            }
+        }
+    }
+}

@@ -1,0 +1,23 @@
+@use "../theme";
+
+@mixin core-styles {
+
+    input {
+        outline: none;
+        border: none;
+        background-color: inherit;
+        color: inherit;
+        @include theme.property(caret-color, primary);
+        font-size: 1em;
+        line-height: 1.75em;
+        box-sizing: border-box;
+        border-radius: 0;
+        border-bottom: 1px solid;
+        @include theme.property(border-bottom-color, input-line);
+        margin-bottom: 0.4em;
+
+        &:hover {
+            @include theme.property(border-bottom-color, input-line--hover);
+        }
+    }
+}

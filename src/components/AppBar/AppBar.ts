@@ -1,6 +1,5 @@
 import template from "./AppBar.html";
 import "./AppBar.scss";
-import "../dialog.scss";
 import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
 import { convertLinks } from "../convertLinks";
 import "../KontokorrentSelect/KontokorrentSelect";
@@ -10,8 +9,7 @@ import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
 import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
 import { Store } from "../../state/Store";
 import { State } from "../../state/State";
-import { stat } from "fs";
-import { Popup } from "../../utils/Popup";
+import { Popup } from "../ui-components/popup/popup";
 
 export class AppBar extends HTMLElement {
     private kontokorrentSelect: KontokorrentSelect;
