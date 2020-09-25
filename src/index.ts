@@ -16,6 +16,7 @@ import "../favicons/site.webmanifest";
 import { AsyncRouteResolver } from "route-it/dist/router";
 import runtime from "serviceworker-webpack-plugin/lib/runtime";
 import { KontokorrentDatabase } from "./lib/KontokorrentDatabase";
+import { BezahlungActionCreator } from "./state/actions/BezahlungActionCreator";
 
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", async () => {
@@ -54,23 +55,25 @@ async function run() {
     store.addReducer("account", new AccountReducer());
     store.addReducer("kontokorrents", new KontokorrentsReducer());
 
-    
+
     const routingActionCreator = new RoutingActionCreator(router);
 
     const accountInfoStore = new AccountInfoStore();
     const apiClient = new ApiClient(accountInfoStore);
     const accountActionCreator = new AccountActionCreator(store, apiClient, accountInfoStore, routingActionCreator, db);
-    
+
     const kontokorrentsActionCreator = new KontokorrentsActionCreator(store, apiClient, routingActionCreator, db);
     const initializationActionCreator = new InitializationActionCreator(store,
         routingActionCreator,
         accountActionCreator, kontokorrentsActionCreator,
         router);
+    const bezahlungActionCreator = new BezahlungActionCreator(store, db);
 
     const serviceLocator = new ServiceLocator(store,
         routingActionCreator,
         accountActionCreator,
-        kontokorrentsActionCreator);
+        kontokorrentsActionCreator,
+        bezahlungActionCreator);
     routeResolver.setServiceLocator(serviceLocator);
 
     await initializationActionCreator.initializeApplication();

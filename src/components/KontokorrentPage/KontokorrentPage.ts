@@ -45,6 +45,10 @@ export class KontokorrentPage extends HTMLElement {
 
     connectedCallback() {
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
+        this.appBar.addEventListener("gotokontokorrent", (e: CustomEvent) => {
+            this.routingActionCreator.navigateKontokorrent(e.detail);
+        });
+        convertLinks(this.querySelectorAll("#eintragen-desktop, #eintragen-mobile"), this.routingActionCreator);
     }
 
     private applyStoreState(state: State) {

@@ -46,9 +46,6 @@ export class AppBar extends HTMLElement {
         this.kontokorrentSelect.addEventListener("addkontokorrent", () => {
             this.routingActionCreator.navigateLogin();
         });
-        this.kontokorrentSelect.addEventListener("gotokontokorrent", (e: CustomEvent) => {
-            this.routingActionCreator.navigateKontokorrent(e.detail);
-        });
     }
 
     applyStoreState(state: State): void {

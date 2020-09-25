@@ -3,9 +3,12 @@ import { KontokorrentsState, KontokorrentState, Bezahlung } from "../State";
 import { KontokorrentsActions, KontokorrentsActionNames } from "../actions/KontokorrentsActionCreator";
 import { KontokorrentInfo } from "../../api/KontokorrentInfo";
 import { AccountActionNames, AccountActions } from "../actions/AccountActionCreator";
+import { BezahlungActionNames, BezahlungActions } from "../actions/BezahlungActionCreator";
+
+type Actions = KontokorrentsActions | AccountActions | BezahlungActions;
 
 export class KontokorrentsReducer implements Reducer<KontokorrentsState, KontokorrentsActions | AccountActions> {
-    onDispatch(action: KontokorrentsActions | AccountActions, updateStore: (a: (s: KontokorrentsState) => KontokorrentsState) => void): void {
+    onDispatch(action: Actions, updateStore: (a: (s: KontokorrentsState) => KontokorrentsState) => void): void {
         switch (action.type) {
             case KontokorrentsActionNames.KontokorrentListeLaden: {
                 updateStore(s => {
@@ -194,6 +197,15 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                         ...s,
                         activeKontokorrentId: null,
                         kontokorrents: {}
+                    };
+                });
+                break;
+            }
+            case BezahlungActionNames.BezahlungKontokorrentGeandert: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        activeKontokorrentId: action.kontokorrentId
                     };
                 });
                 break;
