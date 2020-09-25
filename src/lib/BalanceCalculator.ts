@@ -12,10 +12,7 @@ class GeteilteZahlung {
 }
 
 export class BalanceCalculator {
-    private db: KontokorrentDatabase;
-
-    constructor() {
-        this.db = new KontokorrentDatabase();
+    constructor(private db: KontokorrentDatabase) {
     }
 
     erweitern(summe: number, nenner: number, andere: number[]) {

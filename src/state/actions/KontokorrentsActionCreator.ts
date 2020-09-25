@@ -183,7 +183,6 @@ export class KontokorrentsActionCreator {
             await this.db.addKontokorrent({
                 id: id,
                 name: name,
-                laufendeNummer: 0,
                 personen: request.personen,
                 oeffentlicherName: oeffentlicherName
             });
@@ -213,7 +212,6 @@ export class KontokorrentsActionCreator {
                 let newIds = await this.db.setKontokorrents(res.map(v => {
                     return {
                         id: v.id,
-                        laufendeNummer: null,
                         name: v.name,
                         personen: v.personen,
                         oeffentlicherName: v.oeffentlicherName
@@ -249,7 +247,6 @@ export class KontokorrentsActionCreator {
             await this.db.setKontokorrents(liste.map(e => {
                 return {
                     id: e.id,
-                    laufendeNummer: null,
                     name: e.name,
                     personen: e.personen,
                     oeffentlicherName: e.oeffentlicherName
@@ -281,8 +278,9 @@ export class KontokorrentsActionCreator {
         await Promise.all([this.refreshBezahlungen(id), this.calculateBalance(id)]);
     }
 
-    private async kontokorrentSynchronisieren(id: string, laufendeNummer: number) {
+    private async kontokorrentSynchronisieren(id: string) {
         this.store.dispatch(new KontokorrentSynchronisieren(id));
+        let laufendeNummer = await (await this.getWorkerApi()).getLaufendeNummer(id);
         let res = await this.apiClient.getAktionen(id, laufendeNummer);
         if (res.success) {
             await this.db.addAktionen(id, res.aktionen);
@@ -314,7 +312,7 @@ export class KontokorrentsActionCreator {
             let tasks = [];
             tasks.push(this.db.setZuletztGesehenerKontokorrentId(id));
             tasks.push(this.refreshKontokorrent(id));
-            tasks.push(this.kontokorrentSynchronisieren(id, kk.laufendeNummer));
+            tasks.push(this.kontokorrentSynchronisieren(id));
             await Promise.all(tasks);
         }
     }

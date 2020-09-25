@@ -81,12 +81,6 @@ export class KontokorrentDatabase {
             }).map(a => tx.store.add(a));
             await Promise.all(tasks);
             await tx.done;
-            const tx2 = db.transaction(KontokorrentsStore, "readwrite");
-            let kk = await tx2.store.get(id);
-            let max = Math.max(...aktionen.map(v => v.laufendeNummer));
-            kk.laufendeNummer = max;
-            await tx2.store.put(kk);
-            await tx2.done;
         });
     }
 
