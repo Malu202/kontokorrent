@@ -11,7 +11,7 @@ export class Info extends HTMLElement {
         this.innerHTML = template;
     }
     addServices(serviceLocator: ServiceLocator) {
-        this.routingActionCreator = serviceLocator.routingActionCreator;
+        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
     }
 
     async connectedCallback() {

@@ -32,9 +32,9 @@ export class Login extends HTMLElement {
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
-        this.routingActionCreator = serviceLocator.routingActionCreator;
-        this.accountActionCreator = serviceLocator.accountActionCreator;
-        this.kontokorrentsActionCreator = serviceLocator.kontokorrentsActionCreator;
+        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
+        this.accountActionCreator = AccountActionCreator.locate(serviceLocator);
+        this.kontokorrentsActionCreator = KontokorrentsActionCreator.locate(serviceLocator);
     }
 
     connectedCallback() {

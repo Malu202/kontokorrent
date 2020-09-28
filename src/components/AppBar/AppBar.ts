@@ -6,7 +6,6 @@ import "../KontokorrentSelect/KontokorrentSelect";
 import { KontokorrentSelectTagName, KontokorrentSelect } from "../KontokorrentSelect/KontokorrentSelect";
 import { ServiceLocator } from "../../ServiceLocator";
 import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
-import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
 import { Store } from "../../state/Store";
 import { State } from "../../state/State";
 import { Popup } from "../ui-components/popup/popup";
@@ -16,7 +15,6 @@ export class AppBar extends HTMLElement {
     private store: Store;
     private routingActionCreator: RoutingActionCreator;
     private accountActionCreator: AccountActionCreator;
-    private kontokorrentsActionCreator: KontokorrentsActionCreator;
     private logoutDialog: Popup;
     private subscription: () => void;
 
@@ -55,9 +53,8 @@ export class AppBar extends HTMLElement {
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
-        this.routingActionCreator = serviceLocator.routingActionCreator;
-        this.accountActionCreator = serviceLocator.accountActionCreator;
-        this.kontokorrentsActionCreator = serviceLocator.kontokorrentsActionCreator;
+        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
+        this.accountActionCreator = AccountActionCreator.locate(serviceLocator);
     }
 
     disconnectedCallback() {

@@ -1,6 +1,10 @@
 import { Router } from "route-it";
 import { Paths } from "../../routing/KontokorrentRouteResolver";
+import { ServiceLocator } from "../../ServiceLocator";
 export class RoutingActionCreator {
+    static locate(serviceLocator: ServiceLocator): RoutingActionCreator {
+        return new RoutingActionCreator(serviceLocator.router);
+    }
     constructor(private router: Router<HTMLElement>) {
     }
     navigateHome() {

@@ -1,18 +1,13 @@
 import template from "./home.html";
 import { Store } from "../../state/Store";
 import { ServiceLocator } from "../../ServiceLocator";
-import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
 import { State } from "../../state/State";
-import { convertLinks } from "../convertLinks";
-import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
 import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
 import { AppBar, AppBarTagName } from "../AppBar/AppBar";
 
 export class Home extends HTMLElement {
     private store: Store;
     private subscription: () => void;
-    private routingActionCreator: RoutingActionCreator;
-    private accountActionCreator: AccountActionCreator;
     private loginExpired: HTMLDivElement;
     private kontokorrentsActionCreator: KontokorrentsActionCreator;
     private appBar: AppBar;
@@ -25,9 +20,7 @@ export class Home extends HTMLElement {
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
-        this.routingActionCreator = serviceLocator.routingActionCreator;
-        this.accountActionCreator = serviceLocator.accountActionCreator;
-        this.kontokorrentsActionCreator = serviceLocator.kontokorrentsActionCreator;
+        this.kontokorrentsActionCreator = KontokorrentsActionCreator.locate(serviceLocator);
         this.appBar.addServices(serviceLocator);
     }
 

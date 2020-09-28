@@ -11,7 +11,7 @@ export class FeaturesRequired extends HTMLElement {
     }
 
     addServices(serviceLocator: ServiceLocator) {
-        this.routingActionCreator = serviceLocator.routingActionCreator;
+        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
     }
 
     connectedCallback() {

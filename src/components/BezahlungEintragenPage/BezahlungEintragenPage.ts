@@ -25,8 +25,8 @@ export class BezahlungEintragenPage extends HTMLElement {
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
-        this.routingActionCreator = serviceLocator.routingActionCreator;
-        this.bezahlungActionCreator = serviceLocator.bezahlungActionCreator;
+        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
+        this.bezahlungActionCreator = BezahlungActionCreator.locate(serviceLocator);
         this.appBar.addServices(serviceLocator);
     }
 

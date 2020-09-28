@@ -44,9 +44,9 @@ export class CreateKontokorrent extends HTMLElement {
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
-        this.routingActionCreator = serviceLocator.routingActionCreator;
-        this.accountActionCreator = serviceLocator.accountActionCreator;
-        this.kontokorrentsActionCreator = serviceLocator.kontokorrentsActionCreator;
+        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
+        this.accountActionCreator = AccountActionCreator.locate(serviceLocator);
+        this.kontokorrentsActionCreator = KontokorrentsActionCreator.locate(serviceLocator);
     }
 
     connectedCallback() {
@@ -96,7 +96,7 @@ export class CreateKontokorrent extends HTMLElement {
         this.personCountError.style.display = personCountOk ? "none" : "block";
         let personNameError = personNames.some(v => !v);
         this.emptyNameError.style.display = personNameError ? "block" : "none";
-        let oeffentlicherNameError = this.oeffentlich.checked && ( !this.oeffentlicherName.value || !/^[a-z0-9]+$/.test(this.oeffentlicherName.value));
+        let oeffentlicherNameError = this.oeffentlich.checked && (!this.oeffentlicherName.value || !/^[a-z0-9]+$/.test(this.oeffentlicherName.value));
         this.oeffentlicherNameError.style.display = oeffentlicherNameError ? "block" : "none";
         let personNameDuplicateError = (personNames.some((item, index) => personNames.indexOf(item) != index));
         this.personNameDuplicateError.style.display = personNameDuplicateError ? "block" : "none";

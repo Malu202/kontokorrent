@@ -9,6 +9,7 @@ import { TokenRenewFailedException } from "../../api/TokenRenewFailedException";
 import { InteractionRequiredException } from "../../api/InteractionRequiredException";
 import { AccountInfo } from "../../lib/AccountInfo";
 import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
+import { ServiceLocator } from "../../ServiceLocator";
 
 export enum AccountActionNames {
     AccountCreating = "AccountCreating",
@@ -69,12 +70,21 @@ export type AccountActions = AccountInitialized
     | LoginExpired;
 
 export class AccountActionCreator {
+
     constructor(private store: Store,
         private apiClient: ApiClient,
         private accountInfoStore: AccountInfoStore,
         private routingActionCreator: RoutingActionCreator,
         private db: KontokorrentDatabase) {
+    }
 
+    static locate(serviceLocator : ServiceLocator) : AccountActionCreator {
+        return new AccountActionCreator(serviceLocator.store,
+            serviceLocator.apiClient,
+            serviceLocator.accountInfoStore,
+            RoutingActionCreator.locate(serviceLocator),
+            serviceLocator.db
+        );
     }
 
     initializeAccount() {

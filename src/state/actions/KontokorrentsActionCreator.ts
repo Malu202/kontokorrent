@@ -12,6 +12,7 @@ type KontokorrentWorkerApi = import("../../worker/KontokorrentWorker").Kontokorr
 import { wrap } from "comlink";
 import { filterBezahlungen } from "../../lib/filterBezahlungen";
 import { KontokorrentBalance } from "../../lib/KontokorrentBalance";
+import { ServiceLocator } from "../../ServiceLocator";
 
 
 export enum KontokorrentsActionNames {
@@ -155,6 +156,13 @@ export type KontokorrentsActions = KontokorrentCreationFailed
     | LoginPageGeoeffnet;
 
 export class KontokorrentsActionCreator {
+    static locate(serviceLocator: ServiceLocator): KontokorrentsActionCreator {
+        return new KontokorrentsActionCreator(serviceLocator.store,
+            serviceLocator.apiClient,
+            RoutingActionCreator.locate(serviceLocator),
+            serviceLocator.db
+        );
+    }
     private workerApi: KontokorrentWorkerApi;
     constructor(private store: Store,
         private apiClient: ApiClient,
