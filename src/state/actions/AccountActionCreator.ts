@@ -10,53 +10,46 @@ import { InteractionRequiredException } from "../../api/InteractionRequiredExcep
 import { AccountInfo } from "../../lib/AccountInfo";
 import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
 import { ServiceLocator } from "../../ServiceLocator";
+import { ActionNames } from "./ActionNames";
 
-export enum AccountActionNames {
-    AccountCreating = "AccountCreating",
-    AccountCreationFailed = "AccountCreationFailed",
-    AccountCreated = "AccountCreated",
-    AccountInitialized = "AccountInitialized",
-    LoggedOut = "LoggedOut",
-    LoginExpired = "LoginExpired"
-}
 
 export class AccountCreating implements Action {
-    readonly type = AccountActionNames.AccountCreating;
+    readonly type = ActionNames.AccountCreating;
     constructor() {
 
     }
 }
 
 export class AccountCreationFailed implements Action {
-    readonly type = AccountActionNames.AccountCreationFailed;
+    readonly type = ActionNames.AccountCreationFailed;
     constructor() {
 
     }
 }
 
 export class AccountCreated implements Action {
-    readonly type = AccountActionNames.AccountCreated;
+    readonly type = ActionNames.AccountCreated;
     constructor(public info: AccountInfo) {
 
     }
 }
 
 export class AccountInitialized implements Action {
-    readonly type = AccountActionNames.AccountInitialized;
+    readonly type = ActionNames.AccountInitialized;
     constructor(public info: AccountInfo) {
 
     }
 }
 
 export class LoggedOut implements Action {
-    readonly type = AccountActionNames.LoggedOut;
+    readonly type = ActionNames.LoggedOut;
     constructor() {
 
     }
 }
 
 export class LoginExpired implements Action {
-    readonly type = AccountActionNames.LoginExpired;
+    readonly type = ActionNames.LoginExpired;
     constructor() {
 
     }

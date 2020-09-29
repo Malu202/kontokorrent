@@ -1,16 +1,17 @@
 import { Reducer } from "../lib/Reducer";
 import { KontokorrentsState, KontokorrentState, Bezahlung } from "../State";
-import { KontokorrentsActions, KontokorrentsActionNames } from "../actions/KontokorrentsActionCreator";
+import { KontokorrentsActions } from "../actions/KontokorrentsActionCreator";
 import { KontokorrentInfo } from "../../api/KontokorrentInfo";
-import { AccountActionNames, AccountActions } from "../actions/AccountActionCreator";
-import { BezahlungActionNames, BezahlungActions } from "../actions/BezahlungActionCreator";
+import {  AccountActions } from "../actions/AccountActionCreator";
+import {  BezahlungActions } from "../actions/BezahlungActionCreator";
+import { ActionNames } from "../actions/ActionNames";
 
 type Actions = KontokorrentsActions | AccountActions | BezahlungActions;
 
 export class KontokorrentsReducer implements Reducer<KontokorrentsState, KontokorrentsActions | AccountActions> {
     onDispatch(action: Actions, updateStore: (a: (s: KontokorrentsState) => KontokorrentsState) => void): void {
         switch (action.type) {
-            case KontokorrentsActionNames.KontokorrentListeLaden: {
+            case ActionNames.KontokorrentListeLaden: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -19,7 +20,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 })
             }
                 break;
-            case KontokorrentsActionNames.KontokorrentListeLadenFailed: {
+            case ActionNames.KontokorrentListeLadenFailed: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -28,7 +29,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 })
             }
                 break;
-            case KontokorrentsActionNames.KontokorrentListe: {
+            case ActionNames.KontokorrentListe: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -37,7 +38,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 })
             }
                 break;
-            case KontokorrentsActionNames.KontokorrentHinzufuegen: {
+            case ActionNames.KontokorrentHinzufuegen: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -46,7 +47,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 })
             }
                 break;
-            case KontokorrentsActionNames.KontokorrentHinzufuegenFailed: {
+            case ActionNames.KontokorrentHinzufuegenFailed: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -56,7 +57,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 })
             }
                 break;
-            case KontokorrentsActionNames.KontokorrentHinzufuegenSuccess: {
+            case ActionNames.KontokorrentHinzufuegenSuccess: {
                 updateStore(s => {
 
                     return {
@@ -66,7 +67,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                     };
                 })
             }
-            case KontokorrentsActionNames.KontokorrentCreating: {
+            case ActionNames.KontokorrentCreating: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -76,7 +77,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 })
             }
                 break;
-            case KontokorrentsActionNames.KontokorrentCreationFailed: {
+            case ActionNames.KontokorrentCreationFailed: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -88,7 +89,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 })
             }
                 break;
-            case KontokorrentsActionNames.KontokorrentCreated: {
+            case ActionNames.KontokorrentCreated: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -111,7 +112,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 });
                 break;
             }
-            case KontokorrentsActionNames.KontokorrentGeoeffnet: {
+            case ActionNames.KontokorrentGeoeffnet: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -120,7 +121,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 });
                 break;
             }
-            case KontokorrentsActionNames.KontokorrentBezahlungen: {
+            case ActionNames.KontokorrentBezahlungen: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -134,7 +135,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 });
                 break;
             }
-            case KontokorrentsActionNames.KontokorrentSynchronisieren: {
+            case ActionNames.KontokorrentSynchronisieren: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -148,7 +149,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 });
                 break;
             }
-            case KontokorrentsActionNames.KontokorrentSynchronisiert: {
+            case ActionNames.KontokorrentSynchronisiert: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -162,7 +163,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 });
                 break;
             }
-            case KontokorrentsActionNames.KontokorrentBalanceAktualisiert: {
+            case ActionNames.KontokorrentBalanceAktualisiert: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -181,7 +182,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 });
                 break;
             }
-            case KontokorrentsActionNames.LoginPageGeoeffnet: {
+            case ActionNames.LoginPageGeoeffnet: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -191,7 +192,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 });
                 break;
             }
-            case AccountActionNames.LoggedOut: {
+            case ActionNames.LoggedOut: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -201,7 +202,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Kontoko
                 });
                 break;
             }
-            case BezahlungActionNames.BezahlungKontokorrentGeandert: {
+            case ActionNames.BezahlungKontokorrentGeandert: {
                 updateStore(s => {
                     return {
                         ...s,

@@ -13,126 +13,109 @@ import { wrap } from "comlink";
 import { filterBezahlungen } from "../../lib/filterBezahlungen";
 import { KontokorrentBalance } from "../../lib/KontokorrentBalance";
 import { ServiceLocator } from "../../ServiceLocator";
+import { ActionNames } from "./ActionNames";
 
-
-export enum KontokorrentsActionNames {
-    KontokorrentCreating = "KontokorrentCreating",
-    KontokorrentCreated = "KontokorrentCreated",
-    KontokorrentCreationFailed = "KontokorrentCreationFailed",
-    KontokorrentHinzufuegenFailed = "KontokorrentHinzufuegenFailed",
-    KontokorrentHinzufuegen = "KontokorrentHinzufuegen",
-    KontokorrentHinzufuegenSuccess = "KontokorrentHinzufuegenSuccess",
-    KontokorrentListeLaden = "KontokorrentListeLaden",
-    KontokorrentListe = "KontokorrentListe",
-    KontokorrentListeLadenFailed = "KontokorrentListeLadenFailed",
-    KontokorrentGeoeffnet = "KontokorrentGeoeffnet",
-    KontokorrentBezahlungen = "KontokorrentBezahlungen",
-    KontokorrentSynchronisieren = "KontokorrentSynchronisieren",
-    KontokorrentSynchronisiert = "KontokorrentSynchronisiert",
-    KontokorrentBalanceAktualisiert = "KontokorrentBalanceAktualisiert",
-    LoginPageGeoeffnet = "LoginPageGeoeffnet"
-}
 
 export class KontokorrentCreationFailed implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentCreationFailed;
+    readonly type = ActionNames.KontokorrentCreationFailed;
     constructor(public exists: boolean) {
 
     }
 }
 
 export class KontokorrentCreating implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentCreating;
+    readonly type = ActionNames.KontokorrentCreating;
     constructor() {
 
     }
 }
 
 export class KontokorrentCreated implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentCreated;
+    readonly type = ActionNames.KontokorrentCreated;
     constructor(public kontokorrent: KontokorrentInfo) {
 
     }
 }
 
 export class KontokorrentHinzufuegenFailed implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentHinzufuegenFailed;
+    readonly type = ActionNames.KontokorrentHinzufuegenFailed;
     constructor(public notFound: boolean) {
 
     }
 }
 
 export class KontokorrentHinzufuegen implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentHinzufuegen;
+    readonly type = ActionNames.KontokorrentHinzufuegen;
     constructor() {
 
     }
 }
 
 export class KontokorrentHinzufuegenSuccess implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentHinzufuegenSuccess;
+    readonly type = ActionNames.KontokorrentHinzufuegenSuccess;
     constructor(public kontokorrents: KontokorrentInfo[]) {
 
     }
 }
 
 export class KontokorrentListeLaden implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentListeLaden;
+    readonly type = ActionNames.KontokorrentListeLaden;
     constructor() {
 
     }
 }
 
 export class KontokorrentListe implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentListe;
+    readonly type = ActionNames.KontokorrentListe;
     constructor(public kontokorrents: KontokorrentInfo[]) {
 
     }
 }
 
 export class KontokorrentListeLadenFailed implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentListeLadenFailed;
+    readonly type = ActionNames.KontokorrentListeLadenFailed;
     constructor(public interactionRequired: boolean) {
 
     }
 }
 
 export class KontokorrentGeoeffnet implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentGeoeffnet;
+    readonly type = ActionNames.KontokorrentGeoeffnet;
     constructor(public id: string) {
 
     }
 }
 
 export class KontokorrentBezahlungen implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentBezahlungen;
+    readonly type = ActionNames.KontokorrentBezahlungen;
     constructor(public kontokorrentId: string, public bezahlungen: Bezahlung[]) {
 
     }
 }
 
 export class KontokorrentSynchronisieren implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentSynchronisieren;
+    readonly type = ActionNames.KontokorrentSynchronisieren;
     constructor(public kontokorrentId: string) {
 
     }
 }
 
 export class KontokorrentSynchronisiert implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentSynchronisiert;
+    readonly type = ActionNames.KontokorrentSynchronisiert;
     constructor(public kontokorrentId: string) {
 
     }
 }
 
 export class KontokorrentBalanceAktualisiert implements Action {
-    readonly type = KontokorrentsActionNames.KontokorrentBalanceAktualisiert;
+    readonly type = ActionNames.KontokorrentBalanceAktualisiert;
     constructor(public kontokorrentId: string, public balance: KontokorrentBalance) {
 
     }
 }
 
 export class LoginPageGeoeffnet implements Action {
-    readonly type = KontokorrentsActionNames.LoginPageGeoeffnet;
+    readonly type = ActionNames.LoginPageGeoeffnet;
     constructor() {
 
     }

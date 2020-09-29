@@ -1,12 +1,13 @@
 import { Reducer } from "../lib/Reducer";
 import { State, AccountState } from "../State";
-import { AccountActions, AccountActionNames } from "../actions/AccountActionCreator";
-import { KontokorrentsActions, KontokorrentsActionNames } from "../actions/KontokorrentsActionCreator";
+import { AccountActions } from "../actions/AccountActionCreator";
+import { KontokorrentsActions } from "../actions/KontokorrentsActionCreator";
+import { ActionNames } from "../actions/ActionNames";
 
 export class AccountReducer implements Reducer<AccountState, AccountActions | KontokorrentsActions> {
     onDispatch(action: AccountActions | KontokorrentsActions, updateStore: (a: (s: AccountState) => AccountState) => void): void {
         switch (action.type) {
-            case AccountActionNames.AccountCreating: {
+            case ActionNames.AccountCreating: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -16,7 +17,7 @@ export class AccountReducer implements Reducer<AccountState, AccountActions | Ko
                 })
             }
                 break;
-            case AccountActionNames.AccountCreated: {
+            case ActionNames.AccountCreated: {
                 updateStore(s => {
                     return {
                         ...s, accountCreating: false,
@@ -26,7 +27,7 @@ export class AccountReducer implements Reducer<AccountState, AccountActions | Ko
                 })
             }
                 break;
-            case AccountActionNames.AccountCreationFailed: {
+            case ActionNames.AccountCreationFailed: {
                 updateStore(s => {
                     return {
                         ...s, accountCreationFailed: true,
@@ -36,7 +37,7 @@ export class AccountReducer implements Reducer<AccountState, AccountActions | Ko
                 })
             }
                 break;
-            case AccountActionNames.AccountInitialized: {
+            case ActionNames.AccountInitialized: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -46,7 +47,7 @@ export class AccountReducer implements Reducer<AccountState, AccountActions | Ko
                 })
             }
                 break;
-            case AccountActionNames.LoggedOut: {
+            case ActionNames.LoggedOut: {
                 updateStore(s => {
                     return {
                         ...s,
@@ -55,7 +56,7 @@ export class AccountReducer implements Reducer<AccountState, AccountActions | Ko
                 })
             }
                 break;
-            case AccountActionNames.LoginExpired:
+            case ActionNames.LoginExpired:
                 {
                     updateStore(s => {
                         return {
@@ -65,7 +66,7 @@ export class AccountReducer implements Reducer<AccountState, AccountActions | Ko
                     })
                 }
                 break;
-            case KontokorrentsActionNames.KontokorrentListeLadenFailed: {
+            case ActionNames.KontokorrentListeLadenFailed: {
                 if (action.interactionRequired) {
                     updateStore(s => {
                         return {

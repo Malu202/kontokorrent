@@ -1,4 +1,4 @@
-let API_URL = "https://kontokorrent.azurewebsites.net";
+let API_URL;
 if (__ENVIRONMENT == "local") {
     API_URL = "https://kontokorrent-v2.azurewebsites.net";
 }
@@ -7,6 +7,9 @@ else if (__ENVIRONMENT == "gh-pages") {
 }
 else if (__ENVIRONMENT == "gh-pagesv2") {
     API_URL = "https://kontokorrent-v2.azurewebsites.net";
+}
+else {
+    API_URL = "https://kontokorrent.azurewebsites.net";
 }
 
 export const environment = {
