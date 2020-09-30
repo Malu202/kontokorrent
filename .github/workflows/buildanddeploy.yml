@@ -23,8 +23,7 @@ jobs:
     - run: npm run build -- -p --env.environment 'gh-pagesv2'
     - run: cp dist/index.html dist/404.html
     - run: mkdir -p v2
-    - run: mv dist/* v2/
-    - run: mv v2 dist/
+    - run: cp -r dist/* v2/
     - name: Install SSH Client 🔑
       uses: webfactory/ssh-agent@v0.2.0
       with:
