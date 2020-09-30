@@ -24,6 +24,9 @@ jobs:
     - run: cp dist/index.html dist/404.html
     - run: mkdir -p v2
     - run: cp -r dist/* v2/
+    - run: mkdir -p rootfolder
+    - run: rm -rf rootfolder/*
+    - run: mv v2 rootfolder/
     - name: Install SSH Client 🔑
       uses: webfactory/ssh-agent@v0.2.0
       with:
@@ -33,4 +36,4 @@ jobs:
       with:
         SSH: true
         BRANCH: gh-pages
-        FOLDER: v2
+        FOLDER: rootfolder
