@@ -6,6 +6,7 @@ const ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
 const { DefinePlugin } = require("webpack");
 const WorkerPlugin = require('worker-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const CopyPlugin = require('copy-webpack-plugin');
 
 const path = require('path');
 
@@ -47,7 +48,7 @@ module.exports = (env, argv) => {
                         MiniCssExtractPlugin.loader,
                         {
                             loader: "css-loader", options: {
-                                
+
                             }
                         },
                         { loader: "postcss-loader", options: {} },
@@ -61,28 +62,6 @@ module.exports = (env, argv) => {
                         }
                     ]
                 },
-                {
-                    test: /favicons(\\|\/).+\.(svg|png|ico|xml|json)$/i,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                            options: {
-                                name: 'favicons/[name].[ext]',
-                            },
-                        },
-                    ],
-                },
-                {
-                    test: /\.(webmanifest)$/i,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                            options: {
-                                name: '[name].[ext]',
-                            },
-                        },
-                    ],
-                }
             ],
         },
         resolve: {
@@ -114,6 +93,12 @@ module.exports = (env, argv) => {
             }),
             new DefinePlugin({
                 __ENVIRONMENT: `"${environment}"`
+            }),
+            new CopyPlugin({
+                patterns: [
+                    { from: './favicons', to: 'favicons' },
+                    { from: './src/site.webmanifest', to: './' },
+                ],
             }),
             new WorkerPlugin(),
             ...(analyze ? [new BundleAnalyzerPlugin()] : [])
