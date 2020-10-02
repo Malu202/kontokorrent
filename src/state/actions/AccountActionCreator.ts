@@ -4,7 +4,7 @@ import { Action } from "../lib/Action";
 import { AccountInfoStore } from "../../lib/AccountInfoStore";
 import { v4 as uuid } from "uuid";
 import { AccountType } from "../../lib/AccountType";
-import { RoutingActionCreator } from "./RoutingActionCreator";
+import { RoutingActionCreator, routingActionCreatorFactory } from "./RoutingActionCreator";
 import { TokenRenewFailedException } from "../../api/TokenRenewFailedException";
 import { InteractionRequiredException } from "../../api/InteractionRequiredException";
 import { AccountInfo } from "../../lib/AccountInfo";
@@ -70,16 +70,7 @@ export class AccountActionCreator {
         private routingActionCreator: RoutingActionCreator,
         private db: KontokorrentDatabase) {
     }
-
-    static locate(serviceLocator : ServiceLocator) : AccountActionCreator {
-        return new AccountActionCreator(serviceLocator.store,
-            serviceLocator.apiClient,
-            serviceLocator.accountInfoStore,
-            RoutingActionCreator.locate(serviceLocator),
-            serviceLocator.db
-        );
-    }
-
+    
     initializeAccount() {
         let info = this.accountInfoStore.get();
         if (!this.accountInfoStore.get()) {
@@ -137,4 +128,14 @@ export class AccountActionCreator {
         this.store.dispatch(new LoggedOut());
         this.routingActionCreator.navigateLogin();
     }
+}
+
+export function accountActionCreatorFactory(serviceLocator: ServiceLocator) {
+    return serviceLocator.get("AccountActionCreator",
+        serviceLocator => new AccountActionCreator(serviceLocator.store,
+            serviceLocator.apiClient,
+            serviceLocator.accountInfoStore,
+            routingActionCreatorFactory(serviceLocator),
+            serviceLocator.db
+        ));
 }

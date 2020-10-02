@@ -1,6 +1,6 @@
 import template from "./FeaturesRequired.html";
 import { ServiceLocator } from "../../ServiceLocator";
-import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
+import { RoutingActionCreator, routingActionCreatorFactory } from "../../state/actions/RoutingActionCreator";
 import { testFeatures } from "../../lib/testFeatures";
 export class FeaturesRequired extends HTMLElement {
     routingActionCreator: RoutingActionCreator;
@@ -11,7 +11,7 @@ export class FeaturesRequired extends HTMLElement {
     }
 
     addServices(serviceLocator: ServiceLocator) {
-        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
+        this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
     }
 
     connectedCallback() {

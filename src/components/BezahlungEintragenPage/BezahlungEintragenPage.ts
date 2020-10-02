@@ -1,10 +1,10 @@
 import template from "./BezahlungEintragenPage.html";
 import { Store } from "../../state/Store";
 import { ServiceLocator } from "../../ServiceLocator";
-import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
+import { RoutingActionCreator, routingActionCreatorFactory } from "../../state/actions/RoutingActionCreator";
 import { AppBar, AppBarTagName } from "../AppBar/AppBar";
 import "./BezahlungEintragenPage.scss";
-import { BezahlungActionCreator } from "../../state/actions/BezahlungActionCreator";
+import { BezahlungActionCreator, bezahlungActionCreatorFactory } from "../../state/actions/BezahlungActionCreator";
 import { State } from "../../state/State";
 import { convertLinks } from "../convertLinks";
 
@@ -25,8 +25,8 @@ export class BezahlungEintragenPage extends HTMLElement {
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
-        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
-        this.bezahlungActionCreator = BezahlungActionCreator.locate(serviceLocator);
+        this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
+        this.bezahlungActionCreator = bezahlungActionCreatorFactory(serviceLocator);
         this.appBar.addServices(serviceLocator);
     }
 

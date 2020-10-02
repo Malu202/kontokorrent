@@ -1,11 +1,11 @@
 import template from "./AppBar.html";
 import "./AppBar.scss";
-import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
+import { RoutingActionCreator, routingActionCreatorFactory } from "../../state/actions/RoutingActionCreator";
 import { convertLinks } from "../convertLinks";
 import "../KontokorrentSelect/KontokorrentSelect";
 import { KontokorrentSelectTagName, KontokorrentSelect } from "../KontokorrentSelect/KontokorrentSelect";
 import { ServiceLocator } from "../../ServiceLocator";
-import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
+import { AccountActionCreator, accountActionCreatorFactory } from "../../state/actions/AccountActionCreator";
 import { Store } from "../../state/Store";
 import { State } from "../../state/State";
 import { Popup } from "../ui-components/popup/popup";
@@ -53,8 +53,8 @@ export class AppBar extends HTMLElement {
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
-        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
-        this.accountActionCreator = AccountActionCreator.locate(serviceLocator);
+        this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
+        this.accountActionCreator = accountActionCreatorFactory(serviceLocator);
     }
 
     disconnectedCallback() {

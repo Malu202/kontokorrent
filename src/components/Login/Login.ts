@@ -1,11 +1,11 @@
 import template from "./Login.html";
 import { Store } from "../../state/Store";
 import { ServiceLocator } from "../../ServiceLocator";
-import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
+import { RoutingActionCreator, routingActionCreatorFactory } from "../../state/actions/RoutingActionCreator";
 import { State } from "../../state/State";
 import { convertLinks } from "../convertLinks";
-import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
-import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
+import { AccountActionCreator, accountActionCreatorFactory } from "../../state/actions/AccountActionCreator";
+import { KontokorrentsActionCreator, kontokorrentsActionCreatorFactory } from "../../state/actions/KontokorrentsActionCreator";
 import "./Login.scss";
 import "../ui-components/popup/popup";
 import "../ui-components/tip-button/tip-button";
@@ -32,9 +32,9 @@ export class Login extends HTMLElement {
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
-        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
-        this.accountActionCreator = AccountActionCreator.locate(serviceLocator);
-        this.kontokorrentsActionCreator = KontokorrentsActionCreator.locate(serviceLocator);
+        this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
+        this.accountActionCreator = accountActionCreatorFactory(serviceLocator);
+        this.kontokorrentsActionCreator = kontokorrentsActionCreatorFactory(serviceLocator);
     }
 
     connectedCallback() {

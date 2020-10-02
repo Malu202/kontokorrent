@@ -1,10 +1,10 @@
 import template from "./KontokorrentPage.html";
 import { Store } from "../../state/Store";
 import { ServiceLocator } from "../../ServiceLocator";
-import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
+import { RoutingActionCreator, routingActionCreatorFactory } from "../../state/actions/RoutingActionCreator";
 import { KontokorrentState, State } from "../../state/State";
 import { convertLinks } from "../convertLinks";
-import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
+import { KontokorrentsActionCreator, kontokorrentsActionCreatorFactory } from "../../state/actions/KontokorrentsActionCreator";
 import { AppBar, AppBarTagName } from "../AppBar/AppBar";
 import "../BalanceAnzeige/BalanceAnzeigeElement";
 import { BalanceAnzeige } from "../BalanceAnzeige/BalanceAnzeige";
@@ -23,6 +23,7 @@ export class KontokorrentPage extends HTMLElement {
     private bezahlungenView: BezahlungenView;
     private kontokorrentSpinner: HTMLSpanElement;
     private kontokorrent: KontokorrentState;
+    private kontokorrentIdParameter: string;
 
     constructor() {
         super();
@@ -35,17 +36,21 @@ export class KontokorrentPage extends HTMLElement {
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
-        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
-        this.kontokorrentsActionCreator = KontokorrentsActionCreator.locate(serviceLocator);
+        this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
+        this.kontokorrentsActionCreator = kontokorrentsActionCreatorFactory(serviceLocator);
         this.appBar.addServices(serviceLocator);
     }
 
     connectedCallback() {
+        if (!this.kontokorrentIdParameter) {
+            this.kontokorrentsActionCreator.navigiereZuLetztGesehenem(true);
+        }
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.appBar.addEventListener("gotokontokorrent", (e: CustomEvent) => {
             this.routingActionCreator.navigateKontokorrent(e.detail);
         });
         convertLinks(this.querySelectorAll("#eintragen-desktop, #eintragen-mobile"), this.routingActionCreator);
+        this.applyStoreState(this.store.state);
     }
 
     private applyStoreState(state: State) {
@@ -60,8 +65,9 @@ export class KontokorrentPage extends HTMLElement {
         }
     }
 
-    setKontokorrentId(id: string) {
+    setRouteParameters(id: string) {
         this.kontokorrentsActionCreator.kontokorrentOeffnen(id);
+        this.kontokorrentIdParameter = id;
     }
 
     disconnectedCallback() {

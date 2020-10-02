@@ -1,13 +1,13 @@
 import template from "./CreateKontokorrent.html";
 import { Store } from "../../state/Store";
 import { ServiceLocator } from "../../ServiceLocator";
-import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
+import { RoutingActionCreator, routingActionCreatorFactory } from "../../state/actions/RoutingActionCreator";
 import { State } from "../../state/State";
-import { AccountActionCreator } from "../../state/actions/AccountActionCreator";
+import { AccountActionCreator, accountActionCreatorFactory } from "../../state/actions/AccountActionCreator";
 import "../PersonenListe/PersonenListe";
 import { PersonenListe } from "../PersonenListe/PersonenListe";
 import { v4 as uuid } from "uuid";
-import { KontokorrentsActionCreator } from "../../state/actions/KontokorrentsActionCreator";
+import { KontokorrentsActionCreator, kontokorrentsActionCreatorFactory } from "../../state/actions/KontokorrentsActionCreator";
 
 export class CreateKontokorrent extends HTMLElement {
     store: Store;
@@ -44,9 +44,9 @@ export class CreateKontokorrent extends HTMLElement {
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
-        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
-        this.accountActionCreator = AccountActionCreator.locate(serviceLocator);
-        this.kontokorrentsActionCreator = KontokorrentsActionCreator.locate(serviceLocator);
+        this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
+        this.accountActionCreator = accountActionCreatorFactory(serviceLocator);
+        this.kontokorrentsActionCreator = kontokorrentsActionCreatorFactory(serviceLocator);
     }
 
     connectedCallback() {

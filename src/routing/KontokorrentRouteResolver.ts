@@ -26,6 +26,13 @@ export class KontokorrentRouteResolver extends EventTarget implements AsyncRoute
         this.serviceLocator = serviceLocator;
     }
 
+    private async getKontokorrentPageComponent() {
+        const { KontokorrentPage } = await import("../components/KontokorrentPage/KontokorrentPage");
+        let component = new KontokorrentPage();
+        component.addServices(this.serviceLocator);
+        return component;
+    }
+
     async resolve(lastRoute: string, currentRoute: string, router: Router<HTMLElement>) {
         if (currentRoute in Paths) {
             this.dispatchEvent(new CustomEvent("routedTo", { detail: { currentRoute } }));
@@ -67,14 +74,11 @@ export class KontokorrentRouteResolver extends EventTarget implements AsyncRoute
         let kontokorrentsRoute = /^kontokorrents\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
         if (kontokorrentsRoute) {
             let id: string = kontokorrentsRoute[1];
-            const { KontokorrentPage } = await import("../components/KontokorrentPage/KontokorrentPage");
-            let component = new KontokorrentPage();
-            component.addServices(this.serviceLocator);
-            component.setKontokorrentId(id);
+            let component = await this.getKontokorrentPageComponent();
+            component.setRouteParameters(id);
             return component;
         }
-        const { Home } = await import("../components/Home/home");
-        let component = new Home();
+        let component = await this.getKontokorrentPageComponent();
         component.addServices(this.serviceLocator);
         return component;
     }

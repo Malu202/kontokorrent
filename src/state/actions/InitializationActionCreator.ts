@@ -1,10 +1,11 @@
 import { Store } from "../Store";
-import { RoutingActionCreator } from "./RoutingActionCreator";
+import { RoutingActionCreator, routingActionCreatorFactory } from "./RoutingActionCreator";
 import { testFeatures } from "../../lib/testFeatures";
-import { AccountActionCreator } from "./AccountActionCreator";
+import { AccountActionCreator, accountActionCreatorFactory } from "./AccountActionCreator";
 import { Router } from "route-it/dist/router";
-import { KontokorrentsActionCreator } from "./KontokorrentsActionCreator";
+import { KontokorrentsActionCreator, kontokorrentsActionCreatorFactory } from "./KontokorrentsActionCreator";
 import { ServiceLocator } from "../../ServiceLocator";
+import { Paths } from "../../routing/KontokorrentRouteResolver";
 
 export class InitializationActionCreator {
 
@@ -16,27 +17,28 @@ export class InitializationActionCreator {
 
     }
 
-    static locate(serviceLocator: ServiceLocator): InitializationActionCreator {
-        return new InitializationActionCreator(serviceLocator.store,
-            RoutingActionCreator.locate(serviceLocator),
-            AccountActionCreator.locate(serviceLocator),
-            KontokorrentsActionCreator.locate(serviceLocator),
-            serviceLocator.router);
-    }
-
     async initializeApplication() {
         if (!testFeatures().allPassed) {
             this.router.run();
             this.routingActionCreator.navigateFeaturesRequired();
             return;
         }
-        let initialized = await this.accountActionCreator.initializeAccount();
-        this.router.run();
+        let initialized = this.accountActionCreator.initializeAccount();
         if (!initialized) {
-            this.routingActionCreator.navigateLogin();
+            window.history.replaceState({}, document.title, Paths.Login);
         }
-        else {
+        this.router.run();
+        if (initialized) {
             await this.kontokorrentsActionCreator.syncKontokorrentListe();
         }
     }
+}
+
+export function initializationActionCreatorFactory(serviceLocator: ServiceLocator) {
+    return serviceLocator.get("InitializationActionCreator",
+        serviceLocator => new InitializationActionCreator(serviceLocator.store,
+            routingActionCreatorFactory(serviceLocator),
+            accountActionCreatorFactory(serviceLocator),
+            kontokorrentsActionCreatorFactory(serviceLocator),
+            serviceLocator.router));
 }

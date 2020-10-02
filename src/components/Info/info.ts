@@ -1,5 +1,5 @@
 import { ServiceLocator } from "../../ServiceLocator";
-import { RoutingActionCreator } from "../../state/actions/RoutingActionCreator";
+import { RoutingActionCreator, routingActionCreatorFactory } from "../../state/actions/RoutingActionCreator";
 import { convertLinks } from "../convertLinks";
 import template from "./info.html";
 
@@ -11,7 +11,7 @@ export class Info extends HTMLElement {
         this.innerHTML = template;
     }
     addServices(serviceLocator: ServiceLocator) {
-        this.routingActionCreator = RoutingActionCreator.locate(serviceLocator);
+        this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
     }
 
     async connectedCallback() {

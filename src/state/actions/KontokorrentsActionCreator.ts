@@ -5,7 +5,7 @@ import { KontokorrentInfo } from "../../api/KontokorrentInfo";
 import { NeuerKontokorrentRequest } from "../../api/NeuerKontokorrentRequest";
 import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
 import { InteractionRequiredException } from "../../api/InteractionRequiredException";
-import { RoutingActionCreator } from "./RoutingActionCreator";
+import { RoutingActionCreator, routingActionCreatorFactory } from "./RoutingActionCreator";
 import { v4 as uuid } from "uuid";
 import { Bezahlung } from "../State";
 type KontokorrentWorkerApi = import("../../worker/KontokorrentWorker").KontokorrentWorkerApi;
@@ -139,13 +139,6 @@ export type KontokorrentsActions = KontokorrentCreationFailed
     | LoginPageGeoeffnet;
 
 export class KontokorrentsActionCreator {
-    static locate(serviceLocator: ServiceLocator): KontokorrentsActionCreator {
-        return new KontokorrentsActionCreator(serviceLocator.store,
-            serviceLocator.apiClient,
-            RoutingActionCreator.locate(serviceLocator),
-            serviceLocator.db
-        );
-    }
     private workerApi: KontokorrentWorkerApi;
     constructor(private store: Store,
         private apiClient: ApiClient,
@@ -218,10 +211,10 @@ export class KontokorrentsActionCreator {
         return false;
     }
 
-    async navigiereZuLetztGesehenem(redirect?: boolean) {
+    async navigiereZuLetztGesehenem(replace?: boolean) {
         let id = await this.db.getZuletztGesehenerKontokorrentId();
         if (id) {
-            this.routingActionCreator.navigateKontokorrent(id, redirect);
+            this.routingActionCreator.navigateKontokorrent(id, replace);
             return true;
         }
         return false;
@@ -294,8 +287,6 @@ export class KontokorrentsActionCreator {
         return this.workerApi;
     }
 
-
-
     async kontokorrentOeffnen(id: string) {
         let kk = await this.db.getKontokorrent(id);
         if (null != kk) {
@@ -307,4 +298,14 @@ export class KontokorrentsActionCreator {
             await Promise.all(tasks);
         }
     }
+}
+
+export function kontokorrentsActionCreatorFactory(serviceLocator: ServiceLocator) {
+    return serviceLocator.get("KontokorrentsActionCreator",
+        serviceLocator => new KontokorrentsActionCreator(
+            serviceLocator.store,
+            serviceLocator.apiClient,
+            routingActionCreatorFactory(serviceLocator),
+            serviceLocator.db
+        ));
 }

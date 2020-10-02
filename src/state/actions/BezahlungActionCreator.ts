@@ -13,13 +13,6 @@ export class BezahlungKontokorrentGeandert implements Action {
 export type BezahlungActions = BezahlungKontokorrentGeandert;
 
 export class BezahlungActionCreator {
-    large: string;
-
-
-    static locate(serviceLocator: ServiceLocator) {
-        return new BezahlungActionCreator(serviceLocator.store,
-            serviceLocator.db);
-    }
     constructor(private store: Store,
         private db: KontokorrentDatabase) {
     }
@@ -33,4 +26,10 @@ export class BezahlungActionCreator {
         this.store.dispatch(new BezahlungKontokorrentGeandert(id));
         await this.db.setZuletztGesehenerKontokorrentId(id);
     }
+}
+
+export function bezahlungActionCreatorFactory(serviceLocator: ServiceLocator) {
+    return serviceLocator.get("BezahlungActionCreator",
+        serviceLocator => new BezahlungActionCreator(serviceLocator.store,
+            serviceLocator.db));
 }

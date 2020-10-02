@@ -12,7 +12,7 @@ import "../favicons/site.webmanifest";
 import { AsyncRouteResolver } from "route-it/dist/router";
 import runtime from "serviceworker-webpack-plugin/lib/runtime";
 import { KontokorrentDatabase } from "./lib/KontokorrentDatabase";
-import { InitializationActionCreator } from "./state/actions/InitializationActionCreator";
+import { InitializationActionCreator, initializationActionCreatorFactory } from "./state/actions/InitializationActionCreator";
 
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", async () => {
@@ -61,7 +61,7 @@ async function run() {
         accountInfoStore);
     routeResolver.setServiceLocator(serviceLocator);
 
-    await InitializationActionCreator.locate(serviceLocator).initializeApplication();
+    await initializationActionCreatorFactory(serviceLocator).initializeApplication();
 }
 
 run().catch(err => console.error(err));
