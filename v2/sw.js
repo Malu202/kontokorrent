@@ -1,7 +1,17 @@
 var serviceWorkerOption = {
   "assets": [
     "/v2/licenses.txt",
-    "/v2/0.4fdf6f326727cb73ae80.bundle.worker.js",
+    "/v2/0.2c4320cbcde1edebb02e.bundle.worker.js",
+    "/v2/index.ffc9fb7d44c0e0a4c45b.css",
+    "/v2/5db9e2c5490aaea62b74.bundle.js",
+    "/v2/1.1908d4c2721e71167026.css",
+    "/v2/1.035b75e0afc3b3e0413f.bundle.js",
+    "/v2/2.c646867d152f87160c16.css",
+    "/v2/2.37666711a6f2c48d5a92.bundle.js",
+    "/v2/3.69f6fdb9ca090f17fcb4.css",
+    "/v2/3.602266e6e354f536fecd.bundle.js",
+    "/v2/4.10f90ba5a7804fbe98ea.bundle.js",
+    "/v2/5.1bd7d8c100c211fcb1f1.bundle.js",
     "/v2/favicons/android-chrome-192x192.png",
     "/v2/favicons/android-chrome-512x512.png",
     "/v2/favicons/apple-touch-icon.png",
@@ -16,16 +26,6 @@ var serviceWorkerOption = {
     "/v2/favicons/mstile-70x70.png",
     "/v2/favicons/safari-pinned-tab.svg",
     "/v2/site.webmanifest",
-    "/v2/index.227f10e4a58833d0dc3f.css",
-    "/v2/5da6a418e1510ce42e9a.bundle.js",
-    "/v2/1.b7fc4ca24e8c1c792273.css",
-    "/v2/1.d4097f154f62c3824901.bundle.js",
-    "/v2/2.5bfe84ed41f0bc1012d7.css",
-    "/v2/2.b56aa3185ef0a1520570.bundle.js",
-    "/v2/3.eddfcfc4d90393f6a5c8.css",
-    "/v2/3.3f3b817324c716801858.bundle.js",
-    "/v2/4.44876575003b44aca70b.bundle.js",
-    "/v2/5.0e90f5212868e9deb605.bundle.js",
     "/v2/index.html"
   ]
 };
