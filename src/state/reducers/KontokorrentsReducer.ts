@@ -1,14 +1,20 @@
 import { Reducer } from "../lib/Reducer";
 import { KontokorrentsState, KontokorrentState, Bezahlung } from "../State";
-import { KontokorrentsActions } from "../actions/KontokorrentsActionCreator";
+import { KontokorrentListenActions } from "../actions/KontokorrentListenActionCreator";
 import { KontokorrentInfo } from "../../api/KontokorrentInfo";
-import {  AccountActions } from "../actions/AccountActionCreator";
-import {  BezahlungActions } from "../actions/BezahlungActionCreator";
+import { AccountActions } from "../actions/AccountActionCreator";
+import { BezahlungActions } from "../actions/BezahlungActionCreator";
 import { ActionNames } from "../actions/ActionNames";
+import { KontokorrentHinzufuegenActions } from "../actions/KontokorrentHinzufuegenActionCreator";
+import { KontokorrentActions } from "../actions/KontokorrentActionCreator";
 
-type Actions = KontokorrentsActions | AccountActions | BezahlungActions;
+type Actions = KontokorrentListenActions
+    | AccountActions
+    | BezahlungActions
+    | KontokorrentHinzufuegenActions
+    | KontokorrentActions;
 
-export class KontokorrentsReducer implements Reducer<KontokorrentsState, KontokorrentsActions | AccountActions> {
+export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions> {
     onDispatch(action: Actions, updateStore: (a: (s: KontokorrentsState) => KontokorrentsState) => void): void {
         switch (action.type) {
             case ActionNames.KontokorrentListeLaden: {

@@ -7,7 +7,8 @@ import { AccountActionCreator, accountActionCreatorFactory } from "../../state/a
 import "../PersonenListe/PersonenListe";
 import { PersonenListe } from "../PersonenListe/PersonenListe";
 import { v4 as uuid } from "uuid";
-import { KontokorrentsActionCreator, kontokorrentsActionCreatorFactory } from "../../state/actions/KontokorrentsActionCreator";
+import { KontokorrentListenActionCreator, kontokorrentListenActionCreatorFactory } from "../../state/actions/KontokorrentListenActionCreator";
+import { KontokorrentHinzufuegenActionCreator, kontokorrentHinzufuegenActionCreatorFactory } from "../../state/actions/KontokorrentHinzufuegenActionCreator";
 
 export class CreateKontokorrent extends HTMLElement {
     store: Store;
@@ -31,7 +32,7 @@ export class CreateKontokorrent extends HTMLElement {
     private oeffentlicherNameManuell: boolean;
     private oeffentlicherNameError: HTMLDivElement;
     private eventNameDuplicate: HTMLDivElement;
-    private kontokorrentsActionCreator: KontokorrentsActionCreator;
+    private kontokorrentHinzufuegenActionCreator: KontokorrentHinzufuegenActionCreator;
     private accountCreationFailed: HTMLDivElement;
     private personNameDuplicateError: HTMLDivElement;
 
@@ -46,7 +47,7 @@ export class CreateKontokorrent extends HTMLElement {
         this.store = serviceLocator.store;
         this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
         this.accountActionCreator = accountActionCreatorFactory(serviceLocator);
-        this.kontokorrentsActionCreator = kontokorrentsActionCreatorFactory(serviceLocator);
+        this.kontokorrentHinzufuegenActionCreator = kontokorrentHinzufuegenActionCreatorFactory(serviceLocator);
     }
 
     connectedCallback() {
@@ -102,7 +103,7 @@ export class CreateKontokorrent extends HTMLElement {
         this.personNameDuplicateError.style.display = personNameDuplicateError ? "block" : "none";
         if (eventName && personCountOk && !personNameError && !oeffentlicherNameError && !personNameDuplicateError) {
             if (await this.accountActionCreator.ensureAccount()) {
-                if (await this.kontokorrentsActionCreator.kontokorrentErstellen(this.kontokorrentId, this.eventName.value, this.oeffentlich.checked ? this.oeffentlicherName.value : null, personNames)) {
+                if (await this.kontokorrentHinzufuegenActionCreator.kontokorrentErstellen(this.kontokorrentId, this.eventName.value, this.oeffentlich.checked ? this.oeffentlicherName.value : null, personNames)) {
                     this.routingActionCreator.navigateKontokorrent(this.kontokorrentId);
                 };
             }

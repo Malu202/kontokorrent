@@ -3,7 +3,7 @@ import { RoutingActionCreator, routingActionCreatorFactory } from "./RoutingActi
 import { testFeatures } from "../../lib/testFeatures";
 import { AccountActionCreator, accountActionCreatorFactory } from "./AccountActionCreator";
 import { Router } from "route-it/dist/router";
-import { KontokorrentsActionCreator, kontokorrentsActionCreatorFactory } from "./KontokorrentsActionCreator";
+import { KontokorrentListenActionCreator, kontokorrentListenActionCreatorFactory } from "./KontokorrentListenActionCreator";
 import { ServiceLocator } from "../../ServiceLocator";
 import { Paths } from "../../routing/KontokorrentRouteResolver";
 
@@ -12,7 +12,7 @@ export class InitializationActionCreator {
     constructor(private store: Store,
         private routingActionCreator: RoutingActionCreator,
         private accountActionCreator: AccountActionCreator,
-        private kontokorrentsActionCreator: KontokorrentsActionCreator,
+        private kontokorrentsActionCreator: KontokorrentListenActionCreator,
         private router: Router<unknown>) {
 
     }
@@ -39,6 +39,6 @@ export function initializationActionCreatorFactory(serviceLocator: ServiceLocato
         serviceLocator => new InitializationActionCreator(serviceLocator.store,
             routingActionCreatorFactory(serviceLocator),
             accountActionCreatorFactory(serviceLocator),
-            kontokorrentsActionCreatorFactory(serviceLocator),
+            kontokorrentListenActionCreatorFactory(serviceLocator),
             serviceLocator.router));
 }

@@ -1,11 +1,11 @@
 import { Reducer } from "../lib/Reducer";
 import { State, AccountState } from "../State";
 import { AccountActions } from "../actions/AccountActionCreator";
-import { KontokorrentsActions } from "../actions/KontokorrentsActionCreator";
+import { KontokorrentListenActions } from "../actions/KontokorrentListenActionCreator";
 import { ActionNames } from "../actions/ActionNames";
 
-export class AccountReducer implements Reducer<AccountState, AccountActions | KontokorrentsActions> {
-    onDispatch(action: AccountActions | KontokorrentsActions, updateStore: (a: (s: AccountState) => AccountState) => void): void {
+export class AccountReducer implements Reducer<AccountState, AccountActions | KontokorrentListenActions> {
+    onDispatch(action: AccountActions | KontokorrentListenActions, updateStore: (a: (s: AccountState) => AccountState) => void): void {
         switch (action.type) {
             case ActionNames.AccountCreating: {
                 updateStore(s => {

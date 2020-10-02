@@ -5,10 +5,10 @@ import { RoutingActionCreator, routingActionCreatorFactory } from "../../state/a
 import { State } from "../../state/State";
 import { convertLinks } from "../convertLinks";
 import { AccountActionCreator, accountActionCreatorFactory } from "../../state/actions/AccountActionCreator";
-import { KontokorrentsActionCreator, kontokorrentsActionCreatorFactory } from "../../state/actions/KontokorrentsActionCreator";
 import "./Login.scss";
 import "../ui-components/popup/popup";
 import "../ui-components/tip-button/tip-button";
+import { KontokorrentHinzufuegenActionCreator, kontokorrentHinzufuegenActionCreatorFactory } from "../../state/actions/KontokorrentHinzufuegenActionCreator";
 
 export class Login extends HTMLElement {
     store: Store;
@@ -20,7 +20,7 @@ export class Login extends HTMLElement {
     private eventMissingError: HTMLDivElement;
     private accountCreationFailed: HTMLDivElement;
     private notFoundError: HTMLDivElement;
-    private kontokorrentsActionCreator: KontokorrentsActionCreator;
+    private kontokorrentHinzufuegenActionCreator: KontokorrentHinzufuegenActionCreator;
     private processing: HTMLDivElement;
     private homeButton: HTMLButtonElement;
     private loginBox: HTMLDivElement;
@@ -34,7 +34,7 @@ export class Login extends HTMLElement {
         this.store = serviceLocator.store;
         this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
         this.accountActionCreator = accountActionCreatorFactory(serviceLocator);
-        this.kontokorrentsActionCreator = kontokorrentsActionCreatorFactory(serviceLocator);
+        this.kontokorrentHinzufuegenActionCreator = kontokorrentHinzufuegenActionCreatorFactory(serviceLocator);
     }
 
     connectedCallback() {
@@ -54,7 +54,7 @@ export class Login extends HTMLElement {
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
         this.accountActionCreator.initializeAccount();
-        this.kontokorrentsActionCreator.loginPageGeoeffnet();
+        this.kontokorrentHinzufuegenActionCreator.loginPageGeoeffnet();
     }
 
     async loginFuerEvent() {
@@ -62,7 +62,7 @@ export class Login extends HTMLElement {
         this.eventMissingError.style.display = event ? "none" : "block";
         if (event) {
             if (await this.accountActionCreator.ensureAccount()) {
-                let id = await this.kontokorrentsActionCreator.kontokorrentHinzufuegen(event);
+                let id = await this.kontokorrentHinzufuegenActionCreator.kontokorrentHinzufuegen(event);
                 if (id) {
                     this.routingActionCreator.navigateKontokorrent(id);
                 };
