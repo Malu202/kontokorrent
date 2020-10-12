@@ -1,6 +1,7 @@
-export class ArrayToElementRenderer<T, E extends HTMLElement, K>{
+export class ArrayToElementRenderer<T, E extends Element, K>{
     private keyToElement: Map<K, E>;
     private elementToKey: WeakMap<E, K>;
+    
     constructor(private listElement: HTMLElement,
         private keySelector: (x: T) => K,
         private createElement: (x: T) => E) {

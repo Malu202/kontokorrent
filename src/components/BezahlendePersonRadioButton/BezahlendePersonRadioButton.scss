@@ -1,0 +1,73 @@
+@use "../ui-components/reset";
+@use "../ui-components/button";
+@use "../ui-components/theme";
+
+$trans-props: 0.2s cubic-bezier(0, 0, 0.2, 1);
+
+.bezahlende-person-radio {
+    &__input {
+        position: absolute;
+        margin: 0;
+        padding: 0;
+        opacity: 0;
+        cursor: inherit;
+        z-index: 1;
+        &:focus-visible+ label {
+            @include theme.property(border-color, active-on-container);
+        }
+        
+
+        &:checked+label {
+            @include theme.property(background-color, active-on-container);
+
+            svg {
+                opacity: 1;
+                animation: card-jump $trans-props;
+
+
+                @keyframes card-jump {
+                    0% {
+                        transform: translateY(0)
+                    }
+
+                    50% {
+
+                        transform: translateY(-0.2em)
+                    }
+
+                    100% {
+                        transform: translateY(0)
+                    }
+                }
+            }
+        }
+    }
+
+    svg {
+        opacity: 0.1;
+        will-change: transform, opacity;
+        transition: opacity $trans-props;
+        flex-shrink: 0;
+    }
+
+    user-select: none;
+
+    span {
+        margin-left: 0.5em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color $trans-props;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 2px solid #ffffff00;
+}

@@ -1,2 +1,18 @@
 @use "../ui-components/theme";
 @use "../ui-components/utils";
+
+.bezahlungen-page-menu {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5em 0;
+}
+
+bezahlung-eintragen-page {
+    @include theme.property(background-color, bg-container);
+    flex-grow: 1;
+    
+}
+
+.bezahlungen-page__form-container {
+    margin: 0 1em;
+}

@@ -28,11 +28,6 @@ $app-bar-size: 4em;
 }
 
 .app-bar {
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    right: 0;
     height: $app-bar-size;
     @include theme.property(background-color, primary);
     @include utils.default-shadow;
@@ -53,8 +48,4 @@ $app-bar-size: 4em;
         margin-left: 1em;
         min-width: 6em;
     }
-}
-
-.body--app-bar {
-    margin-top: $app-bar-size;
 }

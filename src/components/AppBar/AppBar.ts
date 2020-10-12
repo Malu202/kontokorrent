@@ -27,7 +27,6 @@ export class AppBar extends HTMLElement {
     }
 
     connectedCallback() {
-        document.body.classList.add("body--app-bar");
         this.querySelector("#logout-button").addEventListener("click", (e: MouseEvent) => {
             this.logoutDialog.toggle();
             e.stopPropagation();
@@ -58,7 +57,6 @@ export class AppBar extends HTMLElement {
     }
 
     disconnectedCallback() {
-        document.body.classList.remove("body--app-bar");
         this.subscription();
     }
 }

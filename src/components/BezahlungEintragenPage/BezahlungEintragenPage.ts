@@ -7,6 +7,8 @@ import "./BezahlungEintragenPage.scss";
 import { BezahlungActionCreator, bezahlungActionCreatorFactory } from "../../state/actions/BezahlungActionCreator";
 import { State } from "../../state/State";
 import { convertLinks } from "../convertLinks";
+import "../BezahlungEintragenForm/BezahlungEintragenForm";
+import { BezahlungEintragenForm, BezahlungEintragenFormTagName } from "../BezahlungEintragenForm/BezahlungEintragenForm";
 
 export class BezahlungEintragenPage extends HTMLElement {
     private store: Store;
@@ -15,12 +17,14 @@ export class BezahlungEintragenPage extends HTMLElement {
     private appBar: AppBar;
     private bezahlungActionCreator: BezahlungActionCreator;
     private zurueckLink: HTMLAnchorElement;
+    private bezahlungEintragenForm: BezahlungEintragenForm;
 
     constructor() {
         super();
         this.innerHTML = template;
         this.zurueckLink = this.querySelector("#zurueck-zum-kontokorrent");
         this.appBar = this.querySelector(AppBarTagName);
+        this.bezahlungEintragenForm = this.querySelector(BezahlungEintragenFormTagName);
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -37,10 +41,14 @@ export class BezahlungEintragenPage extends HTMLElement {
         });
         this.bezahlungActionCreator.bezahlungEintragenGeoeffnet();
         convertLinks([this.zurueckLink], this.routingActionCreator);
+        this.applyStoreState(this.store.state);
     }
 
     private applyStoreState(s: State) {
         this.zurueckLink.href = s.kontokorrents.activeKontokorrentId ? `kontokorrents/${s.kontokorrents.activeKontokorrentId}` : null;
+        if (s.kontokorrents.activeKontokorrentId) {
+            this.bezahlungEintragenForm.personen = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].personen;
+        }
     }
 
     disconnectedCallback() {
