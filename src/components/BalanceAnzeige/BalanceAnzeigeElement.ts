@@ -1,10 +1,13 @@
-import template from "./BalanceAnzeigeElement.html";
+import templateContent from "./BalanceAnzeigeElement.html";
 import "./BalanceAnzeigeElement.scss";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { ReuseableTemplate } from "../../utils/ReuseableTemplate";
 
 export const PersonNameAttribute = "person-name";
 export const BalanceAttribute = "balance";
 export const BalanceRangeAttribute = "balance-range";
+
+const template = new ReuseableTemplate(templateContent);
 
 export class BalanceAnzeigeElement extends HTMLElement {
     private personName: string;
@@ -17,7 +20,7 @@ export class BalanceAnzeigeElement extends HTMLElement {
 
     constructor() {
         super();
-        this.innerHTML = template;
+        this.appendChild(template.get());
         this.personNameElement = this.querySelector(`[data-ref="person-name"]`);
         this.balanceTextElement = this.querySelector(`[data-ref="balance-text"]`);
         this.balanceContainerElement = this.querySelector(`[data-ref="balance-container"]`);

@@ -1,6 +1,7 @@
-import template from "./BezahlungCard.html";
+import templateContent from "./BezahlungCard.html";
 import "./BezahlungCard.scss";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { ReuseableTemplate } from "../../utils/ReuseableTemplate";
 
 export const BeschreibungAttribute = "beschreibung";
 export const WertAttribute = "wert";
@@ -13,6 +14,8 @@ interface AttributeStore {
     wert: number;
     empfaenger: string;
 }
+
+const template = new ReuseableTemplate(templateContent);
 
 export class BezahlungCard extends HTMLElement {
     private attributeStore: AttributeStore;
@@ -29,7 +32,7 @@ export class BezahlungCard extends HTMLElement {
             empfaenger: null,
             wert: null
         };
-        this.innerHTML = template;
+        this.appendChild(template.get());
         this.beschreibungElement = this.querySelector(`[data-ref="beschreibung"]`);
         this.bezahlendePersonElement = this.querySelector(`[data-ref="bezahlende-person"]`);
         this.empfaengerElement = this.querySelector(`[data-ref="empfaenger"]`);
