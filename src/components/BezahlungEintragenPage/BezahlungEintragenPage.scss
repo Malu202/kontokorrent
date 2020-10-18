@@ -10,9 +10,13 @@
 bezahlung-eintragen-page {
     @include theme.property(background-color, bg-container);
     flex-grow: 1;
-    
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .bezahlungen-page__form-container {
     margin: 0 1em;
+    flex-grow: 1;
+    overflow: auto;
 }
