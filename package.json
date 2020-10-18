@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.html",
   "dependencies": {
+    "@material/checkbox": "^7.0.0",
     "comlink": "^4.3.0",
     "date-fns": "^2.16.1",
     "idb": "^5.0.6",

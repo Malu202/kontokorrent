@@ -2,7 +2,7 @@ export default null;
 declare var self: ServiceWorkerGlobalScope;
 declare var serviceWorkerOption: { assets: string[] };
 
-const cacheName = "v3";
+const cacheName = "v4";
 
 self.addEventListener("install", function (event) {
     const cacheAssets = [
