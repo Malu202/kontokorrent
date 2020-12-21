@@ -6,6 +6,8 @@ import { Store } from "../state/Store";
 import { AsyncRouteResolver } from "route-it/dist/router";
 
 
+
+
 export enum Paths {
     Login = "login",
     Info = "info",
@@ -13,7 +15,8 @@ export enum Paths {
     FeaturesRequired = "features-required",
     Kontokorrents = "kontokorrents",
     CreateEvent = "create-event",
-    BezahlungEintragen = "eintragen"
+    BezahlungEintragen = "eintragen",
+    Scannen = "scannen"
 }
 
 export class KontokorrentRouteResolver extends EventTarget implements AsyncRouteResolver<HTMLElement> {
@@ -65,11 +68,17 @@ export class KontokorrentRouteResolver extends EventTarget implements AsyncRoute
             return false;
         }
         switch (currentRoute) {
-            case Paths.BezahlungEintragen:
+            case Paths.BezahlungEintragen: {
                 const { BezahlungEintragenPage } = await import("../components/BezahlungEintragenPage/BezahlungEintragenPage");
                 let component = new BezahlungEintragenPage();
                 component.addServices(this.serviceLocator);
                 return component;
+            }
+            case Paths.Scannen: {
+                const { ScannenPage } = await import("../components/ScannenPage/ScannenPage");
+                let component = new ScannenPage();
+                return component;
+            }
         }
         let kontokorrentsRoute = /^kontokorrents\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
         if (kontokorrentsRoute) {

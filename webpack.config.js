@@ -61,7 +61,7 @@ module.exports = (env, argv) => {
                             }
                         }
                     ]
-                },
+                }
             ],
         },
         resolve: {
@@ -101,7 +101,7 @@ module.exports = (env, argv) => {
                 ],
             }),
             new WorkerPlugin(),
-            ...(analyze ? [new BundleAnalyzerPlugin()] : [])
+            ...(analyze ? [new BundleAnalyzerPlugin()] : []),
         ],
         optimization: {
             splitChunks: {
@@ -115,6 +115,7 @@ module.exports = (env, argv) => {
             historyApiFallback: {
                 index: "/"
             }
-        }
-    };
+        },
+        node: { fs: 'empty' }
+    }
 }
