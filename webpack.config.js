@@ -1,12 +1,11 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
 const { DefinePlugin } = require("webpack");
-const WorkerPlugin = require('worker-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyPlugin = require('copy-webpack-plugin');
+const LicenseCheckerWebpackPlugin = require("license-checker-webpack-plugin");
+const { InjectManifest } = require("workbox-webpack-plugin");
 
 const path = require('path');
 
@@ -79,18 +78,14 @@ module.exports = (env, argv) => {
                 template: 'src/index.html',
                 inject: false
             }),
-            new LicenseWebpackPlugin({
-                perChunkOutput: false
+            new LicenseCheckerWebpackPlugin({
+                outputFilename: "licenses.txt",
+                allow: "(Apache-2.0 OR BSD-2-Clause OR BSD-3-Clause OR MIT OR ISC)"
             }),
             new MiniCssExtractPlugin({
-                filename: '[name].[contenthash].css',
-                chunkFilename: '[id].[contenthash].css',
+                filename: '[name].[contenthash].css'
             }),
             new CleanWebpackPlugin(),
-            new ServiceWorkerWebpackPlugin({
-                entry: path.join(__dirname, 'src/sw.ts'),
-                publicPath: base
-            }),
             new DefinePlugin({
                 __ENVIRONMENT: `"${environment}"`
             }),
@@ -100,7 +95,9 @@ module.exports = (env, argv) => {
                     { from: './src/site.webmanifest', to: './' },
                 ],
             }),
-            new WorkerPlugin(),
+            new InjectManifest({
+                swSrc: "./src/sw.ts"
+            }),
             ...(analyze ? [new BundleAnalyzerPlugin()] : [])
         ],
         optimization: {

@@ -90,10 +90,7 @@ export class KontokorrentActionCreator {
         if (this.workerApi) {
             return this.workerApi;
         }
-        const worker = new Worker(
-            "../../worker/KontokorrentWorker",
-            { name: 'kontokorrent-worker', type: "module" },
-        ) as Worker;
+        const worker = new Worker(new URL("../../worker/KontokorrentWorker", import.meta.url));
         this.workerApi = wrap<KontokorrentWorkerApi>(worker);
         return this.workerApi;
     }

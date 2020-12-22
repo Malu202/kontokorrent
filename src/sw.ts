@@ -1,14 +1,18 @@
 export default null;
 declare var self: ServiceWorkerGlobalScope;
-declare var serviceWorkerOption: { assets: string[] };
+declare global {
+    interface WorkerGlobalScope {
+        __WB_MANIFEST: Array<{ revision: null, url: string }>;
+    }
+}
 
-const cacheName = "v4";
+const cacheName = "v5";
 
 self.addEventListener("install", function (event) {
     const cacheAssets = [
         "https://fonts.googleapis.com/icon?family=Material+Icons",
         "https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap"];
-    for (let asset of serviceWorkerOption.assets) {
+    for (let asset of self.__WB_MANIFEST.map(v => v.url)) {
         cacheAssets.push(asset);
     }
     event.waitUntil(

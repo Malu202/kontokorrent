@@ -20,7 +20,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
-    - run: npm run build -- -p --env.environment 'gh-pagesv2'
+    - run: npm run build -- --mode="production" --env environment="gh-pagesv2"
     - run: cp dist/index.html dist/404.html
     - run: mkdir -p v2
     - run: cp -r dist/* v2/
