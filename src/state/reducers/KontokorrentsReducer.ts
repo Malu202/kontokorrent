@@ -1,5 +1,5 @@
 import { Reducer } from "../lib/Reducer";
-import { KontokorrentsState, KontokorrentState, Bezahlung, Person } from "../State";
+import { KontokorrentsState, KontokorrentState, Bezahlung, Person, BezahlungAnlegenStatus } from "../State";
 import { KontokorrentListenActions } from "../actions/KontokorrentListenActionCreator";
 import { KontokorrentInfo } from "../../api/KontokorrentInfo";
 import { AccountActions } from "../actions/AccountActionCreator";
@@ -112,7 +112,8 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                                         ...p
                                     }
                                 }),
-                                bezahlungen: []
+                                bezahlungen: [],
+                                bezahlungAnlegen: null
                             }
                         }
                     };
@@ -197,18 +198,58 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                 break;
             }
             case ActionNames.BezahlungKontokorrentGeandert: {
-                updateStore(s => {
-                    return {
-                        ...s,
-                        activeKontokorrentId: action.kontokorrentId
-                    };
-                });
+                updateStore(s => this.updateKontokorrentStatus({
+                    ...s,
+                    activeKontokorrentId: action.kontokorrentId
+                }, action.kontokorrentId, { bezahlungAnlegen: null }));
+                break;
+            }
+            case ActionNames.NeueBezahlungAnlegen: {
+                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: BezahlungAnlegenStatus.Anlegen }));
+                break;
+            }
+            case ActionNames.NeueBezahlungAnlegenFailed: {
+                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: BezahlungAnlegenStatus.Failed }));
+                break;
+            }
+            case ActionNames.NeueBezahlungAngelegt: {
+                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: BezahlungAnlegenStatus.Failed }));
+                updateStore(s => this.upsertBezahlung(s, action.kontokorrentId, action.bezahlung));
                 break;
             }
         }
     }
 
+    private updateKontokorrentStatus(s: KontokorrentsState, kontokorrentId: string, state: Partial<KontokorrentState>) {
+        return {
+            ...s,
+            kontokorrents: {
+                ...s.kontokorrents, [kontokorrentId]: {
+                    ...s.kontokorrents[kontokorrentId],
+                    ...state
+                }
+            }
+        };
+    }
 
+    private upsertBezahlung(s: KontokorrentsState, kontokorrentId: string, b: Bezahlung):
+        KontokorrentsState {
+        let bezahlungen = s.kontokorrents[kontokorrentId]?.bezahlungen || [];
+        let existing = bezahlungen.find(d => b.id == d.id);
+        if (existing) {
+            bezahlungen.splice(bezahlungen.indexOf(existing), 1);
+        }
+        bezahlungen.push({ ...existing, ...b });
+        return {
+            ...s,
+            kontokorrents: {
+                ...s.kontokorrents, [kontokorrentId]: {
+                    ...s.kontokorrents[kontokorrentId],
+                    bezahlungen: bezahlungen
+                }
+            }
+        }
+    }
 
     private extendPersonenInfo(s: KontokorrentsState, kontokorrentId: string, personenInfo: PersonOptional[]):
         KontokorrentsState {

@@ -20,5 +20,8 @@ export const enum ActionNames {
     LoginPageGeoeffnet,
     KontokorrentSynchronisiert,
     KontokorrentHinzufuegenSuccess,
-    KontokorrentCreated
+    KontokorrentCreated,
+    NeueBezahlungAnlegen,
+    NeueBezahlungAngelegt,
+    NeueBezahlungAnlegenFailed
 }

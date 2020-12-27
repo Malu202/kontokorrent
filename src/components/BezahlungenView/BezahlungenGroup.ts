@@ -2,7 +2,7 @@ import template from "./BezahlungenGroup.html";
 import "../BezahlungCard/BezahlungCard";
 import { BezahlungViewModel } from "./BezahlungViewModel";
 import { ArrayToElementRenderer } from "../../utils/ArrayToElementRenderer";
-import { BeschreibungAttribute, BezahlendePersonAttribute, BezahlungCard, EmpfaengerAttribute, WertAttribute } from "../BezahlungCard/BezahlungCard";
+import { BeschreibungAttribute, BezahlendePersonAttribute, BezahlungCard, EmpfaengerAttribute, StatusAttribute, WertAttribute } from "../BezahlungCard/BezahlungCard";
 
 export class BezahlungenGroup extends HTMLElement {
     private container: HTMLDivElement;
@@ -35,6 +35,7 @@ export class BezahlungenGroup extends HTMLElement {
             e.setAttribute(WertAttribute, "" + b.wert);
             e.setAttribute(BezahlendePersonAttribute, b.bezahlendePersonName);
             e.setAttribute(EmpfaengerAttribute, b.empfaenger);
+            e.setAttribute(StatusAttribute, b.status)
         });
     }
 

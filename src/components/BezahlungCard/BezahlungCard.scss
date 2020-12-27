@@ -5,6 +5,7 @@ bezahlung-card {
     @extend %card;
     display: inline-flex;
     align-items: center;
+    position: relative;
 }
 
 .bezahlung-card {
@@ -18,8 +19,20 @@ bezahlung-card {
         padding-top: 0.4em;
     }
 
-    &__wert {        
+    &__wert {
         @include theme.property(color, fg-on-container-subtle);
         margin-left: 1em;
+    }
+
+    &__status {
+        @include theme.property(color, fg-on-container-subtle);
+        position: absolute;
+        line-height: 0;
+        &>.material-icons {
+            font-size: 0.9em;
+        }
+
+        bottom: 0;
+        right: 0;
     }
 }

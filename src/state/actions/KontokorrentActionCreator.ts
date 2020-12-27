@@ -2,7 +2,7 @@ import { Store } from "../Store";
 import { ApiClient } from "../../api/ApiClient";
 import { Action } from "../lib/Action";
 import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
-import { Bezahlung } from "../State";
+import { Bezahlung, BezahlungStatus } from "../State";
 type KontokorrentWorkerApi = import("../../worker/KontokorrentWorker").KontokorrentWorkerApi;
 import { wrap } from "comlink";
 import { filterBezahlungen } from "../../lib/filterBezahlungen";
@@ -60,8 +60,13 @@ export class KontokorrentActionCreator {
 
     }
     private async refreshBezahlungen(id: string) {
-        let aktionen = await this.db.getAktionen(id);
-        this.store.dispatch(new KontokorrentBezahlungen(id, filterBezahlungen(aktionen)));
+        let aktionen = filterBezahlungen(await this.db.getAktionen(id)).map(b => {
+            return {
+                ...b,
+                status: BezahlungStatus.Gespeichert
+            };
+        });
+        this.store.dispatch(new KontokorrentBezahlungen(id, [...aktionen]));
     }
 
     private async calculateBalance(id: string) {

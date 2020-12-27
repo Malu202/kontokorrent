@@ -1,19 +1,27 @@
 <app-bar></app-bar>
-<div class="bezahlungen-page-menu">
-    <a id="zurueck-zum-kontokorrent" class="button">
-        <span class="material-icons">
-            arrow_back
-        </span>
-        zurück
-    </a>
-    <button class="button" title="speichern" id="bezahlung-eintragen__save">
-        <span class="material-icons">
-            save
-        </span>
-        speichern
-    </button>
+<div id="bezahlung-eintragen__edit" class="bezahlung-eintragen__edit">
+    <div class="bezahlungen-page-menu">
+        <a id="zurueck-zum-kontokorrent" class="button">
+            <span class="material-icons">
+                arrow_back
+            </span>
+            zurück
+        </a>
+        <button class="button" title="speichern" id="bezahlung-eintragen__save">
+            <span class="material-icons">
+                save
+            </span>
+            speichern
+        </button>
+    </div>
+    <div class="bezahlung-eintragen__form-container" id="bezahlung-eintragen__form-container">
+        <div id="save-error" class="alert alert--error" hidden>Zahlung konnte nicht gespeichert werden.
+        </div>
+        <bezahlung-eintragen-form>
+        </bezahlung-eintragen-form>
+    </div>
 </div>
-<div class="bezahlungen-page__form-container">
-    <bezahlung-eintragen-form>
-    </bezahlung-eintragen-form>
+<div id="bezahlung-eintragen__saving" class="bezahlung-eintragen__saving">
+    <span class="spinner"></span>
+    <span>wird gespeichert</span>
 </div>

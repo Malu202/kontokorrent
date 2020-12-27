@@ -26,6 +26,12 @@ export interface Person {
     balance: number;
 }
 
+export enum BezahlungStatus {
+    Zwischengespeichert = "zwischengespeichert",
+    Speichern = "speichern",
+    Gespeichert = "gespeichert"
+}
+
 export interface Bezahlung {
     id: string;
     zeitpunkt: Date;
@@ -33,6 +39,13 @@ export interface Bezahlung {
     empfaengerIds: string[];
     wert: number;
     beschreibung: string;
+    status: BezahlungStatus
+}
+
+export const enum BezahlungAnlegenStatus {
+    Anlegen,
+    Angelegt,
+    Failed
 }
 
 export interface KontokorrentState {
@@ -41,6 +54,7 @@ export interface KontokorrentState {
     personen: Person[];
     bezahlungen: Bezahlung[];
     synchronisieren: boolean;
+    bezahlungAnlegen: BezahlungAnlegenStatus;
 }
 
 export interface State {

@@ -1,3 +1,4 @@
+import { BezahlungStatus } from "../../state/State";
 
 export interface BezahlungViewModel {
     tag: number;
@@ -6,5 +7,6 @@ export interface BezahlungViewModel {
     empfaenger: string;
     wert: number;
     beschreibung: string;
+    status:BezahlungStatus;
     id:string;
 }

@@ -4,11 +4,13 @@ import { sortByAlphabetically } from "../utils/sortBy";
 import { Aktion } from "../api/Aktion";
 import { AktionDbModel } from "./AktionDbModel";
 import { AccountInfo } from "./AccountInfo";
+import { NeueBezahlungDbModel } from "./NeueBezahlungDbModel";
 
 
 const KontokorrentsStore = "KontokorrentsStore";
 const AppStateStore = "AppStateStore";
 const AktionenStore = "AktionenStore";
+const NeueBezahlungenStore = "NeueBezahlungenStore";
 
 interface AccessTokenInfo {
     timestamp: number;
@@ -38,6 +40,11 @@ interface KontokorrentDbSchema extends DBSchema {
         value: AktionDbModel,
         indexes: { "kontokorrentId": string };
     };
+    NeueBezahlungenStore: {
+        key: string,
+        value: NeueBezahlungDbModel,
+        indexes: { "kontokorrentId": string };
+    }
 }
 
 
@@ -45,7 +52,7 @@ const initialSettings: (() => AppSettings) = () => { return { id: 0, zuletztGese
 export class KontokorrentDatabase {
 
     private async withInitialized<T>(cb: (db: IDBPDatabase<KontokorrentDbSchema>) => Promise<T>) {
-        let db = await openDB<KontokorrentDbSchema>("kontokorrent-db", 3, {
+        let db = await openDB<KontokorrentDbSchema>("kontokorrent-db", 4, {
             upgrade(db, oldVersion: number, newVersion: number) {
                 if (oldVersion < 1) {
                     let store = db.createObjectStore(KontokorrentsStore, { keyPath: "id" });
@@ -57,6 +64,10 @@ export class KontokorrentDatabase {
                 }
                 if (oldVersion < 3) {
                     let store = db.createObjectStore(AktionenStore, { keyPath: ["laufendeNummer", "kontokorrentId"] });
+                    store.createIndex("kontokorrentId", "kontokorrentId");
+                }
+                if (oldVersion < 4) {
+                    let store = db.createObjectStore(NeueBezahlungenStore, { keyPath: ["id"] });
                     store.createIndex("kontokorrentId", "kontokorrentId");
                 }
             },
@@ -240,5 +251,22 @@ export class KontokorrentDatabase {
             await tx.done;
         });
     }
-}
 
+    async getZwischengespeicherteBezahlungen(): Promise<NeueBezahlungDbModel[]> {
+        return await this.withInitialized(async db => {
+            return db.getAll(NeueBezahlungenStore);
+        });
+    }
+
+    async bezahlungZwischenspeichern(m: NeueBezahlungDbModel) {
+        return await this.withInitialized(async db => {
+            db.add(NeueBezahlungenStore, m);
+        });
+    }
+
+    async zwischengespeicherteBezahlungErledigt(id: string) {
+        return await this.withInitialized(async db => {
+            db.delete(NeueBezahlungenStore, id);
+        });
+    }
+}

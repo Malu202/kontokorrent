@@ -51,6 +51,7 @@ export class BezahlungEintragenForm extends HTMLElement {
     connectedCallback() {
         this.formInputListener = () => this.onFormInput();
         this.form.addEventListener("input", this.formInputListener);
+        this.betrag.focus();
     }
 
     disconnectedCallback() {
@@ -66,7 +67,8 @@ export class BezahlungEintragenForm extends HTMLElement {
         let betrag = this.parseBetrag();
         let betragValid = betrag.valid;
         this.betragInvalidError.hidden = betrag.valid || betrag.empty;
-        return this.validateWhileManipulating() && betragValid;
+        let valid = this.validateWhileManipulating() && betragValid;
+        return valid;
     }
 
     private getDatum() {

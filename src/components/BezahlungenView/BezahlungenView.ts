@@ -88,7 +88,8 @@ export class BezahlungenView extends HTMLElement {
                 empfaenger: this.formatEmpfaenger(z, this.personen),
                 tag: +startOfDay(z.zeitpunkt),
                 id: z.id,
-                woche: +startOfWeek(z.zeitpunkt)
+                woche: +startOfWeek(z.zeitpunkt),
+                status: z.status
             };
             return x;
         });
@@ -128,7 +129,7 @@ export class BezahlungenView extends HTMLElement {
     private formatWeek(date: Date) {
         let endWeek = endOfWeek(date);
         let weekformat: string;
-        const dayAndMonth = (d:Date) => new Intl.DateTimeFormat(["de-AT"], { day: "numeric", month: "long" }).format(d);
+        const dayAndMonth = (d: Date) => new Intl.DateTimeFormat(["de-AT"], { day: "numeric", month: "long" }).format(d);
         if (endWeek.getMonth() == date.getMonth()) {
             weekformat = `${new Intl.DateTimeFormat(["de-AT"], { day: "numeric" }).format(date)}. - ${dayAndMonth(endWeek)}`;
         }

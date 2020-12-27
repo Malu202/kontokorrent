@@ -8,6 +8,9 @@ import { InteractionRequiredException } from "./InteractionRequiredException";
 import { ApiException } from "./ApiException";
 import { Aktion } from "./Aktion";
 import { environment } from "../environment";
+import { NeueBezahlungRequest } from "./NeueBezahlungRequest";
+import { rejects } from "assert";
+import { NeueBezahlungFailedException } from "./NeueBezahlungFailedException";
 
 const baseUrl = environment.API_URL;
 
@@ -86,17 +89,40 @@ export class ApiClient {
         }
         else if (res.ok) {
             let aktionen: Aktion[] = await res.json();
-            for (let a of aktionen) {
-                if (a.bezahlung) {
-                    a.bezahlung.zeitpunkt = new Date(a.bezahlung.zeitpunkt);
-                }
-            }
             return {
                 success: true,
-                aktionen
+                aktionen: this.mapAktionen(aktionen)
             }
         }
     }
+
+    private mapAktionen(aktionen : Aktion[]) : Aktion[] {
+        for (let a of aktionen) {
+            if (a.bezahlung) {
+                a.bezahlung.zeitpunkt = new Date(a.bezahlung.zeitpunkt);
+            }
+        }
+        return aktionen;
+    }
+
+    async neueBezahlung(kontokorrentId: string, request: NeueBezahlungRequest) {
+        let init: RequestInit = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/vnd+kontokorrent.hinzufuegenaktion+json",
+                "Authorization": `Bearer ${await this.getAccessToken()}`
+            },
+            body: JSON.stringify(request)
+        };
+        let res = await fetch(`${baseUrl}/api/v2/kontokorrents/${kontokorrentId}/aktionen`, init);
+        if (res.ok) {
+            let aktion = <Aktion>(await res.json());
+            return this.mapAktionen([aktion])[0];
+        }
+        throw new NeueBezahlungFailedException();
+    }
+
 
     private async getAccessToken() {
         let info = await this.accountInfoStore.get();

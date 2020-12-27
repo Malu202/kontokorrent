@@ -6,7 +6,7 @@ declare global {
     }
 }
 
-const cacheName = "v6";
+const cacheName = "v7";
 
 self.addEventListener("install", function (event) {
     const cacheAssets = [
