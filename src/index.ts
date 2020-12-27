@@ -48,7 +48,7 @@ async function run() {
     store.addReducer("account", new AccountReducer());
     store.addReducer("kontokorrents", new KontokorrentsReducer());
 
-    const accountInfoStore = new AccountInfoStore();
+    const accountInfoStore = new AccountInfoStore(db);
     const apiClient = new ApiClient(accountInfoStore);
 
     const serviceLocator = new ServiceLocator(store,

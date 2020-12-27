@@ -103,27 +103,27 @@ export class ApiClient {
         if (null == info) {
             throw new Error("Keine Account Information gespeichert.");
         }
-        let tokenInfo = localStorage.getItem("access_token_anonymous");
-        if (null != tokenInfo) {
-            let { token, expires } = JSON.parse(tokenInfo);
-            if (token && expires && expires >= +new Date()) {
-                return token;
-            }
-        }
         if (info.type == AccountType.anonym) {
-
+            let tokenInfo = await this.accountInfoStore.getAccessToken("anonymous");
+            if (null != tokenInfo) {
+                let { token, expires } = JSON.parse(tokenInfo.value);
+                if (token && expires && expires >= +new Date()) {
+                    return token;
+                }
+            }
+            let tokenResponse;
             try {
                 let res = await postJson(`${baseUrl}/api/v2/token`, { id: info.id, secret: info.secret });
                 if (!res.ok) {
                     throw new TokenRenewFailedException(false);
                 }
-                let tokenResponse = await res.json();
-                localStorage.setItem("access_token_anonymous", JSON.stringify(tokenResponse));
-                return tokenResponse.token;
+                tokenResponse = await res.json();
             }
             catch {
                 throw new TokenRenewFailedException(true);
             }
+            await this.accountInfoStore.updateAccessTokenIfNewer("anonymous", JSON.stringify(tokenResponse), tokenInfo?.timestamp);
+            return tokenResponse.token;
         }
         else if (info.type == AccountType.google) {
             throw new InteractionRequiredException();

@@ -1,17 +1,26 @@
-import { openDB, IDBPDatabase, DBSchema } from "idb";
+import { openDB, IDBPDatabase, DBSchema, unwrap } from "idb";
 import { KontokorrentDbModel } from "./KontokorrentDbModel";
 import { sortByAlphabetically } from "../utils/sortBy";
 import { Aktion } from "../api/Aktion";
 import { AktionDbModel } from "./AktionDbModel";
+import { resolve } from "path";
+import { ca } from "date-fns/locale";
 
 
 const KontokorrentsStore = "KontokorrentsStore";
 const AppStateStore = "AppStateStore";
 const AktionenStore = "AktionenStore";
 
+interface AccessTokenInfo {
+    timestamp: number;
+    value: string;
+    type: "google" | "anonymous";
+}
+
 interface AppSettings {
     id: number;
     zuletztGesehenerKontokorrentId: string
+    accesstokens: AccessTokenInfo[];
 }
 
 interface KontokorrentDbSchema extends DBSchema {
@@ -32,7 +41,7 @@ interface KontokorrentDbSchema extends DBSchema {
 }
 
 
-const initialSettings: (() => AppSettings) = () => { return { id: 0, zuletztGesehenerKontokorrentId: null } };
+const initialSettings: (() => AppSettings) = () => { return { id: 0, zuletztGesehenerKontokorrentId: null, accesstokens: [] } };
 export class KontokorrentDatabase {
 
     private async withInitialized<T>(cb: (db: IDBPDatabase<KontokorrentDbSchema>) => Promise<T>) {
@@ -164,6 +173,42 @@ export class KontokorrentDatabase {
             await db.clear(AktionenStore);
             await db.clear(KontokorrentsStore);
             await db.put(AppStateStore, initialSettings());
+        });
+    }
+
+    async getAccessToken(tokenType: "anonymous" | "google"): Promise<AccessTokenInfo> {
+        return await this.withInitialized(async db => {
+            let appState = await db.get(AppStateStore, 0);
+            return (appState.accesstokens || []).find(t => t.type === tokenType);
+        });
+    }
+
+    async updateAccessTokenIfNewer(tokenType: "anonymous" | "google", value: string, lastTimeStamp: number): Promise<boolean> {
+        return await this.withInitialized(async db => {
+            const tx = db.transaction(AppStateStore, "readwrite", { durability: "strict" });
+            let appState = await tx.store.get(0);
+            if (!appState.accesstokens) {
+                appState.accesstokens = [];
+            }
+            let existing = appState.accesstokens.find(t => t.type === tokenType);
+            if (!existing) {
+                appState.accesstokens.push({
+                    timestamp: 1,
+                    type: tokenType,
+                    value: value
+                });
+            } else if (existing.timestamp == lastTimeStamp) {
+                existing.value = value;
+                existing.timestamp++;
+            }
+            else {
+                console.error(`The accesstoken of type ${tokenType} was already updated since reading.`);
+                await tx.done;
+                return false;
+            }
+            await tx.store.put(appState);
+            await tx.done;
+            return true;
         });
     }
 }
