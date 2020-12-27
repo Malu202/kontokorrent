@@ -18,7 +18,7 @@ export class InitializationActionCreator {
     }
 
     async initializeApplication() {
-        if (!testFeatures().allPassed) {
+        if (!(await testFeatures()).allPassed) {
             this.router.run();
             this.routingActionCreator.navigateFeaturesRequired();
             return;

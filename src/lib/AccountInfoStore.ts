@@ -7,18 +7,13 @@ export class AccountInfoStore {
     }
 
     async set(accountInfo: AccountInfo): Promise<void> {
-        localStorage.setItem("account_info", JSON.stringify(accountInfo));
+        await this.db.setAccountInfo(accountInfo);
     }
     async get(): Promise<AccountInfo> {
-        let info = localStorage.getItem("account_info");
-        if (null == info)
-            return null;
-        return <AccountInfo>JSON.parse(info);
+        return await this.db.getAccountInfo();
     }
     async clear(): Promise<void> {
-        localStorage.removeItem("account_info");
-        localStorage.removeItem("access_token_anonymous");
-        localStorage.removeItem("access_token_google");
+        await this.db.clearAccountInfo();
     }
 
     async getAccessToken(tokenType: "google" | "anonymous"): Promise<{ timestamp: number, value: string }> {

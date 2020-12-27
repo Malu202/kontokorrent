@@ -3,8 +3,7 @@ import { KontokorrentDbModel } from "./KontokorrentDbModel";
 import { sortByAlphabetically } from "../utils/sortBy";
 import { Aktion } from "../api/Aktion";
 import { AktionDbModel } from "./AktionDbModel";
-import { resolve } from "path";
-import { ca } from "date-fns/locale";
+import { AccountInfo } from "./AccountInfo";
 
 
 const KontokorrentsStore = "KontokorrentsStore";
@@ -21,6 +20,7 @@ interface AppSettings {
     id: number;
     zuletztGesehenerKontokorrentId: string
     accesstokens: AccessTokenInfo[];
+    accountinfo: AccountInfo;
 }
 
 interface KontokorrentDbSchema extends DBSchema {
@@ -41,7 +41,7 @@ interface KontokorrentDbSchema extends DBSchema {
 }
 
 
-const initialSettings: (() => AppSettings) = () => { return { id: 0, zuletztGesehenerKontokorrentId: null, accesstokens: [] } };
+const initialSettings: (() => AppSettings) = () => { return { id: 0, zuletztGesehenerKontokorrentId: null, accesstokens: [], accountinfo: null } };
 export class KontokorrentDatabase {
 
     private async withInitialized<T>(cb: (db: IDBPDatabase<KontokorrentDbSchema>) => Promise<T>) {
@@ -209,6 +209,35 @@ export class KontokorrentDatabase {
             await tx.store.put(appState);
             await tx.done;
             return true;
+        });
+    }
+
+    async setAccountInfo(accountInfo: AccountInfo): Promise<void> {
+        return await this.withInitialized(async db => {
+            const tx = db.transaction(AppStateStore, "readwrite");
+            let appState = await tx.store.get(0);
+            appState.accountinfo = accountInfo;
+            await tx.store.put(appState);
+            await tx.done;
+        });
+    }
+
+    async getAccountInfo(): Promise<AccountInfo> {
+        return await this.withInitialized(async db => {
+            const tx = db.transaction(AppStateStore, "readonly");
+            let appState = await tx.store.get(0);
+            return appState?.accountinfo;
+        });
+    }
+
+    async clearAccountInfo(): Promise<void> {
+        return await this.withInitialized(async db => {
+            const tx = db.transaction(AppStateStore, "readwrite");
+            let appState = await tx.store.get(0);
+            appState.accountinfo = null;
+            appState.accesstokens = [];
+            await tx.store.put(appState);
+            await tx.done;
         });
     }
 }
