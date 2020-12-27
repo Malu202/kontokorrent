@@ -1,5 +1,5 @@
 import { Reducer } from "../lib/Reducer";
-import { KontokorrentsState, KontokorrentState, Bezahlung } from "../State";
+import { KontokorrentsState, KontokorrentState, Bezahlung, Person } from "../State";
 import { KontokorrentListenActions } from "../actions/KontokorrentListenActionCreator";
 import { KontokorrentInfo } from "../../api/KontokorrentInfo";
 import { AccountActions } from "../actions/AccountActionCreator";
@@ -13,6 +13,7 @@ type Actions = KontokorrentListenActions
     | BezahlungActions
     | KontokorrentHinzufuegenActions
     | KontokorrentActions;
+type PersonOptional = Partial<Omit<Person, "id">> & { id: string };
 
 export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions> {
     onDispatch(action: Actions, updateStore: (a: (s: KontokorrentsState) => KontokorrentsState) => void): void {
@@ -170,22 +171,9 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                 break;
             }
             case ActionNames.KontokorrentBalanceAktualisiert: {
-                updateStore(s => {
-                    return {
-                        ...s,
-                        kontokorrents: {
-                            ...s.kontokorrents, [action.kontokorrentId]: {
-                                ...s.kontokorrents[action.kontokorrentId],
-                                personen: s.kontokorrents[action.kontokorrentId].personen.map(p => {
-                                    return {
-                                        ...p,
-                                        balance: action.balance[p.id]
-                                    };
-                                })
-                            }
-                        }
-                    };
-                });
+                updateStore(s => this.extendPersonenInfo(s, action.kontokorrentId, Object.entries(action.balance).map(e => {
+                    return { id: e[0], balance: e[1] };
+                })));
                 break;
             }
             case ActionNames.LoginPageGeoeffnet: {
@@ -216,6 +204,25 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                     };
                 });
                 break;
+            }
+        }
+    }
+
+
+
+    private extendPersonenInfo(s: KontokorrentsState, kontokorrentId: string, personenInfo: PersonOptional[]):
+        KontokorrentsState {
+        let personenMap = new Map((s.kontokorrents[kontokorrentId]?.personen || []).map(p => [p.id, p]));
+        for (let info of personenInfo) {
+            personenMap.set(info.id, { ...personenMap.get(info.id), ...info });
+        }
+        return {
+            ...s,
+            kontokorrents: {
+                ...s.kontokorrents, [kontokorrentId]: {
+                    ...s.kontokorrents[kontokorrentId],
+                    personen: Array.from(personenMap.values())
+                }
             }
         }
     }
