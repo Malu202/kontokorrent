@@ -23,7 +23,7 @@ export class InitializationActionCreator {
             this.routingActionCreator.navigateFeaturesRequired();
             return;
         }
-        let initialized = this.accountActionCreator.initializeAccount();
+        let initialized = await this.accountActionCreator.initializeAccount();
         if (!initialized) {
             window.history.replaceState({}, document.title, Paths.Login);
         }

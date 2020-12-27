@@ -70,10 +70,10 @@ export class AccountActionCreator {
         private routingActionCreator: RoutingActionCreator,
         private db: KontokorrentDatabase) {
     }
-    
-    initializeAccount() {
-        let info = this.accountInfoStore.get();
-        if (!this.accountInfoStore.get()) {
+
+    async initializeAccount(): Promise<boolean> {
+        let info = await this.accountInfoStore.get();
+        if (!info) {
             return false;
         }
         this.store.dispatch(new AccountInitialized(info));
@@ -87,11 +87,11 @@ export class AccountActionCreator {
         }
         catch (e) {
             if (e instanceof TokenRenewFailedException) {
-                let accountInfo = this.accountInfoStore.get();
+                let accountInfo = await this.accountInfoStore.get();
                 if (!e.networkError && accountInfo.type == AccountType.anonym) {
                     // anonymer token renew failed - wir haben ein ernstes problem
                     // reset and duck out
-                    this.accountInfoStore.clear();
+                    await this.accountInfoStore.clear();
                     window.location.reload();
                 }
             }
@@ -115,7 +115,7 @@ export class AccountActionCreator {
             }
             else {
                 this.store.dispatch(new AccountCreated(accountInfo));
-                this.accountInfoStore.set(accountInfo);
+                await this.accountInfoStore.set(accountInfo);
             }
             return res.success;
         }
@@ -123,7 +123,7 @@ export class AccountActionCreator {
     }
 
     async logout() {
-        this.accountInfoStore.clear();
+        await this.accountInfoStore.clear();
         await this.db.clear();
         this.store.dispatch(new LoggedOut());
         this.routingActionCreator.navigateLogin();

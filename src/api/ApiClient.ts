@@ -99,7 +99,7 @@ export class ApiClient {
     }
 
     private async getAccessToken() {
-        let info = this.accountInfoStore.get();
+        let info = await this.accountInfoStore.get();
         if (null == info) {
             throw new Error("Keine Account Information gespeichert.");
         }
