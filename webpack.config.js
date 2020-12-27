@@ -20,6 +20,7 @@ module.exports = (env, argv) => {
         "gh-pagesv2": "/v2/"
     }[environment];
     return {
+        target: "web",
         entry: {
             index: './src/index.ts'
         },

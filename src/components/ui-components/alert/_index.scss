@@ -12,5 +12,15 @@
             @include theme.property(border-color, error-alert-border);
             @include theme.property(background-color, error-alert-bg);
         }
+
+        &__field-label {
+
+            font-weight: bold;
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
     }
 }

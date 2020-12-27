@@ -1,10 +1,23 @@
-<form novalidate class="bezahlung-eintragen-form">
-    <label for="betrag" class="bezahlung-eintragen-form__label">Betrag</label>
-    <input name="betrag" id="betrag" type="number" novalidate step="any">
-    <label for="zahlende-person" class="bezahlung-eintragen-form__label">Diese Person zahlt</label>
-    <div id="zahlende-person-auswahl"></div>
-    <label for="empfaenger" class="bezahlung-eintragen-form__label">für diese Personen</label>
-    <div id="empfaenger-auswahl"></div>
-    <label for="betreff" class="bezahlung-eintragen-form__label">Betreff</label>
-    <input name="betreff" id="betreff" required="" type="text">
+<form novalidate class="bezahlung-eintragen-form" id="bezahlung-eintragen-form">
+        <div id="betreff-missing-error" class="alert alert--error" hidden>Es muss ein <label class="alert__field-label"
+                        for="betreff">Betreff</label> angegeben werden.</div>
+        <div id="betrag-invalid-error" class="alert alert--error" hidden> Der <label class="alert__field-label"
+                        for="betreff">Betrag</label> ist ungültig.</div>
+        <div id="betrag-missing-error" class="alert alert--error" hidden>Es muss ein <label class="alert__field-label"
+                        for="betrag">Betrag</label> angegeben werden.</div>
+        <span id="zahlende-person-missing-error" class="alert alert--error" hidden>Wähle eine Person aus die bezahlt.
+        </span>
+        <div id="empfaenger-missing-error" class="alert alert--error" hidden>Wähle Personen aus für die bezahlt wird.
+        </div>
+
+        <label for="betrag" class="bezahlung-eintragen-form__label">Betrag</label>
+        <input name="betrag" id="betrag" type="number" novalidate step="any">
+        <label for="zahlende-person" class="bezahlung-eintragen-form__label">Diese Person zahlt</label>
+        <div id="zahlende-person-auswahl"></div>
+        <label for="empfaenger" class="bezahlung-eintragen-form__label">für diese Personen</label>
+        <div id="empfaenger-auswahl"></div>
+        <label for="betreff" class="bezahlung-eintragen-form__label">Betreff</label>
+        <input name="betreff" id="betreff" required="" type="text">
+        <label for="datum" class="bezahlung-eintragen-form__label">Datum</label>
+        <input name="datum" id="datum" required="" type="date">
 </form>

@@ -2,7 +2,9 @@
 
 @mixin core-styles {
 
-    input[type=text],input[type=number] {
+    input[type=text],
+    input[type=number],
+    input[type=date] {
         outline: none;
         border: none;
         background-color: inherit;

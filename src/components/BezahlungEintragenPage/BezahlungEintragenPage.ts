@@ -18,6 +18,8 @@ export class BezahlungEintragenPage extends HTMLElement {
     private bezahlungActionCreator: BezahlungActionCreator;
     private zurueckLink: HTMLAnchorElement;
     private bezahlungEintragenForm: BezahlungEintragenForm;
+    private saveButton: HTMLButtonElement;
+    private saveEventListener: () => void;
 
     constructor() {
         super();
@@ -25,6 +27,7 @@ export class BezahlungEintragenPage extends HTMLElement {
         this.zurueckLink = this.querySelector("#zurueck-zum-kontokorrent");
         this.appBar = this.querySelector(AppBarTagName);
         this.bezahlungEintragenForm = this.querySelector(BezahlungEintragenFormTagName);
+        this.saveButton = this.querySelector("#bezahlung-eintragen__save");
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -42,6 +45,14 @@ export class BezahlungEintragenPage extends HTMLElement {
         this.bezahlungActionCreator.bezahlungEintragenGeoeffnet();
         convertLinks([this.zurueckLink], this.routingActionCreator);
         this.applyStoreState(this.store.state);
+        this.saveEventListener = () => this.save();
+        this.saveButton.addEventListener("click", this.saveEventListener);
+    }
+
+    save() {
+        if (this.bezahlungEintragenForm.validate()) {
+            let data = this.bezahlungEintragenForm.getData();
+        }
     }
 
     private applyStoreState(s: State) {
@@ -53,6 +64,7 @@ export class BezahlungEintragenPage extends HTMLElement {
 
     disconnectedCallback() {
         this.subscription();
+        this.saveButton.removeEventListener("click", this.saveEventListener);
     }
 }
 
