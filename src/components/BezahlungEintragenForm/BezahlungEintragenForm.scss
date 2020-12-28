@@ -1,13 +1,25 @@
 .bezahlung-eintragen-form {
     display: flex;
     flex-direction: column;
+
     &__label {
         font-weight: 500;
+
+    }
+
+    &__row {
+        margin-top: 0.5em;
+    }
+
+    &__empfaenger-row {
+        display: flex;
+        align-items: center;
         margin-top: 0.5em;
     }
 }
 
-#zahlende-person-auswahl, #empfaenger-auswahl {
+#zahlende-person-auswahl,
+#empfaenger-auswahl {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(7em, 1fr));
 }

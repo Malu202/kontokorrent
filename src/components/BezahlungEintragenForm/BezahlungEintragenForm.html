@@ -10,14 +10,18 @@
         <div id="empfaenger-missing-error" class="alert alert--error" hidden>Wähle Personen aus für die bezahlt wird.
         </div>
 
-        <label for="betrag" class="bezahlung-eintragen-form__label">Betrag</label>
+        <label for="betrag" class="bezahlung-eintragen-form__label bezahlung-eintragen-form__row">Betrag</label>
         <input name="betrag" id="betrag" type="number" novalidate step="any">
-        <label for="zahlende-person" class="bezahlung-eintragen-form__label">Diese Person zahlt</label>
+        <label for="zahlende-person" class="bezahlung-eintragen-form__label bezahlung-eintragen-form__row">Diese Person zahlt</label>
         <div id="zahlende-person-auswahl"></div>
-        <label for="empfaenger" class="bezahlung-eintragen-form__label">für diese Personen</label>
+        <div class="bezahlung-eintragen-form__empfaenger-row">
+                <label for="empfaenger" class="bezahlung-eintragen-form__label">für diese Personen</label>
+                <mdc-checkbox checkbox-id="alle" checkbox-name="alle" id="alle-check"></mdc-checkbox>
+                <label for="alle">alle</label>
+        </div>
         <div id="empfaenger-auswahl"></div>
-        <label for="betreff" class="bezahlung-eintragen-form__label">Betreff</label>
+        <label for="betreff" class="bezahlung-eintragen-form__label bezahlung-eintragen-form__row">Betreff</label>
         <input name="betreff" id="betreff" required="" type="text">
-        <label for="datum" class="bezahlung-eintragen-form__label">Datum</label>
+        <label for="datum" class="bezahlung-eintragen-form__label bezahlung-eintragen-form__row">Datum</label>
         <input name="datum" id="datum" required="" type="date">
 </form>

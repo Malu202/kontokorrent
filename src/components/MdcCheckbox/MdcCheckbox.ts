@@ -4,6 +4,9 @@ import "./MdcCheckbox.scss";
 
 const template = new ReuseableTemplate(templateContent);
 
+export const CheckboxIdAttribute = "checkbox-id";
+export const CheckboxNameAttribute = "checkbox-name";
+
 export class MdcCheckbox extends HTMLElement {
     private nativeControl: HTMLInputElement;
 
@@ -21,12 +24,17 @@ export class MdcCheckbox extends HTMLElement {
 
     }
 
-    set checkboxId(value: string) {
-        this.nativeControl.id = value;
+    attributeChangedCallback() {
+        this.updateAttributes();
     }
 
-    set checkboxName(value: string) {
-        this.nativeControl.name = value;
+    private updateAttributes() {
+        this.nativeControl.id = this.getAttribute(CheckboxIdAttribute);
+        this.nativeControl.name = this.getAttribute(CheckboxNameAttribute);
+    }
+
+    static get observedAttributes() {
+        return [CheckboxIdAttribute, CheckboxNameAttribute];
     }
 }
 

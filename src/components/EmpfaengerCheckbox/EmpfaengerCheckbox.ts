@@ -22,8 +22,8 @@ export class EmpfaengerCheckbox extends HTMLElement {
         this.label.innerText = value.name;
         const id = `empfaenger-${value.id}`;
         this.label.setAttribute("for", id);
-        this.mdcCheckBox.checkboxId = id;
-        this.mdcCheckBox.checkboxName = id;
+        this.mdcCheckBox.setAttribute("checkbox-id", id);
+        this.mdcCheckBox.setAttribute("checkbox-name", id);
     }
 
     connectedCallback() {

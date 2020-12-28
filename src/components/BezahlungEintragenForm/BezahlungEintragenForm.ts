@@ -6,6 +6,7 @@ import { BezahlendePersonRadioButton } from "../BezahlendePersonRadioButton/Beza
 import { EmpfaengerCheckbox } from "../EmpfaengerCheckbox/EmpfaengerCheckbox";
 import { toDateInputValue } from "../../utils/toDateInputValue";
 import { isSameDay, startOfDay } from "date-fns";
+import { MdcCheckbox } from "../MdcCheckbox/MdcCheckbox";
 
 export class BezahlungEintragenForm extends HTMLElement {
     private zahlendePersonRenderer: ArrayToElementRenderer<Person, BezahlendePersonRadioButton, string>;
@@ -23,6 +24,8 @@ export class BezahlungEintragenForm extends HTMLElement {
     private betragInvalidError: HTMLDivElement;
     private empfaengerAuswahl: HTMLDivElement;
     private _personen: Person[];
+    private alleCheck: MdcCheckbox;
+    private alleClickListener: () => void;
 
     constructor() {
         super();
@@ -46,16 +49,27 @@ export class BezahlungEintragenForm extends HTMLElement {
         this.betragInvalidError = this.querySelector("#betrag-invalid-error");
         this.empfaengerMissingError = this.querySelector("#empfaenger-missing-error");
         this.form = this.querySelector("#bezahlung-eintragen-form");
+        this.alleCheck = this.querySelector("#alle-check");
     }
 
     connectedCallback() {
         this.formInputListener = () => this.onFormInput();
         this.form.addEventListener("input", this.formInputListener);
         this.betrag.focus();
+        this.alleClickListener = () => this.alleClick();
+        this.alleCheck.addEventListener("input", this.alleClickListener);
+    }
+
+    private alleClick() {
+        let checked = (this.form["alle"] as HTMLInputElement).checked;
+        for (let c of this.empfaengerCheckboxen) {
+            c.checked = checked;
+        }
     }
 
     disconnectedCallback() {
         this.form.removeEventListener("input", this.formInputListener);
+        this.alleCheck.removeEventListener("input", this.alleClickListener);
     }
 
     onFormInput() {
@@ -92,10 +106,10 @@ export class BezahlungEintragenForm extends HTMLElement {
     private parseBetrag() {
         this.betrag.setAttribute("type", "text");
         let betrag = this.betrag.value;
+        this.betrag.setAttribute("type", "number");
         if (betrag == "") {
             return { valid: false, empty: true };
         }
-        this.betrag.setAttribute("type", "number");
         betrag = betrag.replace(",", ".");
         betrag = betrag.replace(/ /g, "");
         let betragFloat = parseFloat(betrag);
@@ -107,6 +121,10 @@ export class BezahlungEintragenForm extends HTMLElement {
 
     private get bezahlendePerson(): HTMLInputElement {
         return this.form["bezahlende-person"];
+    }
+
+    private get empfaengerCheckboxen(): HTMLInputElement[] {
+        return this._personen.map(p => (this.form["empfaenger-" + p.id] as HTMLInputElement));
     }
 
     private get selectedEmpfaenger(): string[] {

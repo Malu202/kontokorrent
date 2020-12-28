@@ -1,2 +1,6 @@
 @use "@material/checkbox";
 @include checkbox.core-styles;
+
+mdc-checkbox + label {
+    cursor: pointer;
+}
