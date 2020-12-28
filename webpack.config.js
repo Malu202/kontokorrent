@@ -6,8 +6,17 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const CopyPlugin = require('copy-webpack-plugin');
 const LicenseCheckerWebpackPlugin = require("license-checker-webpack-plugin");
 const { InjectManifest } = require("workbox-webpack-plugin");
-
+const fs = require("fs");
 const path = require('path');
+
+function getRevision() {
+    const rev = fs.readFileSync('.git/HEAD').toString();
+    if (rev.indexOf(':') === -1) {
+        return rev;
+    } else {
+        return fs.readFileSync('.git/' + rev.substring(5)).toString();
+    }
+}
 
 module.exports = (env, argv) => {
     const production = argv.mode == "production";
@@ -19,6 +28,8 @@ module.exports = (env, argv) => {
         "local": "/",
         "gh-pagesv2": "/v2/"
     }[environment];
+
+    const cacheName = production ? getRevision() : "development";
     return {
         target: "web",
         entry: {
@@ -88,7 +99,8 @@ module.exports = (env, argv) => {
             }),
             new CleanWebpackPlugin(),
             new DefinePlugin({
-                __ENVIRONMENT: `"${environment}"`
+                __ENVIRONMENT: `"${environment}"`,
+                __CACHENAME: `"${cacheName}"`
             }),
             new CopyPlugin({
                 patterns: [

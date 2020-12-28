@@ -12,35 +12,57 @@ declare global {
         __WB_MANIFEST: Array<{ revision: null, url: string }>;
     }
 }
-
-const cacheName = "v9";
+let cacheNames = {
+    code: `code-${__CACHENAME}`,
+    asset: "asset-v1",
+    webfont: "webfont"
+};
 
 self.addEventListener("install", function (event) {
-    const cacheAssets = [
-        "https://fonts.googleapis.com/icon?family=Material+Icons",
-        "https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap",
-        "index.html"];
-    for (let asset of self.__WB_MANIFEST.map(v => v.url)) {
-        cacheAssets.push(asset);
-    }
-    event.waitUntil(
-        caches.open(cacheName)
-            .then(function (cache) {
-                return cache.addAll(cacheAssets);
-            })
-    );
+    let dividedAssets = self.__WB_MANIFEST.reduce((acc, next) => {
+        if (next.url.indexOf("favicons/") > -1) {
+            acc.asset.push(next.url);
+        }
+        else {
+            acc.code.push(next.url);
+        }
+        return acc;
+    }, { asset: [], code: [] });
+    let definedCaches = [
+        {
+            name: cacheNames.code, assets: [...dividedAssets.code,
+                "index.html"]
+        },
+        {
+            name: cacheNames.asset,
+            assets: dividedAssets.asset,
+        },
+        {
+            name: cacheNames.webfont,
+            assets: ["https://fonts.googleapis.com/icon?family=Material+Icons",
+                "https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap"
+            ]
+        }
+    ];
+    event.waitUntil((async () => {
+        let tasks = definedCaches.map(async c => {
+            let cache = await caches.open(c.name);
+            await cache.addAll(c.assets);
+        });
+        await Promise.all(tasks);
+    })());
 });
 
 self.addEventListener("activate", event => {
-    event.waitUntil(
-        caches.keys().then(function (cacheNames) {
-            return Promise.all(cacheNames.map(function (thisCacheName) {
-                if (thisCacheName !== cacheName) {
-                    return caches.delete(thisCacheName);
-                }
-            }));
-        }));
-})
+    event.waitUntil((async () => {
+        let storedCaches = await caches.keys();
+        let expectedCaches = Object.values(cacheNames);
+        let tasks = storedCaches.filter(c => expectedCaches.indexOf(c) < 0).map(async c => {
+            await caches.delete(c);
+        })
+        await Promise.all(tasks);
+    })());
+});
 
 
 self.addEventListener("fetch", function (event) {
@@ -48,7 +70,7 @@ self.addEventListener("fetch", function (event) {
         if (event.request.method !== "GET") {
             return;
         }
-        event.respondWith(caches.match("index.html", { cacheName: cacheName }).then(response => {
+        event.respondWith(caches.match("index.html", { cacheName: cacheNames.code }).then(response => {
             return response || fetch(event.request);
         }));
         return;
