@@ -93,22 +93,38 @@ export class KontokorrentDatabase {
         if (!aktionen.length) {
             return;
         }
-        return await this.withInitialized(async db => {
-            const tx = db.transaction(AktionenStore, "readwrite");
-            let existing = await tx.store.index("kontokorrentId").getAll(id);
-            let neueAktionen = aktionen
-                .filter(a => !existing.some(e => a.laufendeNummer == e.laufendeNummer))
-                .map(v => {
-                    let a: AktionDbModel = {
-                        ...v,
-                        kontokorrentId: id
-                    };
-                    return a;
-                });
-            for (let a of neueAktionen) {
-                await tx.store.add(a);
-            }
-            await tx.done;
+        let mapped = aktionen
+            .map(v => {
+                let a: AktionDbModel = {
+                    ...v,
+                    kontokorrentId: id
+                };
+                return a;
+            });
+        return await this.withInitialized(db => {
+            const unwrapped = unwrap(<IDBPDatabase>db);
+            return new Promise((resolve, reject) => {
+                const tx = unwrapped.transaction(AktionenStore, "readwrite");
+                tx.onerror = err => {
+                    console.error("addAktionen failed", err, tx.error);
+                    reject(tx.error);
+                };
+                tx.oncomplete = () => {
+                    resolve();
+                }
+                for (let a of mapped) {
+                    let request = tx.objectStore(AktionenStore).add(a);
+                    request.onerror = ev => {
+                        if (request.error.name == "ConstraintError") {
+                            console.log(`Aktion ${a.laufendeNummer} für Kontokorrent ${id} bereits gespeichert.`, ev, request.error);
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                        } else {
+                            console.error(`Aktion ${a.laufendeNummer} für Kontokorrent ${id} konnte nicht gespeichert werden.`, ev, request.error);
+                        }
+                    }
+                }
+            });
         });
     }
 
