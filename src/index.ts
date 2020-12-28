@@ -10,6 +10,7 @@ import "./styles.scss";
 import { AsyncRouteResolver } from "route-it/dist/router";
 import { KontokorrentDatabase } from "./lib/KontokorrentDatabase";
 import { initializationActionCreatorFactory } from "./state/actions/InitializationActionCreator";
+import { ServiceWorkerActions } from "./state/actions/ServiceWorkerActions";
 
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", async () => {
@@ -42,6 +43,14 @@ async function run() {
             }
         }
     });
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.addEventListener("message", ev => {
+            if (ev.data?.type == "statedispatch") {
+                let msg = ev.data.msg as ServiceWorkerActions;
+                store.dispatch(msg);
+            }
+        });
+    }
     const routeResolver = new KontokorrentRouteResolver(store);
     const router = new Router(routeResolver as AsyncRouteResolver<HTMLElement>, new BodyChildRouteRenderer());
     const db = new KontokorrentDatabase();

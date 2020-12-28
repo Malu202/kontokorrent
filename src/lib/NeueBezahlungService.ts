@@ -3,11 +3,6 @@ import { NeueBezahlungRequest } from "../api/NeueBezahlungRequest";
 import { ServiceLocator } from "../ServiceLocator";
 import { KontokorrentDatabase } from "./KontokorrentDatabase";
 
-export enum NeueBezahlungHinzufuegenResult {
-    BackgroundSync,
-    Direct
-}
-
 export class NeueBezahlungService {
     constructor(private apiClient: ApiClient,
         private db: KontokorrentDatabase) {

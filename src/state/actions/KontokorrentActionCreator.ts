@@ -66,7 +66,19 @@ export class KontokorrentActionCreator {
                 status: BezahlungStatus.Gespeichert
             };
         });
-        this.store.dispatch(new KontokorrentBezahlungen(id, [...aktionen]));
+        let zwischengespeicherte = (await this.db.getZwischengespeicherteBezahlungenForKontokorrent(id)).map(b => {
+            let x: Bezahlung = {
+                status: BezahlungStatus.Zwischengespeichert,
+                beschreibung: b.beschreibung,
+                bezahlendePersonId: b.bezahlendePersonId,
+                empfaengerIds: b.empfaengerIds,
+                id: b.id,
+                wert: b.wert,
+                zeitpunkt: b.zeitpunkt
+            };
+            return x;
+        });
+        this.store.dispatch(new KontokorrentBezahlungen(id, [...aktionen, ...zwischengespeicherte]));
     }
 
     private async calculateBalance(id: string) {

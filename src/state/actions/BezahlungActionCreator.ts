@@ -66,7 +66,7 @@ export class BezahlungActionCreator {
             wert: bezahlung.betrag,
             zeitpunkt: bezahlung.datum
         };
-        if ("serviceWorker" in navigator && "SyncManager" in window && false) {
+        if ("serviceWorker" in navigator && "SyncManager" in window) {
             let reg = await navigator.serviceWorker.ready;
             try {
                 let zwischengespeichert: NeueBezahlungDbModel = {
@@ -80,6 +80,15 @@ export class BezahlungActionCreator {
                 }
                 await this.db.bezahlungZwischenspeichern(zwischengespeichert);
                 await reg.sync.register(NeueBezahlungBackgroundSyncTag);
+                this.store.dispatch(new NeueBezahlungAngelegt(kontokorrentId, {
+                    beschreibung: zwischengespeichert.beschreibung,
+                    bezahlendePersonId: zwischengespeichert.bezahlendePersonId,
+                    empfaengerIds: zwischengespeichert.empfaengerIds,
+                    id: zwischengespeichert.id,
+                    wert: zwischengespeichert.wert,
+                    zeitpunkt: zwischengespeichert.zeitpunkt,
+                    status: BezahlungStatus.Zwischengespeichert
+                }));
             } catch {
                 console.warn("background sync not allowed");
                 await this.db.zwischengespeicherteBezahlungErledigt(id);

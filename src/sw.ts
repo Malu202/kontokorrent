@@ -1,3 +1,10 @@
+import { ApiClient } from "./api/ApiClient";
+import { AccountInfoStore } from "./lib/AccountInfoStore";
+import { KontokorrentDatabase } from "./lib/KontokorrentDatabase";
+import { NeueBezahlungService } from "./lib/NeueBezahlungService";
+import { ServiceWorkerActions, ServiceWorkerBezahlungAngelegt, ServiceWorkerBezahlungAnlegen } from "./state/actions/ServiceWorkerActions";
+import { NeueBezahlungBackgroundSyncTag } from "./sw.constants";
+
 export default null;
 declare var self: ServiceWorkerGlobalScope;
 declare global {
@@ -6,7 +13,7 @@ declare global {
     }
 }
 
-const cacheName = "v7";
+const cacheName = "v8";
 
 self.addEventListener("install", function (event) {
     const cacheAssets = [
@@ -50,4 +57,45 @@ self.addEventListener("fetch", function (event) {
             return response || fetch(event.request);
         })
     );
+});
+
+async function dispatchToClients(msg: ServiceWorkerActions) {
+    const clients = await self.clients.matchAll();
+    for (const client of clients) {
+        client.postMessage({ type: "statedispatch", msg });
+    }
+}
+
+class BackgroundSyncService {
+    constructor(private db: KontokorrentDatabase, private neueBezahlungenService: NeueBezahlungService) {
+
+    }
+
+    async zwischengespeicherteZahlungenAnlegen() {
+        let zwischengespeicherte = await this.db.getZwischengespeicherteBezahlungen();
+        for (let z of zwischengespeicherte) {
+            await dispatchToClients(new ServiceWorkerBezahlungAnlegen(z.kontokorrentId, z.id));
+            try {
+                let res = await this.neueBezahlungenService.bezahlungAnlegen(z.kontokorrentId, z);
+                await this.db.zwischengespeicherteBezahlungErledigt(res.bezahlung.id);
+                await dispatchToClients(new ServiceWorkerBezahlungAngelegt(z.kontokorrentId, z.id));
+            }
+            catch (err) {
+                console.error("Fehler beim Anlegen der Zahlung", err);
+            }
+        }
+    }
+}
+
+self.addEventListener("sync", function (event) {
+    if (event.tag == NeueBezahlungBackgroundSyncTag) {
+        event.waitUntil((async () => {
+            let db = new KontokorrentDatabase();
+            let accountInfoStore = new AccountInfoStore(db);
+            let apiClient = new ApiClient(accountInfoStore);
+            let neueBezahlungService = new NeueBezahlungService(apiClient, db);
+            let backgroundSyncService = new BackgroundSyncService(db, neueBezahlungService);
+            await backgroundSyncService.zwischengespeicherteZahlungenAnlegen();
+        })());
+    }
 });

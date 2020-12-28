@@ -1,5 +1,5 @@
 import { Reducer } from "../lib/Reducer";
-import { KontokorrentsState, KontokorrentState, Bezahlung, Person, BezahlungAnlegenStatus } from "../State";
+import { KontokorrentsState, KontokorrentState, Bezahlung, Person, BezahlungAnlegenStatus, BezahlungStatus } from "../State";
 import { KontokorrentListenActions } from "../actions/KontokorrentListenActionCreator";
 import { KontokorrentInfo } from "../../api/KontokorrentInfo";
 import { AccountActions } from "../actions/AccountActionCreator";
@@ -7,13 +7,16 @@ import { BezahlungActions } from "../actions/BezahlungActionCreator";
 import { ActionNames } from "../actions/ActionNames";
 import { KontokorrentHinzufuegenActions } from "../actions/KontokorrentHinzufuegenActionCreator";
 import { KontokorrentActions } from "../actions/KontokorrentActionCreator";
+import { ServiceWorkerActions } from "../actions/ServiceWorkerActions";
 
 type Actions = KontokorrentListenActions
     | AccountActions
     | BezahlungActions
     | KontokorrentHinzufuegenActions
-    | KontokorrentActions;
+    | KontokorrentActions
+    | ServiceWorkerActions;
 type PersonOptional = Partial<Omit<Person, "id">> & { id: string };
+type BezhalungOptional = Partial<Omit<Bezahlung, "id">> & { id: string };
 
 export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions> {
     onDispatch(action: Actions, updateStore: (a: (s: KontokorrentsState) => KontokorrentsState) => void): void {
@@ -213,8 +216,16 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                 break;
             }
             case ActionNames.NeueBezahlungAngelegt: {
-                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: BezahlungAnlegenStatus.Failed }));
+                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: BezahlungAnlegenStatus.Angelegt }));
                 updateStore(s => this.upsertBezahlung(s, action.kontokorrentId, action.bezahlung));
+                break;
+            }
+            case ActionNames.ServiceWorkerBezahlungAnlegen: {
+                updateStore(s => this.upsertBezahlung(s, action.kontokorrentId, { status: BezahlungStatus.Speichern, id: action.bezahlungId }));
+                break;
+            }
+            case ActionNames.ServiceWorkerBezahlungAngelegt: {
+                updateStore(s => this.upsertBezahlung(s, action.kontokorrentId, { status: BezahlungStatus.Gespeichert, id: action.bezahlungId }));
                 break;
             }
         }
@@ -232,7 +243,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
         };
     }
 
-    private upsertBezahlung(s: KontokorrentsState, kontokorrentId: string, b: Bezahlung):
+    private upsertBezahlung(s: KontokorrentsState, kontokorrentId: string, b: BezhalungOptional):
         KontokorrentsState {
         let bezahlungen = s.kontokorrents[kontokorrentId]?.bezahlungen || [];
         let existing = bezahlungen.find(d => b.id == d.id);

@@ -23,5 +23,7 @@ export const enum ActionNames {
     KontokorrentCreated,
     NeueBezahlungAnlegen,
     NeueBezahlungAngelegt,
-    NeueBezahlungAnlegenFailed
+    NeueBezahlungAnlegenFailed,
+    ServiceWorkerBezahlungAnlegen,
+    ServiceWorkerBezahlungAngelegt
 }
