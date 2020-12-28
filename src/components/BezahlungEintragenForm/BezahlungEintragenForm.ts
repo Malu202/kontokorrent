@@ -5,7 +5,7 @@ import { ArrayToElementRenderer } from "../../utils/ArrayToElementRenderer";
 import { BezahlendePersonRadioButton } from "../BezahlendePersonRadioButton/BezahlendePersonRadioButton";
 import { EmpfaengerCheckbox } from "../EmpfaengerCheckbox/EmpfaengerCheckbox";
 import { toDateInputValue } from "../../utils/toDateInputValue";
-import { isSameDay, startOfDay } from "date-fns";
+import { endOfDay, isSameDay } from "date-fns";
 import { MdcCheckbox } from "../MdcCheckbox/MdcCheckbox";
 
 export class BezahlungEintragenForm extends HTMLElement {
@@ -90,7 +90,7 @@ export class BezahlungEintragenForm extends HTMLElement {
         if (!d || isSameDay(d, new Date())) {
             return new Date();
         }
-        return startOfDay(d);
+        return endOfDay(d);
     }
 
     getData() {
