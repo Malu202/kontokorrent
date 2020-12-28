@@ -11,7 +11,7 @@
     "noImplicitAny": true,
     "skipLibCheck": true,
     "module": "es2020",
-    "target": "es2015",
+    "target": "es2017",
     "allowJs": true,
     "moduleResolution": "node",
     "sourceMap": true,

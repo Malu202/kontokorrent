@@ -95,21 +95,19 @@ export class KontokorrentDatabase {
         }
         return await this.withInitialized(async db => {
             const tx = db.transaction(AktionenStore, "readwrite");
-            let tasks = aktionen.map(v => {
-                let a: AktionDbModel = {
-                    ...v,
-                    kontokorrentId: id
-                };
-                return a;
-            }).map(async a => {
-                try {
-                    tx.store.add(a);
-                }
-                catch {
-                    console.error(`Aktion ${a.laufendeNummer} für kontokorrent ${a.kontokorrentId} war bereits hinzugefügt.`);
-                }
-            });
-            await Promise.all(tasks);
+            let existing = await tx.store.index("kontokorrentId").getAll(id);
+            let neueAktionen = aktionen
+                .filter(a => !existing.some(e => a.laufendeNummer == e.laufendeNummer))
+                .map(v => {
+                    let a: AktionDbModel = {
+                        ...v,
+                        kontokorrentId: id
+                    };
+                    return a;
+                });
+            for (let a of neueAktionen) {
+                await tx.store.add(a);
+            }
             await tx.done;
         });
     }
