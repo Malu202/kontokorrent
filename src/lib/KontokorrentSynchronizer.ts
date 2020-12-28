@@ -6,7 +6,13 @@ export class KontokorrentSynchronizer {
 
     async getLaufendeNummer(kontokorrentId: string) {
         let aktionen = await this.db.getAktionen(kontokorrentId);
-        let max = Math.max(...aktionen.map(v => v.laufendeNummer));
-        return max;
+        let sorted = aktionen.map(v => v.laufendeNummer).sort((a, b) => a - b);
+        let i: number;
+        for (i = 0; i < sorted.length - 1; i++) {
+            if (sorted[i] + 1 !== sorted[i + 1]) {
+                break;
+            }
+        }
+        return sorted[i];
     }
 }
