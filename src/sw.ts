@@ -78,10 +78,7 @@ class BackgroundSyncService {
             await dispatchToClients(new ServiceWorkerBezahlungAnlegen(z.kontokorrentId, z.id));
             try {
                 let res = await this.neueBezahlungenService.bezahlungAnlegen(z.kontokorrentId, z);
-                await this.db.zwischengespeicherteBezahlungErledigt(res.bezahlung.id, {
-                    ...res,
-                    kontokorrentId: z.kontokorrentId
-                });
+                await this.db.zwischengespeicherteBezahlungErledigt(res.bezahlung.id);
                 await dispatchToClients(new ServiceWorkerBezahlungAngelegt(z.kontokorrentId, z.id));
             }
             catch (err) {
