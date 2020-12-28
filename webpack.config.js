@@ -9,12 +9,15 @@ const { InjectManifest } = require("workbox-webpack-plugin");
 const fs = require("fs");
 const path = require('path');
 
+
+const allowedChars = /[^a-zA-Z0-9/]|-/g;
 function getRevision() {
     const rev = fs.readFileSync('.git/HEAD').toString();
     if (rev.indexOf(':') === -1) {
         return rev;
     } else {
-        return fs.readFileSync('.git/' + rev.substring(5)).toString();
+        return fs.readFileSync('.git/' + rev.substring(5).replace(allowedChars, "")).toString()
+            .replace(allowedChars, "");
     }
 }
 
