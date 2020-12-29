@@ -37,12 +37,12 @@ module.exports = (env, argv) => {
             [
                 "@babel/preset-env",
                 {
-                    debug: true,
                     "useBuiltIns": "usage",
                     "corejs": "3.8"
-                }
-            ]
-        ],
+                },
+            ],
+
+        ]
     };
 
     const cacheName = production ? getRevision() : "development";
@@ -56,7 +56,7 @@ module.exports = (env, argv) => {
             rules: [
                 {
                     test: /\.m?js$/,
-                    include: /node_modules/,
+                    include: /node_modules\/(comlink|idb|date-fns|route-it|uuid)/,
                     use: {
                         loader: 'babel-loader',
                         options: babelConfig,

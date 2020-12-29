@@ -8,12 +8,12 @@
     "comlink": "^4.3.0",
     "date-fns": "^2.16.1",
     "idb": "^5.0.8",
-    "postcss": "^8.2.1",
     "route-it": "^1.2.0",
     "uuid": "^8.3.2",
     "core-js": "^3.8.1"
   },
   "devDependencies": {
+    "postcss": "^8.2.1",
     "babel-loader": "^8.2.2",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
