@@ -5,12 +5,14 @@ bezahlung-card {
     @extend %card;
     display: inline-flex;
     align-items: center;
-    position: relative;
 }
+
+$status-font-size : 0.9em;
 
 .bezahlung-card {
     &__beschreibung {
         flex-grow: 1;
+        padding: card.$card-padding;
     }
 
     &__personen {
@@ -19,21 +21,38 @@ bezahlung-card {
         padding-top: 0.4em;
     }
 
+    &__col2 {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    &__dummy {
+        flex: 0 0 $status-font-size;
+    }
+
     &__wert {
         @include theme.property(color, fg-on-container-subtle);
         margin-left: 1em;
+        padding-right: card.$card-padding;
+        flex: 1 0 auto;
+        display: inline-flex;
+        align-items: center;
     }
 
     &__status {
-        @include theme.property(color, fg-on-container-subtle);
-        position: absolute;
-        line-height: 0;
-        &>.material-icons {
-            font-size: 0.9em;
-        }
         padding-right: 0.1em;
-        bottom: 0;
-        right: 0;
+        text-align: right;
+        flex: 0 0 $status-font-size;
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        @include theme.property(color, fg-on-container-subtle);
+
+        &>.material-icons {
+            font-size: $status-font-size;
+        }
+
         user-select: none;
     }
 }

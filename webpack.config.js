@@ -46,7 +46,7 @@ module.exports = (env, argv) => {
 
     const cacheName = production ? getRevision() : "development";
     return {
-        target: "browserslist",
+        target: production ? "browserslist" : "web",
         entry: {
             index: './src/index.ts'
         },
