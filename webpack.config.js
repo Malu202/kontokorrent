@@ -41,13 +41,12 @@ module.exports = (env, argv) => {
                     "corejs": "3.8"
                 },
             ],
-
         ]
     };
 
     const cacheName = production ? getRevision() : "development";
     return {
-        target: "web",
+        target: "browserslist",
         entry: {
             index: './src/index.ts'
         },
@@ -56,10 +55,10 @@ module.exports = (env, argv) => {
             rules: [
                 {
                     test: /\.m?js$/,
-                    include: /node_modules\/(comlink|idb|date-fns|route-it|uuid)/,
+                    exclude: /node_modules(\/|\\)(\bwebpack\b|\bcore-js\b)/,
                     use: {
                         loader: 'babel-loader',
-                        options: babelConfig,
+                        options: { ...babelConfig, sourceType: "unambiguous" },
 
                     },
                 },

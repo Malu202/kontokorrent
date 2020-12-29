@@ -16,9 +16,8 @@ export enum Paths {
     BezahlungEintragen = "eintragen"
 }
 
-export class KontokorrentRouteResolver extends EventTarget implements AsyncRouteResolver<HTMLElement> {
+export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement> {
     constructor(private store: Store) {
-        super();
     }
 
     serviceLocator: ServiceLocator;
@@ -34,9 +33,6 @@ export class KontokorrentRouteResolver extends EventTarget implements AsyncRoute
     }
 
     async resolve(lastRoute: string, currentRoute: string, router: Router<HTMLElement>) {
-        if (currentRoute in Paths) {
-            this.dispatchEvent(new CustomEvent("routedTo", { detail: { currentRoute } }));
-        }
         switch (currentRoute) {
             case Paths.Info:
                 const { Info } = await import("../components/Info/info");
