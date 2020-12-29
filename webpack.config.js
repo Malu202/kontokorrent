@@ -32,6 +32,19 @@ module.exports = (env, argv) => {
         "gh-pagesv2": "/v2/"
     }[environment];
 
+    const babelConfig = {
+        presets: [
+            [
+                "@babel/preset-env",
+                {
+                    debug: true,
+                    "useBuiltIns": "usage",
+                    "corejs": "3.8"
+                }
+            ]
+        ],
+    };
+
     const cacheName = production ? getRevision() : "development";
     return {
         target: "web",
@@ -42,8 +55,22 @@ module.exports = (env, argv) => {
         module: {
             rules: [
                 {
+                    test: /\.m?js$/,
+                    include: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: babelConfig,
+
+                    },
+                },
+                {
                     test: /\.tsx?$/,
-                    use: "ts-loader",
+                    use: [{
+                        loader: 'babel-loader',
+                        options: babelConfig,
+
+                    },
+                        "ts-loader"],
                     exclude: /node_modules/,
                 },
                 {
