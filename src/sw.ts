@@ -77,7 +77,16 @@ self.addEventListener("fetch", function (event) {
     }
     event.respondWith(
         caches.match(event.request).then(function (response) {
-            return response || fetch(event.request);
+            if (response) {
+                return response;
+            }
+            else if (["https://fonts.gstatic.com",
+                "https://fonts.googleapis.com"].some(url => event.request.url.startsWith(url))) {
+                event.waitUntil((async () => {
+                    (await caches.open(cacheNames.webfont)).add(event.request);
+                })());
+            }
+            return fetch(event.request);
         })
     );
 });
