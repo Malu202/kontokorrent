@@ -57,7 +57,13 @@ export interface KontokorrentState {
     bezahlungAnlegen: BezahlungAnlegenStatus;
 }
 
+export interface BeschreibungVorschlagState {
+    kontokorrentId: string;
+    vorschlaege: string[];
+}
+
 export interface State {
     account: AccountState
     kontokorrents: KontokorrentsState;
+    beschreibungVorschlaege: BeschreibungVorschlagState;
 }

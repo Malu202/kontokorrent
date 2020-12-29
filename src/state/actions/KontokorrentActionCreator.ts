@@ -3,12 +3,11 @@ import { ApiClient } from "../../api/ApiClient";
 import { Action } from "../lib/Action";
 import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
 import { Bezahlung, BezahlungStatus } from "../State";
-type KontokorrentWorkerApi = import("../../worker/KontokorrentWorker").KontokorrentWorkerApi;
-import { wrap } from "comlink";
 import { filterBezahlungen } from "../../lib/filterBezahlungen";
 import { KontokorrentBalance } from "../../lib/KontokorrentBalance";
 import { ServiceLocator } from "../../ServiceLocator";
 import { ActionNames } from "./ActionNames";
+import { WorkerService, workerServiceFactory } from "../../lib/WorkerService";
 
 export class KontokorrentGeoeffnet implements Action {
     readonly type = ActionNames.KontokorrentGeoeffnet;
@@ -53,10 +52,11 @@ export type KontokorrentActions =
     | KontokorrentBalanceAktualisiert;
 
 export class KontokorrentActionCreator {
-    private workerApi: KontokorrentWorkerApi;
+
     constructor(private store: Store,
         private apiClient: ApiClient,
-        private db: KontokorrentDatabase) {
+        private db: KontokorrentDatabase,
+        private workerService: WorkerService) {
 
     }
     private async refreshBezahlungen(id: string) {
@@ -82,7 +82,7 @@ export class KontokorrentActionCreator {
     }
 
     private async calculateBalance(id: string) {
-        let balance = await (await this.getWorkerApi()).calculateBalance(id);
+        let balance = await (await this.workerService.getWorker()).calculateBalance(id);
         this.store.dispatch(new KontokorrentBalanceAktualisiert(id, balance));
     }
 
@@ -92,7 +92,7 @@ export class KontokorrentActionCreator {
 
     private async kontokorrentSynchronisieren(id: string) {
         this.store.dispatch(new KontokorrentSynchronisieren(id));
-        let laufendeNummer = await (await this.getWorkerApi()).getLaufendeNummer(id);
+        let laufendeNummer = await (await this.workerService.getWorker()).getLaufendeNummer(id);
         let res = await this.apiClient.getAktionen(id, laufendeNummer);
         if (res.success) {
             await this.db.addAktionen(id, res.aktionen);
@@ -103,14 +103,7 @@ export class KontokorrentActionCreator {
         this.store.dispatch(new KontokorrentSynchronisiert(id));
     }
 
-    private async getWorkerApi() {
-        if (this.workerApi) {
-            return this.workerApi;
-        }
-        const worker = new Worker(new URL("../../worker/KontokorrentWorker", import.meta.url));
-        this.workerApi = wrap<KontokorrentWorkerApi>(worker);
-        return this.workerApi;
-    }
+
 
     async kontokorrentOeffnen(id: string) {
         let kk = await this.db.getKontokorrent(id);
@@ -130,6 +123,7 @@ export function kontokorrentActionCreatorFactory(serviceLocator: ServiceLocator)
         serviceLocator => new KontokorrentActionCreator(
             serviceLocator.store,
             serviceLocator.apiClient,
-            serviceLocator.db
+            serviceLocator.db,
+            workerServiceFactory(serviceLocator)
         ));
 }

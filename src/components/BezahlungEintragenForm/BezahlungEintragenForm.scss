@@ -1,3 +1,12 @@
+@use "../ui-components/button";
+@use "../ui-components/reset";
+@use "../ui-components/theme";
+@use "../ui-components/utils";
+
+$vorschlag-height : 1.5em;
+$vorschlag-fontsize : 0.875;
+$margin-top: 0.5em;
+
 .bezahlung-eintragen-form {
     display: flex;
     flex-direction: column;
@@ -8,13 +17,44 @@
     }
 
     &__row {
-        margin-top: 0.5em;
+        margin-top: $margin-top;
     }
 
     &__empfaenger-row {
         display: flex;
         align-items: center;
-        margin-top: 0.5em;
+        margin-top: $margin-top;
+    }
+
+    &__vorschlaege {
+        display: flex;
+        height: $vorschlag-height * $vorschlag-fontsize;
+        flex-flow: row wrap;
+        overflow: hidden;
+    }
+
+    &__vorschlag {
+        margin-right: 0.5em;
+        cursor: pointer;
+        @include reset.reset-button;
+        @include theme.property(color, primary);
+        @include theme.property(background-color, active-on-container);
+        max-width: 10em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0em 0.4em;
+        border-radius: $vorschlag-height;
+        height: $vorschlag-height;
+        box-sizing: border-box;
+        font-size: $vorschlag-fontsize * 1em;
+
+        @include utils.hover-effect;
+
+        &:first-child {
+            @include theme.property(color, fg-on-primary);
+            @include theme.property(background-color, primary);
+        }
     }
 }
 

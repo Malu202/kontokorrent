@@ -25,5 +25,6 @@ export const enum ActionNames {
     NeueBezahlungAngelegt,
     NeueBezahlungAnlegenFailed,
     ServiceWorkerBezahlungAnlegen,
-    ServiceWorkerBezahlungAngelegt
+    ServiceWorkerBezahlungAngelegt,
+    BeschreibungsVorschlaege
 }

@@ -1,5 +1,6 @@
 import { Reducer } from "./Reducer";
 import { Action } from "./Action";
+import { Store } from "./Store";
 
 interface Subscription<TState> {
     call(a: TState): void;
@@ -11,7 +12,7 @@ interface ReducerSubscription<TState> {
     area: keyof TState | null;
 }
 
-export class BaseStore<TState> {
+export class BaseStore<TState> implements Store {
     public state: TState;
     private subscriptions: Subscription<TState>[];
     private reducerSubscriptions: ReducerSubscription<TState>[];

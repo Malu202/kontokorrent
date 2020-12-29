@@ -26,6 +26,10 @@ export class BezahlungEintragenForm extends HTMLElement {
     private _personen: Person[];
     private alleCheck: MdcCheckbox;
     private alleClickListener: () => void;
+    private betreffInputListener: () => void;
+    private beschreibungVorschlaegeRenderer: ArrayToElementRenderer<string, HTMLElement, string>;
+    private vorschlaege: string[];
+    private betreffKeyDownListener: (e: KeyboardEvent) => void;
 
     constructor() {
         super();
@@ -39,6 +43,19 @@ export class BezahlungEintragenForm extends HTMLElement {
             this.empfaengerAuswahl,
             p => p.id,
             p => new EmpfaengerCheckbox());
+        this.beschreibungVorschlaegeRenderer = new ArrayToElementRenderer<string, HTMLElement, string>(
+            this.querySelector("#beschreibung-vorschlaege"),
+            p => p,
+            p => {
+                let el = document.createElement("button");
+                el.className = "bezahlung-eintragen-form__vorschlag";
+                el.innerText = p;
+                el.type = "button";
+                el.addEventListener("click", e => {
+                    this.completeBetreff(p);
+                });
+                return el;
+            });
         this.datum = this.querySelector("#datum");
         this.datum.value = toDateInputValue(new Date());
         this.betrag = this.querySelector("#betrag");
@@ -58,6 +75,25 @@ export class BezahlungEintragenForm extends HTMLElement {
         this.betrag.focus();
         this.alleClickListener = () => this.alleClick();
         this.alleCheck.addEventListener("input", this.alleClickListener);
+        this.betreffInputListener = () => {
+            this.dispatchEvent(new CustomEvent("betreffChanged", { detail: this.betreff.value }));
+        };
+        this.betreff.addEventListener("input", this.betreffInputListener);
+        this.betreffKeyDownListener = (e: KeyboardEvent) => this.betreffKeyDown(e);
+        this.betreff.addEventListener("keydown", this.betreffKeyDownListener)
+    }
+
+    betreffKeyDown(e: KeyboardEvent) {
+        if (e.code == "Enter" && this.vorschlaege?.length > 0) {
+            this.completeBetreff(this.vorschlaege[0]);
+        }
+    }
+
+    private completeBetreff(p: string) {
+        this.betreff.value = p;
+        this.betreffInputListener();
+        this.betreff.focus();
+        this.validateWhileManipulating();
     }
 
     private alleClick() {
@@ -70,6 +106,8 @@ export class BezahlungEintragenForm extends HTMLElement {
     disconnectedCallback() {
         this.form.removeEventListener("input", this.formInputListener);
         this.alleCheck.removeEventListener("input", this.alleClickListener);
+        this.betreff.removeEventListener("input", this.betreffInputListener);
+        this.betreff.removeEventListener("keydown", this.betreffKeyDownListener)
     }
 
     onFormInput() {
@@ -155,6 +193,11 @@ export class BezahlungEintragenForm extends HTMLElement {
         this.empfaengerRenderer.update(value, (element, person) => {
             element.person = person;
         });
+    }
+
+    set beschreibungVorschlaege(value: string[]) {
+        this.vorschlaege = value;
+        this.beschreibungVorschlaegeRenderer.update(value, () => { });
     }
 }
 export const BezahlungEintragenFormTagName = "bezahlung-eintragen-form";

@@ -9,6 +9,7 @@ import { NeueBezahlungRequest } from "../../api/NeueBezahlungRequest";
 import { v4 as uuid } from "uuid";
 import { NeueBezahlungDbModel } from "../../lib/NeueBezahlungDbModel";
 import { Bezahlung, BezahlungStatus } from "../State";
+import { WorkerService, workerServiceFactory } from "../../lib/WorkerService";
 
 export class BezahlungKontokorrentGeandert implements Action {
     readonly type = ActionNames.BezahlungKontokorrentGeandert;
@@ -42,17 +43,20 @@ export type BezahlungActions = BezahlungKontokorrentGeandert
 export class BezahlungActionCreator {
     constructor(private store: Store,
         private db: KontokorrentDatabase,
-        private neueBezahlungService: NeueBezahlungService) {
+        private neueBezahlungService: NeueBezahlungService,
+        private workerService: WorkerService) {
     }
 
     async bezahlungEintragenGeoeffnet() {
         let id = this.store.state.kontokorrents.activeKontokorrentId || await this.db.getZuletztGesehenerKontokorrentId();
         this.store.dispatch(new BezahlungKontokorrentGeandert(id));
+        await (await this.workerService.getWorker()).getBeschreibungVorschlaege(id, null);
     }
 
     async bezahlungEintragenKontokorrentChanged(id: string) {
         this.store.dispatch(new BezahlungKontokorrentGeandert(id));
         await this.db.setZuletztGesehenerKontokorrentId(id);
+        await (await this.workerService.getWorker()).getBeschreibungVorschlaege(id, null);
     }
 
     async bezahlungHinzufuegen(kontokorrentId: string, bezahlung: { betreff: string, betrag: number, datum: Date, bezahlendePerson: string, empfaenger: string[] }) {
@@ -119,11 +123,16 @@ export class BezahlungActionCreator {
             }
         }
     }
+
+    async getBeschreibungVorschlaege(kontokorrentId: string, eingabe: string) {
+        (await this.workerService.getWorker()).getBeschreibungVorschlaege(kontokorrentId, eingabe);
+    }
 }
 
 export function bezahlungActionCreatorFactory(serviceLocator: ServiceLocator) {
     return serviceLocator.get("BezahlungActionCreator",
         serviceLocator => new BezahlungActionCreator(serviceLocator.store,
             serviceLocator.db,
-            neueBezahlungServiceFactory(serviceLocator)));
+            neueBezahlungServiceFactory(serviceLocator),
+            workerServiceFactory(serviceLocator)));
 }

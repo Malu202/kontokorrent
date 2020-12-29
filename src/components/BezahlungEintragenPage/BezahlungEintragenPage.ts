@@ -10,10 +10,11 @@ import { convertLinks } from "../convertLinks";
 import "../BezahlungEintragenForm/BezahlungEintragenForm";
 import { BezahlungEintragenForm, BezahlungEintragenFormTagName } from "../BezahlungEintragenForm/BezahlungEintragenForm";
 import { th } from "date-fns/locale";
+import { Debouncer } from "../../utils/Debouncer";
 
 export class BezahlungEintragenPage extends HTMLElement {
     private store: Store;
-    private subscription: () => void;
+    private kontokorrentsSubscription: () => void;
     private routingActionCreator: RoutingActionCreator;
     private appBar: AppBar;
     private bezahlungActionCreator: BezahlungActionCreator;
@@ -25,7 +26,10 @@ export class BezahlungEintragenPage extends HTMLElement {
     private editingSection: HTMLDivElement;
     private savingSection: HTMLDivElement;
     private saveError: HTMLDivElement;
-    private formContainer : HTMLDivElement;
+    private formContainer: HTMLDivElement;
+    private beschreibungVorschlagSubscription: () => void;
+    private betreffVorschlagDebouncer = new Debouncer();
+
     constructor() {
         super();
         this.innerHTML = template;
@@ -47,7 +51,8 @@ export class BezahlungEintragenPage extends HTMLElement {
     }
 
     connectedCallback() {
-        this.subscription = this.store.subscribe("kontokorrents", s => this.applyStoreState(s));
+        this.kontokorrentsSubscription = this.store.subscribe("kontokorrents", s => this.applyStoreState(s));
+        this.beschreibungVorschlagSubscription = this.store.subscribe("beschreibungVorschlaege", s => this.beschreibungVorschlaegeChanged(s));
         this.appBar.addEventListener("gotokontokorrent", (e: CustomEvent) => {
             this.bezahlungActionCreator.bezahlungEintragenKontokorrentChanged(e.detail);
         });
@@ -56,6 +61,24 @@ export class BezahlungEintragenPage extends HTMLElement {
         this.applyStoreState(this.store.state);
         this.saveEventListener = () => this.save();
         this.saveButton.addEventListener("click", this.saveEventListener);
+        this.bezahlungEintragenForm.addEventListener("betreffChanged", (ev: CustomEvent) => this.betreffChanged(ev.detail));
+    }
+    async betreffChanged(betreff: string) {
+            try {
+                await this.betreffVorschlagDebouncer.trigger(200);
+            }
+            catch {
+                //aborted
+            }
+            await this.bezahlungActionCreator.getBeschreibungVorschlaege(this.kontokorrentId, betreff);
+    }
+    private beschreibungVorschlaegeChanged(s: State): void {
+        if (s.beschreibungVorschlaege?.kontokorrentId == this.kontokorrentId) {
+            this.bezahlungEintragenForm.beschreibungVorschlaege = s.beschreibungVorschlaege.vorschlaege.slice(0,10);
+        }
+        else {
+            this.bezahlungEintragenForm.beschreibungVorschlaege = [];
+        }
     }
 
     async save() {
@@ -81,7 +104,8 @@ export class BezahlungEintragenPage extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this.subscription();
+        this.kontokorrentsSubscription();
+        this.beschreibungVorschlagSubscription();
         this.saveButton.removeEventListener("click", this.saveEventListener);
     }
 }

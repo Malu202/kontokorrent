@@ -11,11 +11,11 @@ import { AsyncRouteResolver } from "route-it/dist/router";
 import { KontokorrentDatabase } from "./lib/KontokorrentDatabase";
 import { initializationActionCreatorFactory } from "./state/actions/InitializationActionCreator";
 import { ServiceWorkerActions } from "./state/actions/ServiceWorkerActions";
+import { BeschreibungVorschlagReducer } from "./state/reducers/BeschreibungVorschlaegeReducer";
 
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", async () => {
         navigator.serviceWorker.register("./sw.js").then(registration => {
-            console.log('SW registered: ', registration);
         }).catch(registrationError => {
             console.log('SW registration failed: ', registrationError);
         });
@@ -40,6 +40,10 @@ async function run() {
                 kontokorrents: {},
                 listeLaden: false,
                 activeKontokorrentId: null
+            },
+            beschreibungVorschlaege: {
+                vorschlaege: [],
+                kontokorrentId: null
             }
         }
     });
@@ -56,6 +60,7 @@ async function run() {
     const db = new KontokorrentDatabase();
     store.addReducer("account", new AccountReducer());
     store.addReducer("kontokorrents", new KontokorrentsReducer());
+    store.addReducer("beschreibungVorschlaege", new BeschreibungVorschlagReducer());
 
     const accountInfoStore = new AccountInfoStore(db);
     const apiClient = new ApiClient(accountInfoStore);
