@@ -59,8 +59,10 @@ export class BezahlungActionCreator {
         await (await this.workerService.getWorker()).getBeschreibungVorschlaege(id, null);
     }
 
-    async bezahlungHinzufuegen(kontokorrentId: string, bezahlung: { betreff: string, betrag: number, datum: Date, bezahlendePerson: string, empfaenger: string[] }) {
-        let direct = false;
+    async bezahlungHinzufuegen(kontokorrentId: string,
+        bezahlung: { betreff: string, betrag: number, datum: Date, bezahlendePerson: string, empfaenger: string[] },
+        direct?: boolean) {
+        direct = direct || false;
         let id = uuid();
         let request: NeueBezahlungRequest = {
             beschreibung: bezahlung.betreff,
@@ -70,37 +72,39 @@ export class BezahlungActionCreator {
             wert: bezahlung.betrag,
             zeitpunkt: bezahlung.datum
         };
-        if ("serviceWorker" in navigator && "SyncManager" in window) {
-            let reg = await navigator.serviceWorker.ready;
-            try {
-                let zwischengespeichert: NeueBezahlungDbModel = {
-                    beschreibung: bezahlung.betreff,
-                    bezahlendePersonId: bezahlung.bezahlendePerson,
-                    empfaengerIds: bezahlung.empfaenger,
-                    id: id,
-                    wert: bezahlung.betrag,
-                    zeitpunkt: bezahlung.datum,
-                    kontokorrentId: kontokorrentId
+        if (!direct) {
+            if ("serviceWorker" in navigator && "SyncManager" in window) {
+                let reg = await navigator.serviceWorker.ready;
+                try {
+                    let zwischengespeichert: NeueBezahlungDbModel = {
+                        beschreibung: bezahlung.betreff,
+                        bezahlendePersonId: bezahlung.bezahlendePerson,
+                        empfaengerIds: bezahlung.empfaenger,
+                        id: id,
+                        wert: bezahlung.betrag,
+                        zeitpunkt: bezahlung.datum,
+                        kontokorrentId: kontokorrentId
+                    }
+                    await this.db.bezahlungZwischenspeichern(zwischengespeichert);
+                    await reg.sync.register(NeueBezahlungBackgroundSyncTag);
+                    this.store.dispatch(new NeueBezahlungAngelegt(kontokorrentId, {
+                        beschreibung: zwischengespeichert.beschreibung,
+                        bezahlendePersonId: zwischengespeichert.bezahlendePersonId,
+                        empfaengerIds: zwischengespeichert.empfaengerIds,
+                        id: zwischengespeichert.id,
+                        wert: zwischengespeichert.wert,
+                        zeitpunkt: zwischengespeichert.zeitpunkt,
+                        status: BezahlungStatus.Zwischengespeichert
+                    }));
+                } catch {
+                    console.warn("background sync not allowed");
+                    await this.db.zwischengespeicherteBezahlungErledigt(id);
+                    direct = true;
                 }
-                await this.db.bezahlungZwischenspeichern(zwischengespeichert);
-                await reg.sync.register(NeueBezahlungBackgroundSyncTag);
-                this.store.dispatch(new NeueBezahlungAngelegt(kontokorrentId, {
-                    beschreibung: zwischengespeichert.beschreibung,
-                    bezahlendePersonId: zwischengespeichert.bezahlendePersonId,
-                    empfaengerIds: zwischengespeichert.empfaengerIds,
-                    id: zwischengespeichert.id,
-                    wert: zwischengespeichert.wert,
-                    zeitpunkt: zwischengespeichert.zeitpunkt,
-                    status: BezahlungStatus.Zwischengespeichert
-                }));
-            } catch {
-                console.warn("background sync not allowed");
-                await this.db.zwischengespeicherteBezahlungErledigt(id);
+            } else {
+                console.log("background sync not supported");
                 direct = true;
             }
-        } else {
-            console.log("background sync not supported");
-            direct = true;
         }
         if (direct) {
             this.store.dispatch(new NeueBezahlungAnlegen(kontokorrentId));

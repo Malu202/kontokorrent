@@ -1,0 +1,9 @@
+@use "../ui-components/theme";
+@use "../ui-components/utils";
+
+#bezahlungen-table {
+    display: grid;
+    grid-template-columns: min-content min-content 5fr 1fr 1fr;
+    grid-column-gap: 2em;
+    align-items: center;
+}

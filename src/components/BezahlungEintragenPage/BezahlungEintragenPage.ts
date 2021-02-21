@@ -9,7 +9,6 @@ import { BezahlungAnlegenStatus, State } from "../../state/State";
 import { convertLinks } from "../convertLinks";
 import "../BezahlungEintragenForm/BezahlungEintragenForm";
 import { BezahlungEintragenForm, BezahlungEintragenFormTagName } from "../BezahlungEintragenForm/BezahlungEintragenForm";
-import { th } from "date-fns/locale";
 import { Debouncer } from "../../utils/Debouncer";
 
 export class BezahlungEintragenPage extends HTMLElement {

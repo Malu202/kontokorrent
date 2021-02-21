@@ -13,7 +13,9 @@ export enum Paths {
     FeaturesRequired = "features-required",
     Kontokorrents = "kontokorrents",
     CreateEvent = "create-event",
-    BezahlungEintragen = "eintragen"
+    BezahlungEintragen = "eintragen",
+    MultiBezahlungEintragen = "multi-eintragen",
+    DatabaseDebug = "database-debug"
 }
 
 export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement> {
@@ -61,11 +63,24 @@ export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement
             return false;
         }
         switch (currentRoute) {
-            case Paths.BezahlungEintragen:
+            case Paths.BezahlungEintragen: {
                 const { BezahlungEintragenPage } = await import("../components/BezahlungEintragenPage/BezahlungEintragenPage");
                 let component = new BezahlungEintragenPage();
                 component.addServices(this.serviceLocator);
                 return component;
+            }
+            case Paths.MultiBezahlungEintragen: {
+                const { MultiBezahlungEintragenPage } = await import("../components/MultiBezahlungEintragenPage/MultiBezahlungEintragenPage");
+                let component = new MultiBezahlungEintragenPage();
+                component.addServices(this.serviceLocator);
+                return component;
+            }
+            case Paths.DatabaseDebug: {
+                const { DatabaseDebug } = await import("../components/DatabaseDebug/DatabaseDebug");
+                let component = new DatabaseDebug();
+                component.addServices(this.serviceLocator);
+                return component;
+            }
         }
         let kontokorrentsRoute = /^kontokorrents\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
         if (kontokorrentsRoute) {
