@@ -100,13 +100,13 @@ export class MultiBezahlungEintragenPage extends HTMLElement {
     async save() {
         for (let b of this.bezahlungen) {
             try {
-                await this.bezahlungActionCreator.bezahlungHinzufuegen(this.kontokorrentId, {
+                await this.bezahlungActionCreator.bezahlungDirektHinzufuegen(this.kontokorrentId, {
                     betrag: b.betrag,
                     betreff: b.betreff,
                     bezahlendePerson: this.form["bezahlende-person"].value,
                     datum: b.datum,
                     empfaenger: this.personen.map(p => p.id)
-                }, true);
+                });
                 b.done = true;
             } catch (error) {
                 b.error = true;

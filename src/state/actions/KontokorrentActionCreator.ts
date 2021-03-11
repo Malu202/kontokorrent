@@ -77,7 +77,7 @@ export class KontokorrentActionCreator {
                 zeitpunkt: b.zeitpunkt
             };
             return x;
-        });
+        }).filter(b => !aktionen.some(a => a.id == b.id));
         this.store.dispatch(new KontokorrentBezahlungen(id, [...aktionen, ...zwischengespeicherte]));
     }
 

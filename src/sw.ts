@@ -113,7 +113,12 @@ class BackgroundSyncService {
                 await dispatchToClients(new ServiceWorkerBezahlungAngelegt(z.kontokorrentId, z.id));
             }
             catch (err) {
-                console.error("Fehler beim Anlegen der Zahlung", err);
+                // wenn abgebrochen wurde nachdem der request gesendet wurde, aber noch nicht in der db gespeichert
+                if (await this.db.getBezahlungAktion(z.kontokorrentId, z.id) != null) {
+                    await this.db.zwischengespeicherteBezahlungErledigt(z.id);
+                } else {
+                    console.error("Fehler beim Anlegen der Zahlung", err);
+                }
             }
         }
     }

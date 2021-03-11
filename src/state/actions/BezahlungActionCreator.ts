@@ -40,6 +40,10 @@ export type BezahlungActions = BezahlungKontokorrentGeandert
     | NeueBezahlungAnlegen
     | NeueBezahlungAngelegt;
 
+export interface NeueBezahlungModel {
+    betreff: string, betrag: number, datum: Date, bezahlendePerson: string, empfaenger: string[]
+}
+
 export class BezahlungActionCreator {
     constructor(private store: Store,
         private db: KontokorrentDatabase,
@@ -60,71 +64,78 @@ export class BezahlungActionCreator {
     }
 
     async bezahlungHinzufuegen(kontokorrentId: string,
-        bezahlung: { betreff: string, betrag: number, datum: Date, bezahlendePerson: string, empfaenger: string[] },
-        direct?: boolean) {
-        direct = direct || false;
+        bezahlung: NeueBezahlungModel) {
         let id = uuid();
+        if (!(await this.bezahlungPerSyncHinzufuegen(kontokorrentId, id, bezahlung))) {
+            await this.bezahlungDirektHinzufuegen(kontokorrentId, bezahlung, id);
+        }
+    }
+
+    private async bezahlungPerSyncHinzufuegen(kontokorrentId: string,
+        id: string,
+        bezahlung: NeueBezahlungModel) {
+        if ("serviceWorker" in navigator && "SyncManager" in window) {
+            let reg = await navigator.serviceWorker.ready;
+            try {
+                let zwischengespeichert: NeueBezahlungDbModel = {
+                    beschreibung: bezahlung.betreff,
+                    bezahlendePersonId: bezahlung.bezahlendePerson,
+                    empfaengerIds: bezahlung.empfaenger,
+                    id: id,
+                    wert: bezahlung.betrag,
+                    zeitpunkt: bezahlung.datum,
+                    kontokorrentId: kontokorrentId
+                }
+                await this.db.bezahlungZwischenspeichern(zwischengespeichert);
+                await reg.sync.register(NeueBezahlungBackgroundSyncTag);
+                this.store.dispatch(new NeueBezahlungAngelegt(kontokorrentId, {
+                    beschreibung: zwischengespeichert.beschreibung,
+                    bezahlendePersonId: zwischengespeichert.bezahlendePersonId,
+                    empfaengerIds: zwischengespeichert.empfaengerIds,
+                    id: zwischengespeichert.id,
+                    wert: zwischengespeichert.wert,
+                    zeitpunkt: zwischengespeichert.zeitpunkt,
+                    status: BezahlungStatus.Zwischengespeichert
+                }));
+            } catch {
+                console.warn("background sync not allowed");
+                await this.db.zwischengespeicherteBezahlungErledigt(id);
+                return false;
+            }
+        } else {
+            console.log("background sync not supported");
+            return false;
+        }
+        return true;
+    }
+
+    async bezahlungDirektHinzufuegen(kontokorrentId: string,
+        bezahlung: NeueBezahlungModel, id: string = null) {
         let request: NeueBezahlungRequest = {
             beschreibung: bezahlung.betreff,
             bezahlendePersonId: bezahlung.bezahlendePerson,
             empfaengerIds: bezahlung.empfaenger,
-            id: id,
+            id: id || uuid(),
             wert: bezahlung.betrag,
             zeitpunkt: bezahlung.datum
         };
-        if (!direct) {
-            if ("serviceWorker" in navigator && "SyncManager" in window) {
-                let reg = await navigator.serviceWorker.ready;
-                try {
-                    let zwischengespeichert: NeueBezahlungDbModel = {
-                        beschreibung: bezahlung.betreff,
-                        bezahlendePersonId: bezahlung.bezahlendePerson,
-                        empfaengerIds: bezahlung.empfaenger,
-                        id: id,
-                        wert: bezahlung.betrag,
-                        zeitpunkt: bezahlung.datum,
-                        kontokorrentId: kontokorrentId
-                    }
-                    await this.db.bezahlungZwischenspeichern(zwischengespeichert);
-                    await reg.sync.register(NeueBezahlungBackgroundSyncTag);
-                    this.store.dispatch(new NeueBezahlungAngelegt(kontokorrentId, {
-                        beschreibung: zwischengespeichert.beschreibung,
-                        bezahlendePersonId: zwischengespeichert.bezahlendePersonId,
-                        empfaengerIds: zwischengespeichert.empfaengerIds,
-                        id: zwischengespeichert.id,
-                        wert: zwischengespeichert.wert,
-                        zeitpunkt: zwischengespeichert.zeitpunkt,
-                        status: BezahlungStatus.Zwischengespeichert
-                    }));
-                } catch {
-                    console.warn("background sync not allowed");
-                    await this.db.zwischengespeicherteBezahlungErledigt(id);
-                    direct = true;
-                }
-            } else {
-                console.log("background sync not supported");
-                direct = true;
-            }
+        this.store.dispatch(new NeueBezahlungAnlegen(kontokorrentId));
+        try {
+            let aktion = await this.neueBezahlungService.bezahlungAnlegen(kontokorrentId, request);
+            this.store.dispatch(new NeueBezahlungAngelegt(kontokorrentId, {
+                beschreibung: aktion.bezahlung.beschreibung,
+                bezahlendePersonId: aktion.bezahlung.bezahlendePersonId,
+                empfaengerIds: aktion.bezahlung.empfaengerIds,
+                id: aktion.bezahlung.id,
+                wert: aktion.bezahlung.wert,
+                zeitpunkt: aktion.bezahlung.zeitpunkt,
+                status: BezahlungStatus.Gespeichert
+            }));
         }
-        if (direct) {
-            this.store.dispatch(new NeueBezahlungAnlegen(kontokorrentId));
-            try {
-                let aktion = await this.neueBezahlungService.bezahlungAnlegen(kontokorrentId, request);
-                this.store.dispatch(new NeueBezahlungAngelegt(kontokorrentId, {
-                    beschreibung: aktion.bezahlung.beschreibung,
-                    bezahlendePersonId: aktion.bezahlung.bezahlendePersonId,
-                    empfaengerIds: aktion.bezahlung.empfaengerIds,
-                    id: aktion.bezahlung.id,
-                    wert: aktion.bezahlung.wert,
-                    zeitpunkt: aktion.bezahlung.zeitpunkt,
-                    status: BezahlungStatus.Gespeichert
-                }));
-            }
-            catch (err) {
-                console.error(err);
-                this.store.dispatch(new NeueBezahlungAnlegenFailed(kontokorrentId));
-                throw err;
-            }
+        catch (err) {
+            console.error(err);
+            this.store.dispatch(new NeueBezahlungAnlegenFailed(kontokorrentId));
+            throw err;
         }
     }
 

@@ -278,7 +278,14 @@ export class KontokorrentDatabase {
 
     async getZwischengespeicherteBezahlungen(): Promise<NeueBezahlungDbModel[]> {
         return await this.withInitialized(async db => {
-            return db.getAll(NeueBezahlungenStore);
+            return (await db.getAll(NeueBezahlungenStore));
+        });
+    }
+
+    async getBezahlungAktion(kontokorrentId: string, bezahlungId: string) {
+        return await this.withInitialized(async db => {
+            var aktionen = db.getAllFromIndex(AktionenStore, "kontokorrentId", kontokorrentId);
+            return (await aktionen).find(a => a.bezahlung && a.bezahlung.id == bezahlungId);
         });
     }
 
