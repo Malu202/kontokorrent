@@ -1,4 +1,5 @@
 import { AccountInfo } from "../lib/AccountInfo";
+import { BearbeitungsStatus } from "../lib/BearbeitungsStatus";
 
 export interface AccountState {
     accountCreated: boolean,
@@ -48,6 +49,10 @@ export const enum BezahlungAnlegenStatus {
     Failed
 }
 
+export interface AngezeigteBezahlungState {
+    bearbeitungsStatus: BearbeitungsStatus;
+}
+
 export interface KontokorrentState {
     id: string;
     name: string;
@@ -55,6 +60,7 @@ export interface KontokorrentState {
     bezahlungen: Bezahlung[];
     synchronisieren: boolean;
     bezahlungAnlegen: BezahlungAnlegenStatus;
+    angezeigteBezahlung: { [id: string]: AngezeigteBezahlungState }
 }
 
 export interface BeschreibungVorschlagState {

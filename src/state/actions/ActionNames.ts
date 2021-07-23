@@ -5,7 +5,7 @@ export const enum ActionNames {
     AccountInitialized,
     LoggedOut,
     LoginExpired,
-    BezahlungKontokorrentGeandert,
+    BezahlungEintragenKontokorrentGeandert,
     KontokorrentCreationFailed,
     KontokorrentCreating,
     KontokorrentHinzufuegenFailed,
@@ -26,5 +26,6 @@ export const enum ActionNames {
     NeueBezahlungAnlegenFailed,
     ServiceWorkerBezahlungAnlegen,
     ServiceWorkerBezahlungAngelegt,
-    BeschreibungsVorschlaege
+    BeschreibungsVorschlaege,
+    BezahlungGeoeffnet
 }

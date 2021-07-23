@@ -6,7 +6,7 @@ import { AccountActions } from "../actions/AccountActionCreator";
 import { BezahlungActions } from "../actions/BezahlungActionCreator";
 import { ActionNames } from "../actions/ActionNames";
 import { KontokorrentHinzufuegenActions } from "../actions/KontokorrentHinzufuegenActionCreator";
-import { KontokorrentActions } from "../actions/KontokorrentActionCreator";
+import { KontokorrentActions, KontokorrentBalanceAktualisiert } from "../actions/KontokorrentActionCreator";
 import { ServiceWorkerActions } from "../actions/ServiceWorkerActions";
 
 type Actions = KontokorrentListenActions
@@ -116,7 +116,8 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                                     }
                                 }),
                                 bezahlungen: [],
-                                bezahlungAnlegen: null
+                                bezahlungAnlegen: null,
+                                angezeigteBezahlung: {}
                             }
                         }
                     };
@@ -200,11 +201,35 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                 });
                 break;
             }
-            case ActionNames.BezahlungKontokorrentGeandert: {
+            case ActionNames.BezahlungEintragenKontokorrentGeandert: {
                 updateStore(s => this.updateKontokorrentStatus({
                     ...s,
                     activeKontokorrentId: action.kontokorrentId
                 }, action.kontokorrentId, { bezahlungAnlegen: null }));
+                break;
+            }
+            case ActionNames.BezahlungGeoeffnet: {
+                updateStore(s => {
+                    s = {
+                        ...s,
+                        activeKontokorrentId: action.kontokorrentId,
+                    };
+                    s = this.updateKontokorrentStatusFn(s, action.kontokorrentId, ks => {
+                        return {
+                            ...ks,
+                            angezeigteBezahlung: {
+                                ...ks.angezeigteBezahlung,
+                                [action.bezahlungId]: {
+                                    bearbeitungsStatus: action.bearbeitungsStatus
+                                }
+                            }
+                        }
+                    })
+                    if (action.bezahlung) {
+                        s = this.upsertBezahlung(s, action.kontokorrentId, action.bezahlung);
+                    }
+                    return s;
+                });
                 break;
             }
             case ActionNames.NeueBezahlungAnlegen: {
@@ -216,8 +241,10 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                 break;
             }
             case ActionNames.NeueBezahlungAngelegt: {
-                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: BezahlungAnlegenStatus.Angelegt }));
-                updateStore(s => this.upsertBezahlung(s, action.kontokorrentId, action.bezahlung));
+                updateStore(s => {
+                    s = this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: BezahlungAnlegenStatus.Angelegt });
+                    return this.upsertBezahlung(s, action.kontokorrentId, action.bezahlung);
+                });
                 break;
             }
             case ActionNames.ServiceWorkerBezahlungAnlegen: {
@@ -232,13 +259,14 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
     }
 
     private updateKontokorrentStatus(s: KontokorrentsState, kontokorrentId: string, state: Partial<KontokorrentState>) {
+        return this.updateKontokorrentStatusFn(s, kontokorrentId, ks => { return { ...ks, ...state } });
+    }
+
+    private updateKontokorrentStatusFn(s: KontokorrentsState, kontokorrentId: string, update: (ks: KontokorrentState) => KontokorrentState) {
         return {
             ...s,
             kontokorrents: {
-                ...s.kontokorrents, [kontokorrentId]: {
-                    ...s.kontokorrents[kontokorrentId],
-                    ...state
-                }
+                ...s.kontokorrents, [kontokorrentId]: update(s.kontokorrents[kontokorrentId])
             }
         };
     }

@@ -89,6 +89,16 @@ export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement
             component.setRouteParameters(id);
             return component;
         }
+        let bezahlungRoute = /^kontokorrents\/([a-zA-Z0-9\-]+)\/bezahlungen\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
+        if (bezahlungRoute) {
+            let kontokorrentId = bezahlungRoute[1];
+            let bezahlungId = bezahlungRoute[2];
+            const { BezahlungPage } = await import("../components/BezahlungPage/BezahlungPage");
+            let component = new BezahlungPage();
+            component.addServices(this.serviceLocator);
+            component.setRouteParameters(kontokorrentId, bezahlungId);
+            return component;
+        }
         let component = await this.getKontokorrentPageComponent();
         component.addServices(this.serviceLocator);
         return component;

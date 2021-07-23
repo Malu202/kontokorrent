@@ -1,0 +1,9 @@
+@use "../ui-components/theme";
+@use "../ui-components/utils";
+
+@mixin bezahlung-page {
+    @include theme.property(background-color, bg-container);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}

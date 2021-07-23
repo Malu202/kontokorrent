@@ -10,10 +10,18 @@ import { v4 as uuid } from "uuid";
 import { NeueBezahlungDbModel } from "../../lib/NeueBezahlungDbModel";
 import { Bezahlung, BezahlungStatus } from "../State";
 import { WorkerService, workerServiceFactory } from "../../lib/WorkerService";
+import { BearbeitungsStatus } from "../../lib/BearbeitungsStatus";
 
-export class BezahlungKontokorrentGeandert implements Action {
-    readonly type = ActionNames.BezahlungKontokorrentGeandert;
+export class BezahlungEintragenKontokorrentGeandert implements Action {
+    readonly type = ActionNames.BezahlungEintragenKontokorrentGeandert;
     constructor(public kontokorrentId: string) {
+    }
+}
+
+export class BezahlungGeoeffnet implements Action {
+    readonly type = ActionNames.BezahlungGeoeffnet;
+    constructor(public kontokorrentId: string, public bezahlungId: string,
+        public bearbeitungsStatus: BearbeitungsStatus, public bezahlung: Bezahlung | null) {
     }
 }
 
@@ -35,10 +43,11 @@ export class NeueBezahlungAnlegenFailed implements Action {
     }
 }
 
-export type BezahlungActions = BezahlungKontokorrentGeandert
+export type BezahlungActions = BezahlungEintragenKontokorrentGeandert
     | NeueBezahlungAnlegenFailed
     | NeueBezahlungAnlegen
-    | NeueBezahlungAngelegt;
+    | NeueBezahlungAngelegt
+    | BezahlungGeoeffnet;
 
 export interface NeueBezahlungModel {
     betreff: string, betrag: number, datum: Date, bezahlendePerson: string, empfaenger: string[]
@@ -51,14 +60,34 @@ export class BezahlungActionCreator {
         private workerService: WorkerService) {
     }
 
+
+    async bezahlungGeoeffnet(kontokorrentId: string, bezahlungId: string) {
+        let b = await this.db.getBearbeitungsStatus(kontokorrentId, bezahlungId);
+        let bezahlung: Bezahlung = null;
+        if (b.aktion) {
+            let bezahlungAktion = b.aktion;
+            bezahlung = {
+                beschreibung: bezahlungAktion.bezahlung.beschreibung,
+                bezahlendePersonId: bezahlungAktion.bezahlung.bezahlendePersonId,
+                empfaengerIds: bezahlungAktion.bezahlung.empfaengerIds,
+                id: bezahlungAktion.bezahlung.id,
+                status: BezahlungStatus.Gespeichert,
+                wert: bezahlungAktion.bezahlung.wert,
+                zeitpunkt: bezahlungAktion.bezahlung.zeitpunkt
+            };
+        }
+        this.store.dispatch(new BezahlungGeoeffnet(kontokorrentId, bezahlungId, b.status, bezahlung));
+        await (await this.workerService.getWorker()).getBeschreibungVorschlaege(kontokorrentId, null);
+    }
+
     async bezahlungEintragenGeoeffnet() {
         let id = this.store.state.kontokorrents.activeKontokorrentId || await this.db.getZuletztGesehenerKontokorrentId();
-        this.store.dispatch(new BezahlungKontokorrentGeandert(id));
+        this.store.dispatch(new BezahlungEintragenKontokorrentGeandert(id));
         await (await this.workerService.getWorker()).getBeschreibungVorschlaege(id, null);
     }
 
     async bezahlungEintragenKontokorrentChanged(id: string) {
-        this.store.dispatch(new BezahlungKontokorrentGeandert(id));
+        this.store.dispatch(new BezahlungEintragenKontokorrentGeandert(id));
         await this.db.setZuletztGesehenerKontokorrentId(id);
         await (await this.workerService.getWorker()).getBeschreibungVorschlaege(id, null);
     }

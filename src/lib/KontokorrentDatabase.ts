@@ -5,6 +5,7 @@ import { Aktion } from "../api/Aktion";
 import { AktionDbModel } from "./AktionDbModel";
 import { AccountInfo } from "./AccountInfo";
 import { NeueBezahlungDbModel } from "./NeueBezahlungDbModel";
+import { BearbeitungsStatus } from "./BearbeitungsStatus";
 
 
 const KontokorrentsStore = "KontokorrentsStore";
@@ -282,10 +283,34 @@ export class KontokorrentDatabase {
         });
     }
 
-    async getBezahlungAktion(kontokorrentId: string, bezahlungId: string) {
+    async getBezahlungAktion(kontokorrentId: string, bezahlungId: string): Promise<AktionDbModel> {
         return await this.withInitialized(async db => {
             var aktionen = db.getAllFromIndex(AktionenStore, "kontokorrentId", kontokorrentId);
             return (await aktionen).find(a => a.bezahlung && a.bezahlung.id == bezahlungId);
+        });
+    }
+
+    async getBearbeitungsStatus(kontokorrentId: string, bezahlungId: string): Promise<{ aktion: AktionDbModel, status: BearbeitungsStatus }> {
+        return await this.withInitialized(async db => {
+            let aktionen: AktionDbModel[] = await db.getAllFromIndex(AktionenStore, "kontokorrentId", kontokorrentId);
+            let aktion = aktionen.find(a => a.bezahlung && a.bezahlung.id == bezahlungId);
+            if (!aktion) {
+                let neueBezahlungen: NeueBezahlungDbModel[] = await db.getAllFromIndex(NeueBezahlungenStore, "kontokorrentId", kontokorrentId);
+                let neueBezahlung = neueBezahlungen.find(a => a.id == bezahlungId);
+                if (neueBezahlung) {
+                    return { aktion: null, status: BearbeitungsStatus.Zwischengespeichert };
+                }
+                return { aktion: null, status: BearbeitungsStatus.NichtGefunden };
+            }
+            let bearbeitendeAktion = aktionen.find(a => a.bearbeiteteBezahlungId == bezahlungId);
+            if (null != bearbeitendeAktion) {
+                return { aktion: aktion, status: BearbeitungsStatus.Bearbeitet };
+            }
+            let loeschendeAktion = aktionen.find(a => a.geloeschteBezahlungId == bezahlungId);
+            if (null != loeschendeAktion) {
+                return { aktion: aktion, status: BearbeitungsStatus.Geloescht };
+            }
+            return { aktion: aktion, status: BearbeitungsStatus.Bearbeitbar };
         });
     }
 
