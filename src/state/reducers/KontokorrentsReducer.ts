@@ -310,10 +310,13 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
     private extendMap(map: { [id: string]: KontokorrentState }, kk: KontokorrentInfo[]) {
         let kontokorrents: { [id: string]: KontokorrentState } = {};
         for (let k of kk) {
-            let kontokorrent = {
+            let kontokorrent: KontokorrentState = {
                 ...k,
+                // default props
                 synchronisieren: false,
                 bezahlungen: <Bezahlung[]>[],
+                angezeigteBezahlung: {},
+                // old model
                 ...map[k.id],
                 personen: k.personen.map(v => {
                     let p = map[k.id]?.personen?.find(p => p.id == v.id);

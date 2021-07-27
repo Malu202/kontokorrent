@@ -35,6 +35,7 @@ export class BezahlungPage extends HTMLElement {
     private bezahlungBearbeitetError: HTMLDivElement;
     private updateButton: HTMLButtonElement;
     private deleteButton: HTMLButtonElement;
+    private dataLoaded: boolean = false;
 
     constructor() {
         super();
@@ -101,6 +102,12 @@ export class BezahlungPage extends HTMLElement {
                     this.bezahlungGeloeschtError.hidden = angezeigteBezahlung.bearbeitungsStatus != BearbeitungsStatus.Geloescht;
                     this.bezahlungBearbeitetError.hidden = angezeigteBezahlung.bearbeitungsStatus != BearbeitungsStatus.Bearbeitet;
                     editable = angezeigteBezahlung.bearbeitungsStatus == BearbeitungsStatus.Bearbeitbar;
+                }
+                let bezahlungData = kontokorrent.bezahlungen.find(b => b.id == this.bezahlungIdParameter);
+                if (kontokorrent.personen && kontokorrent.personen.length > 0
+                    && bezahlungData && !this.dataLoaded) {
+                    this.dataLoaded = true;
+                    this.bezahlungEintragenForm.setData(bezahlungData);
                 }
             }
         }

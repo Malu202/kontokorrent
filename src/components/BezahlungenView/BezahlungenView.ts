@@ -50,7 +50,7 @@ export class BezahlungenView extends HTMLElement {
         let last: BezahlungenGroup = <BezahlungenGroup>this.bezahlungenContainer.lastElementChild;
         this.anzahlEintraege += 20;
         if (last) {
-            last.scrollIntoView();
+            last.scrollIntoView({ behavior: "smooth" });
         }
         this.setShowMoreButtonDisplay();
     }

@@ -26,6 +26,7 @@ export class KontokorrentPage extends HTMLElement {
     private kontokorrent: KontokorrentState;
     private kontokorrentIdParameter: string;
     private kontokorrentListenActionCreator: KontokorrentListenActionCreator;
+    private bezahlungClickListener: (e: CustomEvent) => void;
 
     constructor() {
         super();
@@ -44,6 +45,10 @@ export class KontokorrentPage extends HTMLElement {
         this.appBar.addServices(serviceLocator);
     }
 
+    private bezahlungClick(id: string) {
+        this.routingActionCreator.navigateBezahlung(this.kontokorrentIdParameter, id);
+    }
+
     connectedCallback() {
         if (!this.kontokorrentIdParameter) {
             this.kontokorrentListenActionCreator.navigiereZuLetztGesehenem(true);
@@ -54,6 +59,8 @@ export class KontokorrentPage extends HTMLElement {
         });
         convertLinks(this.querySelectorAll("#eintragen-desktop, #eintragen-mobile"), this.routingActionCreator);
         this.applyStoreState(this.store.state);
+        this.bezahlungClickListener = e => this.bezahlungClick(e.detail);
+        this.bezahlungenView.addEventListener("bezahlungclick", this.bezahlungClickListener);
     }
 
     private applyStoreState(state: State) {
@@ -75,6 +82,7 @@ export class KontokorrentPage extends HTMLElement {
 
     disconnectedCallback() {
         this.subscription();
+        this.bezahlungenView.removeEventListener("bezahlungclick", this.bezahlungClickListener);
     }
 }
 

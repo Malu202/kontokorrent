@@ -1,4 +1,4 @@
-import { Person } from "../../state/State";
+import { Bezahlung, Person } from "../../state/State";
 import template from "./BezahlungEintragenForm.html";
 import "./BezahlungEintragenForm.scss";
 import { ArrayToElementRenderer } from "../../utils/ArrayToElementRenderer";
@@ -139,6 +139,20 @@ export class BezahlungEintragenForm extends HTMLElement {
             bezahlendePerson: this.bezahlendePerson.value,
             datum: this.getDatum()
         }
+    }
+
+    setData(b: Bezahlung) {
+        this.betreff.value = b.beschreibung;
+        this.bezahlendePerson.value = b.bezahlendePersonId;
+        // this can fail if personen not yet loaded
+        for (let p of this._personen) {
+            let e = this.form["empfaenger-" + p.id] as HTMLInputElement;
+            e.checked = !!b.empfaengerIds.find(i => i == p.id);
+        }
+        let alleInput = this.form["alle"] as HTMLInputElement;
+        alleInput.checked = !this.empfaengerCheckboxen.some(e => !e.checked);
+        this.datum.value = toDateInputValue(b.zeitpunkt);
+        this.betrag.value = `${b.wert}`;
     }
 
     private parseBetrag() {

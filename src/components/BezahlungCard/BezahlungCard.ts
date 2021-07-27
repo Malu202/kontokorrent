@@ -9,6 +9,7 @@ export const WertAttribute = "wert";
 export const BezahlendePersonAttribute = "bezahlende-person";
 export const EmpfaengerAttribute = "empfaenger";
 export const StatusAttribute = "status";
+export const BezahlungIdAttribute = "bezahlung-id";
 
 interface AttributeStore {
     bezahlendePerson: string;
@@ -29,6 +30,7 @@ export class BezahlungCard extends HTMLElement {
     private doneElement: HTMLSpanElement;
     private doneAllElement: HTMLSpanElement;
     private syncElement: HTMLSpanElement;
+    private clickListener: (e: MouseEvent) => void;
 
     constructor() {
         super();
@@ -49,12 +51,17 @@ export class BezahlungCard extends HTMLElement {
         this.syncElement = this.querySelector(`[data-ref="icon-sync"]`);
     }
 
-    connectedCallback() {
+    private onClick(e: MouseEvent) {
+        this.dispatchEvent(new CustomEvent("bezahlungclick", { detail: this.getAttribute(BezahlungIdAttribute), bubbles: true }));
+    }
 
+    connectedCallback() {
+        this.clickListener = e => this.onClick(e);
+        this.addEventListener("click", this.clickListener);
     }
 
     disconnectedCallback() {
-
+        this.removeEventListener("click", this.clickListener);
     }
 
     attributeChangedCallback() {

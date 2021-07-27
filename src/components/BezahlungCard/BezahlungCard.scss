@@ -5,6 +5,7 @@ bezahlung-card {
     @extend %card;
     display: inline-flex;
     align-items: center;
+    cursor: pointer;
 }
 
 $status-font-size : 0.9em;

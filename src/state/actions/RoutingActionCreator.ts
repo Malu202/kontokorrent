@@ -7,7 +7,7 @@ export class RoutingActionCreator {
     navigateHome() {
         this.router.navigate(Paths.Home, null);
     }
-    navigateLogin(replace?:boolean) {
+    navigateLogin(replace?: boolean) {
         this.router.navigate(Paths.Login, null, replace);
     }
     navigateFeaturesRequired() {
@@ -18,6 +18,9 @@ export class RoutingActionCreator {
     }
     navigateKontokorrent(id: string, replace?: boolean) {
         this.router.navigate(`${Paths.Kontokorrents}/${id}`, null, replace);
+    }
+    navigateBezahlung(kontokorrentId: string, id: string, replace?: boolean) {
+        this.router.navigate(`kontokorrents/${kontokorrentId}/bezahlungen/${id}`, null, replace);
     }
 }
 
