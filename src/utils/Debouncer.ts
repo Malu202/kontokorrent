@@ -34,7 +34,7 @@ export class Debouncer {
         try {
             await Promise.race([this.timeout(ms), status.promise]);
         }
-        catch {
+        catch(err) {
             throw new Error("aborted");
         }
     }

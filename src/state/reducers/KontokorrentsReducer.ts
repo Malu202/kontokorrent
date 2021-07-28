@@ -1,5 +1,5 @@
 import { Reducer } from "../lib/Reducer";
-import { KontokorrentsState, KontokorrentState, Bezahlung, Person, BezahlungAnlegenStatus, BezahlungStatus } from "../State";
+import { KontokorrentsState, KontokorrentState, Bezahlung, Person, RequestStatus, BezahlungStatus, AngezeigteBezahlungState } from "../State";
 import { KontokorrentListenActions } from "../actions/KontokorrentListenActionCreator";
 import { KontokorrentInfo } from "../../api/KontokorrentInfo";
 import { AccountActions } from "../actions/AccountActionCreator";
@@ -214,17 +214,9 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                         ...s,
                         activeKontokorrentId: action.kontokorrentId,
                     };
-                    s = this.updateKontokorrentStatusFn(s, action.kontokorrentId, ks => {
-                        return {
-                            ...ks,
-                            angezeigteBezahlung: {
-                                ...ks.angezeigteBezahlung,
-                                [action.bezahlungId]: {
-                                    bearbeitungsStatus: action.bearbeitungsStatus
-                                }
-                            }
-                        }
-                    })
+                    s = this.updateAngezeigteBezahlung(s, action.kontokorrentId, action.bezahlungId, {
+                        bearbeitungsStatus: action.bearbeitungsStatus
+                    });
                     if (action.bezahlung) {
                         s = this.upsertBezahlung(s, action.kontokorrentId, action.bezahlung);
                     }
@@ -233,16 +225,16 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                 break;
             }
             case ActionNames.NeueBezahlungAnlegen: {
-                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: BezahlungAnlegenStatus.Anlegen }));
+                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: RequestStatus.InProgress }));
                 break;
             }
             case ActionNames.NeueBezahlungAnlegenFailed: {
-                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: BezahlungAnlegenStatus.Failed }));
+                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: RequestStatus.Failed }));
                 break;
             }
             case ActionNames.NeueBezahlungAngelegt: {
                 updateStore(s => {
-                    s = this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: BezahlungAnlegenStatus.Angelegt });
+                    s = this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungAnlegen: RequestStatus.Success });
                     return this.upsertBezahlung(s, action.kontokorrentId, action.bezahlung);
                 });
                 break;
@@ -253,6 +245,37 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
             }
             case ActionNames.ServiceWorkerBezahlungAngelegt: {
                 updateStore(s => this.upsertBezahlung(s, action.kontokorrentId, { status: BezahlungStatus.Gespeichert, id: action.bezahlungId }));
+                break;
+            }
+            case ActionNames.BezahlungBearbeiten: {
+                updateStore(s => this.updateAngezeigteBezahlung(s, action.kontokorrentId, action.bezahlungId, { updateStatus: RequestStatus.InProgress }));
+                break;
+            }
+            case ActionNames.BezahlungBearbeitenFailed: {
+                updateStore(s => this.updateAngezeigteBezahlung(s, action.kontokorrentId, action.bezahlungId, { updateStatus: RequestStatus.Failed }));
+                break;
+            }
+            case ActionNames.BezahlungBearbeitet: {
+                updateStore(s => {
+                    s = this.updateAngezeigteBezahlung(s, action.kontokorrentId, action.bearbeiteteBezahlungId, { updateStatus: RequestStatus.Success });
+                    s = this.removeBezahlung(s, action.kontokorrentId, action.bearbeiteteBezahlungId);
+                    return this.upsertBezahlung(s, action.kontokorrentId, action.bezahlung);
+                });
+                break;
+            }
+            case ActionNames.BezahlungLoeschen: {
+                updateStore(s => this.updateAngezeigteBezahlung(s, action.kontokorrentId, action.bezahlungId, { deleteStatus: RequestStatus.InProgress }));
+                break;
+            }
+            case ActionNames.BezahlungLoeschenFailed: {
+                updateStore(s => this.updateAngezeigteBezahlung(s, action.kontokorrentId, action.bezahlungId, { deleteStatus: RequestStatus.Failed }));
+                break;
+            }
+            case ActionNames.BezahlungGeloescht: {
+                updateStore(s => {
+                    s = this.updateAngezeigteBezahlung(s, action.kontokorrentId, action.geloeschteBezahlungId, { deleteStatus: RequestStatus.Success });
+                    return this.removeBezahlung(s, action.kontokorrentId, action.geloeschteBezahlungId);
+                });
                 break;
             }
         }
@@ -271,6 +294,21 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
         };
     }
 
+    private updateAngezeigteBezahlung(s: KontokorrentsState, kontokorrentId: string, bezahlungId: string, state: Partial<AngezeigteBezahlungState>) {
+        return this.updateKontokorrentStatusFn(s, kontokorrentId, ks => {
+            return {
+                ...ks,
+                angezeigteBezahlung: {
+                    ...ks.angezeigteBezahlung,
+                    [bezahlungId]: {
+                        ...(ks.angezeigteBezahlung || {})[bezahlungId],
+                        ...state
+                    }
+                }
+            }
+        })
+    }
+
     private upsertBezahlung(s: KontokorrentsState, kontokorrentId: string, b: BezhalungOptional):
         KontokorrentsState {
         let bezahlungen = s.kontokorrents[kontokorrentId]?.bezahlungen || [];
@@ -279,6 +317,22 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
             bezahlungen.splice(bezahlungen.indexOf(existing), 1);
         }
         bezahlungen.push({ ...existing, ...b });
+        return {
+            ...s,
+            kontokorrents: {
+                ...s.kontokorrents, [kontokorrentId]: {
+                    ...s.kontokorrents[kontokorrentId],
+                    bezahlungen: bezahlungen
+                }
+            }
+        }
+    }
+
+    private removeBezahlung(s: KontokorrentsState, kontokorrentId: string, bezahlungId: string):
+        KontokorrentsState {
+        let bezahlungen = s.kontokorrents[kontokorrentId]?.bezahlungen || [];
+        let existing = bezahlungen.find(d => bezahlungId == d.id);
+        bezahlungen.splice(bezahlungen.indexOf(existing), 1);
         return {
             ...s,
             kontokorrents: {

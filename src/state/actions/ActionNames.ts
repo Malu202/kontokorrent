@@ -27,5 +27,11 @@ export const enum ActionNames {
     ServiceWorkerBezahlungAnlegen,
     ServiceWorkerBezahlungAngelegt,
     BeschreibungsVorschlaege,
-    BezahlungGeoeffnet
+    BezahlungGeoeffnet,
+    BezahlungBearbeiten,
+    BezahlungBearbeitet,
+    BezahlungBearbeitenFailed,
+    BezahlungLoeschen,
+    BezahlungGeloescht,
+    BezahlungLoeschenFailed
 }

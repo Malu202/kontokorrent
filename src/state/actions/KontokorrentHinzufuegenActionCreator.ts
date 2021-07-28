@@ -131,7 +131,7 @@ export class KontokorrentHinzufuegenActionCreator {
                 return newIds[0];
             }
         }
-        catch {
+        catch(err) {
             this.store.dispatch(new KontokorrentHinzufuegenFailed(false));
         }
         return false;

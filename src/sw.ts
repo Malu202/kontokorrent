@@ -1,7 +1,7 @@
 import { ApiClient } from "./api/ApiClient";
 import { AccountInfoStore } from "./lib/AccountInfoStore";
 import { KontokorrentDatabase } from "./lib/KontokorrentDatabase";
-import { NeueBezahlungService } from "./lib/NeueBezahlungService";
+import { BezahlungenService } from "./lib/BezahlungenService";
 import { ServiceWorkerActions, ServiceWorkerBezahlungAngelegt, ServiceWorkerBezahlungAnlegen } from "./state/actions/ServiceWorkerActions";
 import { NeueBezahlungBackgroundSyncTag } from "./sw.constants";
 
@@ -99,7 +99,7 @@ async function dispatchToClients(msg: ServiceWorkerActions) {
 }
 
 class BackgroundSyncService {
-    constructor(private db: KontokorrentDatabase, private neueBezahlungenService: NeueBezahlungService) {
+    constructor(private db: KontokorrentDatabase, private neueBezahlungenService: BezahlungenService) {
 
     }
 
@@ -130,7 +130,7 @@ self.addEventListener("sync", function (event) {
             let db = new KontokorrentDatabase();
             let accountInfoStore = new AccountInfoStore(db);
             let apiClient = new ApiClient(accountInfoStore);
-            let neueBezahlungService = new NeueBezahlungService(apiClient, db);
+            let neueBezahlungService = new BezahlungenService(apiClient, db);
             let backgroundSyncService = new BackgroundSyncService(db, neueBezahlungService);
             await backgroundSyncService.zwischengespeicherteZahlungenAnlegen();
         })());

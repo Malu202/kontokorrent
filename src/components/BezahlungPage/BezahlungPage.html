@@ -21,7 +21,11 @@
         </button>
     </div>
     <div class="bezahlung__form-container" id="bezahlung__form-container">
-        <div id="save-error" class="alert alert--error" hidden>Zahlung konnte nicht gespeichert werden.
+        <div id="update-error" class="alert alert--error" hidden>
+            Zahlung konnte nicht bearbeitet werden.
+        </div>
+        <div id="delete-error" class="alert alert--error" hidden>
+            Zahlung konnte nicht bearbeitet werden.
         </div>
         <div id="bezahlung-nicht-gefunden-error" class="alert alert--error" hidden>
             Zahlung konnte nicht gefunden werden.
@@ -47,3 +51,27 @@
     <span class="spinner"></span>
     <span>wird gelöscht</span>
 </div>
+<app-popup id="update-dialog">
+    <div class="dialog__backdrop"></div>
+    <div class="dialog">
+        <p>
+            Geänderte Bezahlung speichern?
+        </p>
+        <div class="dialog__button-pane">
+            <button id="abort-update" class="button">Abbrechen</button>
+            <button id="confirm-update" class="button">Speichern</button>
+        </div>
+    </div>
+</app-popup>
+<app-popup id="delete-dialog">
+    <div class="dialog__backdrop"></div>
+    <div class="dialog">
+        <p>
+            Bezahlung löschen?
+        </p>
+        <div class="dialog__button-pane">
+            <button id="abort-delete" class="button">Abbrechen</button>
+            <button id="confirm-delete" class="button">Löschen</button>
+        </div>
+    </div>
+</app-popup>

@@ -43,14 +43,16 @@ export interface Bezahlung {
     status: BezahlungStatus
 }
 
-export const enum BezahlungAnlegenStatus {
-    Anlegen,
-    Angelegt,
+export const enum RequestStatus {
+    InProgress,
+    Success,
     Failed
 }
 
 export interface AngezeigteBezahlungState {
     bearbeitungsStatus: BearbeitungsStatus;
+    updateStatus?: RequestStatus;
+    deleteStatus?: RequestStatus;
 }
 
 export interface KontokorrentState {
@@ -59,7 +61,7 @@ export interface KontokorrentState {
     personen: Person[];
     bezahlungen: Bezahlung[];
     synchronisieren: boolean;
-    bezahlungAnlegen: BezahlungAnlegenStatus;
+    bezahlungAnlegen: RequestStatus;
     angezeigteBezahlung: { [id: string]: AngezeigteBezahlungState }
 }
 

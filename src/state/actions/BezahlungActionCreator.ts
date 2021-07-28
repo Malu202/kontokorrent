@@ -4,13 +4,14 @@ import { ServiceLocator } from "../../ServiceLocator";
 import { Action } from "../lib/Action";
 import { ActionNames } from "./ActionNames";
 import { NeueBezahlungBackgroundSyncTag } from "../../sw.constants";
-import { NeueBezahlungService, neueBezahlungServiceFactory } from "../../lib/NeueBezahlungService";
+import { BezahlungenService, bezahlungenServiceFactory } from "../../lib/BezahlungenService";
 import { NeueBezahlungRequest } from "../../api/NeueBezahlungRequest";
 import { v4 as uuid } from "uuid";
 import { NeueBezahlungDbModel } from "../../lib/NeueBezahlungDbModel";
 import { Bezahlung, BezahlungStatus } from "../State";
 import { WorkerService, workerServiceFactory } from "../../lib/WorkerService";
 import { BearbeitungsStatus } from "../../lib/BearbeitungsStatus";
+import { BezahlungBearbeitenRequest } from "../../api/BezahlungBearbeitenRequest";
 
 export class BezahlungEintragenKontokorrentGeandert implements Action {
     readonly type = ActionNames.BezahlungEintragenKontokorrentGeandert;
@@ -43,20 +44,62 @@ export class NeueBezahlungAnlegenFailed implements Action {
     }
 }
 
+export class BezahlungBearbeiten implements Action {
+    readonly type = ActionNames.BezahlungBearbeiten;
+    constructor(public kontokorrentId: string, public bezahlungId: string) {
+    }
+}
+
+export class BezahlungBearbeitet implements Action {
+    readonly type = ActionNames.BezahlungBearbeitet;
+    constructor(public kontokorrentId: string, public bearbeiteteBezahlungId: string, public bezahlung: Bezahlung) {
+    }
+}
+
+export class BezahlungBearbeitenFailed implements Action {
+    readonly type = ActionNames.BezahlungBearbeitenFailed;
+    constructor(public kontokorrentId: string, public bezahlungId: string) {
+    }
+}
+
+export class BezahlungLoeschen implements Action {
+    readonly type = ActionNames.BezahlungLoeschen;
+    constructor(public kontokorrentId: string, public bezahlungId: string) {
+    }
+}
+
+export class BezahlungGeloescht implements Action {
+    readonly type = ActionNames.BezahlungGeloescht;
+    constructor(public kontokorrentId: string, public geloeschteBezahlungId: string) {
+    }
+}
+
+export class BezahlungLoeschenFailed implements Action {
+    readonly type = ActionNames.BezahlungLoeschenFailed;
+    constructor(public kontokorrentId: string, public bezahlungId: string) {
+    }
+}
+
 export type BezahlungActions = BezahlungEintragenKontokorrentGeandert
     | NeueBezahlungAnlegenFailed
     | NeueBezahlungAnlegen
     | NeueBezahlungAngelegt
-    | BezahlungGeoeffnet;
+    | BezahlungGeoeffnet
+    | BezahlungBearbeiten
+    | BezahlungBearbeitet
+    | BezahlungBearbeitenFailed
+    | BezahlungLoeschen
+    | BezahlungGeloescht
+    | BezahlungLoeschenFailed;
 
-export interface NeueBezahlungModel {
+export interface BezahlungModel {
     betreff: string, betrag: number, datum: Date, bezahlendePerson: string, empfaenger: string[]
 }
 
 export class BezahlungActionCreator {
     constructor(private store: Store,
         private db: KontokorrentDatabase,
-        private neueBezahlungService: NeueBezahlungService,
+        private bezahlungenService: BezahlungenService,
         private workerService: WorkerService) {
     }
 
@@ -93,7 +136,7 @@ export class BezahlungActionCreator {
     }
 
     async bezahlungHinzufuegen(kontokorrentId: string,
-        bezahlung: NeueBezahlungModel) {
+        bezahlung: BezahlungModel) {
         let id = uuid();
         if (!(await this.bezahlungPerSyncHinzufuegen(kontokorrentId, id, bezahlung))) {
             await this.bezahlungDirektHinzufuegen(kontokorrentId, bezahlung, id);
@@ -102,7 +145,7 @@ export class BezahlungActionCreator {
 
     private async bezahlungPerSyncHinzufuegen(kontokorrentId: string,
         id: string,
-        bezahlung: NeueBezahlungModel) {
+        bezahlung: BezahlungModel) {
         if ("serviceWorker" in navigator && "SyncManager" in window) {
             let reg = await navigator.serviceWorker.ready;
             try {
@@ -126,7 +169,7 @@ export class BezahlungActionCreator {
                     zeitpunkt: zwischengespeichert.zeitpunkt,
                     status: BezahlungStatus.Zwischengespeichert
                 }));
-            } catch {
+            } catch (err) {
                 console.warn("background sync not allowed");
                 await this.db.zwischengespeicherteBezahlungErledigt(id);
                 return false;
@@ -139,7 +182,7 @@ export class BezahlungActionCreator {
     }
 
     async bezahlungDirektHinzufuegen(kontokorrentId: string,
-        bezahlung: NeueBezahlungModel, id: string = null) {
+        bezahlung: BezahlungModel, id: string = null) {
         let request: NeueBezahlungRequest = {
             beschreibung: bezahlung.betreff,
             bezahlendePersonId: bezahlung.bezahlendePerson,
@@ -150,7 +193,7 @@ export class BezahlungActionCreator {
         };
         this.store.dispatch(new NeueBezahlungAnlegen(kontokorrentId));
         try {
-            let aktion = await this.neueBezahlungService.bezahlungAnlegen(kontokorrentId, request);
+            let aktion = await this.bezahlungenService.bezahlungAnlegen(kontokorrentId, request);
             this.store.dispatch(new NeueBezahlungAngelegt(kontokorrentId, {
                 beschreibung: aktion.bezahlung.beschreibung,
                 bezahlendePersonId: aktion.bezahlung.bezahlendePersonId,
@@ -168,6 +211,51 @@ export class BezahlungActionCreator {
         }
     }
 
+    async bezahlungBearbeiten(kontokorrentId: string,
+        bezahlungId: string,
+        bezahlung: BezahlungModel) {
+        let request: BezahlungBearbeitenRequest = {
+            beschreibung: bezahlung.betreff,
+            bezahlendePersonId: bezahlung.bezahlendePerson,
+            empfaengerIds: bezahlung.empfaenger,
+            id: bezahlungId,
+            wert: bezahlung.betrag,
+            zeitpunkt: bezahlung.datum
+        };
+        this.store.dispatch(new BezahlungBearbeiten(kontokorrentId, bezahlungId));
+        try {
+            let aktion = await this.bezahlungenService.bezahlungBearbeiten(kontokorrentId, request);
+            this.store.dispatch(new BezahlungBearbeitet(kontokorrentId, aktion.bearbeiteteBezahlungId, {
+                beschreibung: aktion.bezahlung.beschreibung,
+                bezahlendePersonId: aktion.bezahlung.bezahlendePersonId,
+                empfaengerIds: aktion.bezahlung.empfaengerIds,
+                id: aktion.bezahlung.id,
+                wert: aktion.bezahlung.wert,
+                zeitpunkt: aktion.bezahlung.zeitpunkt,
+                status: BezahlungStatus.Gespeichert
+            }));
+        }
+        catch (err) {
+            console.error(err);
+            this.store.dispatch(new BezahlungBearbeitenFailed(kontokorrentId, bezahlungId));
+            throw err;
+        }
+    }
+
+    async bezahlungLoeschen(kontokorrentId: string,
+        bezahlungId: string) {
+        this.store.dispatch(new BezahlungLoeschen(kontokorrentId, bezahlungId));
+        try {
+            let aktion = await this.bezahlungenService.bezahlungLoeschen(kontokorrentId, bezahlungId);
+            this.store.dispatch(new BezahlungGeloescht(kontokorrentId, aktion.geloeschteBezahlungId));
+        }
+        catch (err) {
+            console.error(err);
+            this.store.dispatch(new BezahlungLoeschenFailed(kontokorrentId, bezahlungId));
+            throw err;
+        }
+    }
+
     async getBeschreibungVorschlaege(kontokorrentId: string, eingabe: string) {
         (await this.workerService.getWorker()).getBeschreibungVorschlaege(kontokorrentId, eingabe);
     }
@@ -177,6 +265,6 @@ export function bezahlungActionCreatorFactory(serviceLocator: ServiceLocator) {
     return serviceLocator.get("BezahlungActionCreator",
         serviceLocator => new BezahlungActionCreator(serviceLocator.store,
             serviceLocator.db,
-            neueBezahlungServiceFactory(serviceLocator),
+            bezahlungenServiceFactory(serviceLocator),
             workerServiceFactory(serviceLocator)));
 }

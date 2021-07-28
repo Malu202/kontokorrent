@@ -9,8 +9,10 @@ import { ApiException } from "./ApiException";
 import { Aktion } from "./Aktion";
 import { environment } from "../environment";
 import { NeueBezahlungRequest } from "./NeueBezahlungRequest";
-import { rejects } from "assert";
 import { NeueBezahlungFailedException } from "./NeueBezahlungFailedException";
+import { BezahlungBearbeitenRequest } from "./BezahlungBearbeitenRequest";
+import { BezahlungBearbeitenFailedException } from "./BezahlungBearbeitenFailedException";
+import { BezahlungLoeschenFailedException } from "./BezahlungLoeschenFailedException";
 
 const baseUrl = environment.API_URL;
 
@@ -28,7 +30,7 @@ export class ApiClient {
             }
             return { success: true };
         }
-        catch {
+        catch(err) {
             return { success: false };
         }
     }
@@ -123,6 +125,42 @@ export class ApiClient {
         throw new NeueBezahlungFailedException();
     }
 
+    async bezahlungLoeschen(kontokorrentId: string, bezahlungId:string) {
+        let init: RequestInit = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/vnd+kontokorrent.loeschenaktion+json",
+                "Authorization": `Bearer ${await this.getAccessToken()}`
+            },
+            body: JSON.stringify({id:bezahlungId})
+        };
+        let res = await fetch(`${baseUrl}/api/v2/kontokorrents/${kontokorrentId}/aktionen`, init);
+        if (res.ok) {
+            let aktion = <Aktion>(await res.json());
+            return this.mapAktionen([aktion])[0];
+        }
+        throw new BezahlungLoeschenFailedException();
+    }
+
+    async bezahlungBearbeiten(kontokorrentId: string, request: BezahlungBearbeitenRequest) {
+        let init: RequestInit = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/vnd+kontokorrent.bearbeitenaktion+json",
+                "Authorization": `Bearer ${await this.getAccessToken()}`
+            },
+            body: JSON.stringify(request)
+        };
+        let res = await fetch(`${baseUrl}/api/v2/kontokorrents/${kontokorrentId}/aktionen`, init);
+        if (res.ok) {
+            let aktion = <Aktion>(await res.json());
+            return this.mapAktionen([aktion])[0];
+        }
+        throw new BezahlungBearbeitenFailedException();
+    }
+
 
     private async getAccessToken() {
         let info = await this.accountInfoStore.get();
@@ -145,7 +183,7 @@ export class ApiClient {
                 }
                 tokenResponse = await res.json();
             }
-            catch {
+            catch(err) {
                 throw new TokenRenewFailedException(true);
             }
             await this.accountInfoStore.updateAccessTokenIfNewer("anonymous", JSON.stringify(tokenResponse), tokenInfo?.timestamp);

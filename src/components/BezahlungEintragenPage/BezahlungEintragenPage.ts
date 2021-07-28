@@ -5,7 +5,7 @@ import { RoutingActionCreator, routingActionCreatorFactory } from "../../state/a
 import { AppBar, AppBarTagName } from "../AppBar/AppBar";
 import "./BezahlungEintragenPage.scss";
 import { BezahlungActionCreator, bezahlungActionCreatorFactory } from "../../state/actions/BezahlungActionCreator";
-import { BezahlungAnlegenStatus, State } from "../../state/State";
+import { RequestStatus, State } from "../../state/State";
 import { convertLinks } from "../convertLinks";
 import "../BezahlungEintragenForm/BezahlungEintragenForm";
 import { BezahlungEintragenForm, BezahlungEintragenFormTagName } from "../BezahlungEintragenForm/BezahlungEintragenForm";
@@ -66,7 +66,7 @@ export class BezahlungEintragenPage extends HTMLElement {
             try {
                 await this.betreffVorschlagDebouncer.trigger(200);
             }
-            catch {
+            catch(err) {
                 //aborted
             }
             await this.bezahlungActionCreator.getBeschreibungVorschlaege(this.kontokorrentId, betreff);
@@ -95,9 +95,9 @@ export class BezahlungEintragenPage extends HTMLElement {
         this.zurueckLink.href = s.kontokorrents.activeKontokorrentId ? `kontokorrents/${s.kontokorrents.activeKontokorrentId}` : null;
         if (s.kontokorrents.activeKontokorrentId) {
             this.bezahlungEintragenForm.personen = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].personen;
-            this.editingSection.style.display = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].bezahlungAnlegen == BezahlungAnlegenStatus.Anlegen ? "none" : "flex";
-            this.savingSection.style.display = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].bezahlungAnlegen != BezahlungAnlegenStatus.Anlegen ? "none" : "flex";
-            this.saveError.hidden = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].bezahlungAnlegen != BezahlungAnlegenStatus.Failed;
+            this.editingSection.style.display = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].bezahlungAnlegen == RequestStatus.InProgress ? "none" : "flex";
+            this.savingSection.style.display = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].bezahlungAnlegen != RequestStatus.InProgress ? "none" : "flex";
+            this.saveError.hidden = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].bezahlungAnlegen != RequestStatus.Failed;
         }
         this.kontokorrentId = s.kontokorrents.activeKontokorrentId;
     }
