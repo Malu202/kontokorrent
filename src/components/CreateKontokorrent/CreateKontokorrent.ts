@@ -7,8 +7,12 @@ import { AccountActionCreator, accountActionCreatorFactory } from "../../state/a
 import "../PersonenListe/PersonenListe";
 import { PersonenListe } from "../PersonenListe/PersonenListe";
 import { v4 as uuid } from "uuid";
+import "./CreateKontokorrent.scss";
 import { KontokorrentListenActionCreator, kontokorrentListenActionCreatorFactory } from "../../state/actions/KontokorrentListenActionCreator";
 import { KontokorrentHinzufuegenActionCreator, kontokorrentHinzufuegenActionCreatorFactory } from "../../state/actions/KontokorrentHinzufuegenActionCreator";
+import "../ui-components/popup/popup";
+import "../ui-components/tip-button/tip-button";
+import { convertLinks } from "../convertLinks";
 
 export class CreateKontokorrent extends HTMLElement {
     store: Store;
@@ -77,7 +81,7 @@ export class CreateKontokorrent extends HTMLElement {
 
         this.eventName.addEventListener("change", () => {
             if (!this.oeffentlicherNameManuell) {
-                this.oeffentlicherName.value = this.eventName.value;
+                this.oeffentlicherName.value = (this.eventName.value || "").toLowerCase();
             }
         });
 
@@ -87,6 +91,7 @@ export class CreateKontokorrent extends HTMLElement {
 
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
+        convertLinks(element.querySelectorAll("a"), this.routingActionCreator);
     }
 
     async createEvent() {

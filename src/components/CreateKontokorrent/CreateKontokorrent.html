@@ -1,20 +1,65 @@
-<h1>Event erstellen</h1>
-<label for="event-name">Eventname</label>
-<input type="text" id="event-name" name="event-name">
-<label for="event-name">Oeffentlich</label>
-<input type="checkbox" id="oeffentlich" name="oeffentlich" checked="checked">
-<div id="oeffentlich-box">
-    <label for="oeffentlicher-name">Öffentlicher Name</label>
-    <input type="text" id="oeffentlicher-name" name="oeffentlicher-name">
+<div class="create-event-box">
+    <h1>Gruppe erstellen</h1>
+    <div id="empty-name-error" class="alert alert--error" style="display: none;">Für alle Personen Namen angeben</div>
+    <div id="person-count-error" class="alert alert--error" style="display: none;">Mindestens zwei Personen angeben
+    </div>
+    <div id="event-create-error" class="alert alert--error" style="display: none;">Kontokorrent konnte nicht erstellt
+        werden</div>
+    <div id="event-name-duplicate" class="alert alert--error" style="display: none;">Ein Kontokorrent mit diesem Namen
+        exisitert bereits</div>
+    <div id="event-name-error" class="alert alert--error" style="display: none;">Eventname angeben</div>
+    <div id="oeffentlicher-name-error" class="alert alert--error" style="display: none;">Öfferntlicher Name: Nur
+        Kleinbuchstaben und Zahlen</div>
+    <div id="person-name-duplicate-error" class="alert alert--error" style="display: none;">Personennamen müssen
+        unterschiedlich sein</div>
+    <div id="account-creation-failed" class="alert alert--error" style="display: none;">Account konnte nicht erstellt
+        werden</div>
+    <label for="event-name" class="create-event-box__label">Anzeigename</label>
+    <div class="create-event-box__input-with-tip">
+        <input type="text" id="event-name" name="event-name">
+        <tip-button popup-id="eventNameExplainer" title="Eventname erklärung">
+            <span class="material-icons">
+                info
+            </span>
+        </tip-button>
+        <app-popup id="eventNameExplainer" class="tip tip--with-input">
+            Wie soll die Gruppe heißen? Unter diesem Namen wird die Gruppe nach dem einloggen angezeigt.
+            Kann, muss aber nicht mit dem öffentlichen Namen übereinstimmen.
+        </app-popup>
+    </div>
+    <!-- TODO nicht oeffentliche enablen -->
+    <label for="event-name" class="create-event-box__label" style="display: none;">Oeffentlich</label>
+    <input type="checkbox" id="oeffentlich" name="oeffentlich" checked="checked" disabled="disabled"
+        style="display: none;">
+
+    <div id="oeffentlich-box">
+        <label for="oeffentlicher-name" class="create-event-box__label">Öffentlicher Name</label>
+        <div class="create-event-box__input-with-tip">
+            <input type="text" id="oeffentlicher-name" name="oeffentlicher-name">
+            <tip-button popup-id="oeffentlicherNameExplainer" title="öffentlicher Name Erklärung">
+                <span class="material-icons">
+                    info
+                </span>
+            </tip-button>
+            <app-popup id="oeffentlicherNameExplainer" class="tip tip--with-input">
+                Gib hier den Namen, den die anderen Gruppenmitglieder verwenden um sich einzuloggen. ("Passwort")
+            </app-popup>
+        </div>
+    </div>
+    <label class="create-event-box__label">Personen</label>
+    <app-personen-liste id="personen-liste"></app-personen-liste>
+    <div id="creating" class="create-event-box__processing" style="display: none;">
+        <span class="spinner"></span>
+    </div>
+    <div>
+        <button id="create-button" class="button">Erstellen</button>
+    </div>
+    <div>
+        <a id="home-button" class="button" href="">
+            <span class="material-icons">
+                home
+            </span>
+            zurück
+        </a>
+    </div>
 </div>
-<div id="empty-name-error" style="display: none;">Für alle Personen Namen angeben</div>
-<div id="person-count-error" style="display: none;">Mindestens zwei Personen angeben</div>
-<div id="event-create-error" style="display: none;">Kontokorrent konnte nicht erstellt werden</div>
-<div id="event-name-duplicate" style="display: none;">Ein Kontokorrent mit diesem Namen exisitert bereits</div>
-<div id="event-name-error" style="display: none;">Eventname angeben</div>
-<div id="oeffentlicher-name-error" style="display: none;">Öfferntlicher Name: Nur Kleinbuchstaben und Zahlen</div>
-<div id="person-name-duplicate-error" style="display: none;">Personennamen müssen unterschiedlich sein</div>
-<div id="creating" style="display: none;">Wird erstellt</div>
-<div id="account-creation-failed" style="display: none;">Account konnte nicht erstellt werden</div>
-<app-personen-liste id="personen-liste"></app-personen-liste>
-<button id="create-button">Erstellen</button>
