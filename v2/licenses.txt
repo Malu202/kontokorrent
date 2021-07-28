@@ -360,7 +360,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 --------------------------------------------------------------------------------
-idb v5.0.8 - Jake Archibald
+idb v6.1.2 - Jake Archibald
 git://github.com/jakearchibald/idb.git
 --------------------------------------------------------------------------------
 
