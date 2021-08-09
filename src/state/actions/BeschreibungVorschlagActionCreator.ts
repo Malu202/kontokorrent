@@ -18,7 +18,7 @@ export type BeschreibungVorschlagActions =
 export class BeschreibungVorschlagActionCreator {
     private beschreibungenCache: { kontokorrentId: string, beschreibungen: { search: string, result: string, occurence: number }[] };
     constructor(private db: KontokorrentDatabase, private store: Store) {
-        this.beschreibungenCache = { kontokorrentId: null, beschreibungen: [] };
+        this.resetCache();
     }
 
 
@@ -34,6 +34,10 @@ export class BeschreibungVorschlagActionCreator {
             }
         }
         return i;
+    }
+
+    resetCache() {
+        this.beschreibungenCache = { kontokorrentId: null, beschreibungen: [] };
     }
 
     async getVorschlaege(kontokorrentId: string, eingabe: string) {

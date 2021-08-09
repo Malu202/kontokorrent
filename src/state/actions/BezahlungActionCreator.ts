@@ -120,13 +120,15 @@ export class BezahlungActionCreator {
             };
         }
         this.store.dispatch(new BezahlungGeoeffnet(kontokorrentId, bezahlungId, b.status, bezahlung));
-        await (await this.workerService.getWorker()).getBeschreibungVorschlaege(kontokorrentId, null);
+        let worker = (await this.workerService.getWorker());
+        await worker.getBeschreibungVorschlaege(kontokorrentId, bezahlung ? bezahlung.beschreibung : null);
     }
 
     async bezahlungEintragenGeoeffnet() {
         let id = this.store.state.kontokorrents.activeKontokorrentId || await this.db.getZuletztGesehenerKontokorrentId();
         this.store.dispatch(new BezahlungEintragenKontokorrentGeandert(id));
-        await (await this.workerService.getWorker()).getBeschreibungVorschlaege(id, null);
+        let worker = (await this.workerService.getWorker());
+        await worker.getBeschreibungVorschlaege(id, null);
     }
 
     async bezahlungEintragenKontokorrentChanged(id: string) {
@@ -141,6 +143,8 @@ export class BezahlungActionCreator {
         if (!(await this.bezahlungPerSyncHinzufuegen(kontokorrentId, id, bezahlung))) {
             await this.bezahlungDirektHinzufuegen(kontokorrentId, bezahlung, id);
         }
+        let worker = (await this.workerService.getWorker());
+        worker.resetBeschreibungenCache();
     }
 
     private async bezahlungPerSyncHinzufuegen(kontokorrentId: string,
@@ -240,6 +244,8 @@ export class BezahlungActionCreator {
             this.store.dispatch(new BezahlungBearbeitenFailed(kontokorrentId, bezahlungId));
             throw err;
         }
+        let worker = (await this.workerService.getWorker());
+        worker.resetBeschreibungenCache();
     }
 
     async bezahlungLoeschen(kontokorrentId: string,

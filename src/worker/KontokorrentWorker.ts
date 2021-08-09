@@ -26,10 +26,15 @@ export async function getBeschreibungVorschlaege(kontokorrentId: string, eingabe
     await beschreibungVorschlagActionCreator.getVorschlaege(kontokorrentId, eingabe);
 }
 
+export function resetBeschreibungenCache() {
+    beschreibungVorschlagActionCreator.resetCache();
+}
+
 const exports = {
     calculateBalance,
     getLaufendeNummer,
-    getBeschreibungVorschlaege
+    getBeschreibungVorschlaege,
+    resetBeschreibungenCache
 };
 export type KontokorrentWorkerApi = typeof exports;
 expose(exports, self);
