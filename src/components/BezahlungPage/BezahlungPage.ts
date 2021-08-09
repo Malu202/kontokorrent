@@ -58,6 +58,7 @@ export class BezahlungPage extends HTMLElement {
         this.deletingSection = this.querySelector("#bezahlung__deleting");
         this.updateError = this.querySelector("#update-error");
         this.deleteError = this.querySelector("#delete-error");
+        this.formContainer = this.querySelector("#bezahlung__form-container");
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -83,7 +84,7 @@ export class BezahlungPage extends HTMLElement {
                 this.updateDialog.show();
             }
             else {
-                this.formContainer.scrollTop = 0;
+                this.formContainer.scroll({ top: 0, behavior: "smooth" });
             }
             e.stopPropagation();
         });

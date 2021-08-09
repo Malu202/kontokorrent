@@ -63,17 +63,17 @@ export class BezahlungEintragenPage extends HTMLElement {
         this.bezahlungEintragenForm.addEventListener("betreffChanged", (ev: CustomEvent) => this.betreffChanged(ev.detail));
     }
     async betreffChanged(betreff: string) {
-            try {
-                await this.betreffVorschlagDebouncer.trigger(200);
-            }
-            catch(err) {
-                //aborted
-            }
-            await this.bezahlungActionCreator.getBeschreibungVorschlaege(this.kontokorrentId, betreff);
+        try {
+            await this.betreffVorschlagDebouncer.trigger(200);
+        }
+        catch (err) {
+            //aborted
+        }
+        await this.bezahlungActionCreator.getBeschreibungVorschlaege(this.kontokorrentId, betreff);
     }
     private beschreibungVorschlaegeChanged(s: State): void {
         if (s.beschreibungVorschlaege?.kontokorrentId == this.kontokorrentId) {
-            this.bezahlungEintragenForm.beschreibungVorschlaege = s.beschreibungVorschlaege.vorschlaege.slice(0,10);
+            this.bezahlungEintragenForm.beschreibungVorschlaege = s.beschreibungVorschlaege.vorschlaege.slice(0, 10);
         }
         else {
             this.bezahlungEintragenForm.beschreibungVorschlaege = [];
@@ -87,7 +87,7 @@ export class BezahlungEintragenPage extends HTMLElement {
             this.routingActionCreator.navigateKontokorrent(this.kontokorrentId, true);
         }
         else {
-            this.formContainer.scrollTop = 0;
+            this.formContainer.scroll({ top: 0, behavior: "smooth" });
         }
     }
 
