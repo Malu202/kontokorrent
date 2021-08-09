@@ -112,6 +112,8 @@ export class CreateKontokorrent extends HTMLElement {
                     this.routingActionCreator.navigateKontokorrent(this.kontokorrentId);
                 };
             }
+        } else {
+            document.scrollingElement.scroll({ top: 0, behavior: "smooth" });
         }
     }
 

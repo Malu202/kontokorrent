@@ -4,7 +4,7 @@ app-create-event {
     display: flex;
     flex-direction: column;
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     @include theme.property(background-color, bg-container);
     justify-content: space-evenly;
     align-items: center;
