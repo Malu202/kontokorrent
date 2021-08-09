@@ -1,5 +1,6 @@
 @use "../ui-components/theme";
 @use "sass:color";
+@use "sass:math";
 
 $size : 4em;
 $bar-gap: 0.1em;
@@ -51,9 +52,9 @@ balance-anzeige-element {
         background-color: #eee;
         position: absolute;
         top: 50%;
-        left: (100% - $bar-width) / 2;
+        left: math.div(100% - $bar-width, 2);
         width: $bar-width;
-        height: $size/2 - $bar-gap;
+        height: math.div($size , 2) - $bar-gap;
         margin: 0;
         padding: 0;
         user-select: none;

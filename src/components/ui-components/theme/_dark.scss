@@ -14,7 +14,7 @@ $grouptitle: $fg-on-bg !default;
 $input-line: rgba(0, 0, 0, 0.42) !default;
 $input-line--hover: rgba(0, 0, 0, 0.87) !default;
 $error-alert-border: #FF5252 !default;
-$error-alert-bg: color.adjust($color: #FF5252, $lightness: 20) !default;
+$error-alert-bg: color.adjust($color: #FF5252, $lightness: 20%) !default;
 
 $theme-props : (primary: $primary,
     fg-on-primary :$fg-on-primary,

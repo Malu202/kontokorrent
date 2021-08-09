@@ -30,8 +30,7 @@ self.addEventListener("install", function (event) {
     }, { asset: [], code: [] });
     let definedCaches = [
         {
-            name: cacheNames.code, assets: [...dividedAssets.code,
-                "index.html"]
+            name: cacheNames.code, assets: [...dividedAssets.code]
         },
         {
             name: cacheNames.asset,
