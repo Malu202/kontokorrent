@@ -6,14 +6,14 @@ import { AccountActions } from "../actions/AccountActionCreator";
 import { BezahlungActions } from "../actions/BezahlungActionCreator";
 import { ActionNames } from "../actions/ActionNames";
 import { KontokorrentHinzufuegenActions } from "../actions/KontokorrentHinzufuegenActionCreator";
-import { KontokorrentActions, KontokorrentBalanceAktualisiert } from "../actions/KontokorrentActionCreator";
 import { ServiceWorkerActions } from "../actions/ServiceWorkerActions";
+import { KontokorrentSyncActions } from "../actions/KontokorrentSyncActionCreator";
 
 type Actions = KontokorrentListenActions
     | AccountActions
     | BezahlungActions
     | KontokorrentHinzufuegenActions
-    | KontokorrentActions
+    | KontokorrentSyncActions
     | ServiceWorkerActions;
 type PersonOptional = Partial<Omit<Person, "id">> & { id: string };
 type BezhalungOptional = Partial<Omit<Bezahlung, "id">> & { id: string };

@@ -3,7 +3,6 @@ import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
 import { ActionNames } from "./ActionNames";
 import { Action } from "../lib/Action";
 import { groupBy } from "../../utils/groupBy";
-import { markAsUntransferable } from "worker_threads";
 
 export class BeschreibungsVorschlaege implements Action {
     readonly type = ActionNames.BeschreibungsVorschlaege;

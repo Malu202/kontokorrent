@@ -1,27 +1,48 @@
-type KontokorrentWorkerApi = import("../worker/KontokorrentWorker").KontokorrentWorkerApi;
-import { wrap } from "comlink";
 import { ServiceLocator } from "../ServiceLocator";
 import { Store } from "../state/Store";
+import { GetBeschreibungVorschlaegeMessage, KontokorrentOeffnenMessage, ResetBeschreibungenCacheMessage, WorkerMessageType } from "../worker/KontokorrentWorker";
 
 export class WorkerService {
     constructor(private store: Store) {
 
     }
-    private workerApi: KontokorrentWorkerApi;
+    private worker: Worker;
 
-    async getWorker() {
-        if (this.workerApi) {
-            return this.workerApi;
+    private getWorker() {
+        if (!this.worker) {
+            this.worker = new Worker(new URL("../worker/KontokorrentWorker", import.meta.url));
+            this.worker.addEventListener("message", ev => {
+                if (ev.data?.type == "statedispatch") {
+                    let msg = ev.data.msg;
+                    this.store.dispatch(msg);
+                }
+            });
         }
-        const worker = new Worker(new URL("../worker/KontokorrentWorker", import.meta.url));
-        worker.addEventListener("message", ev => {
-            if (ev.data?.type == "statedispatch") {
-                let msg = ev.data.msg;
-                this.store.dispatch(msg);
-            }
-        })
-        this.workerApi = wrap<KontokorrentWorkerApi>(worker);
-        return this.workerApi;
+        return this.worker;
+    }
+
+    getBeschreibungVorschlaege(kontokorrentId: string, eingabe: string) {
+        let msg: GetBeschreibungVorschlaegeMessage = {
+            kontokorrentId: kontokorrentId,
+            type: WorkerMessageType.GetBeschreibungVorschlaege,
+            eingabe: eingabe
+        };
+        this.getWorker().postMessage(msg);
+    }
+
+    resetBeschreibungenCache() {
+        let msg: ResetBeschreibungenCacheMessage = {
+            type: WorkerMessageType.ResetBeschreibungenCache,
+        };
+        this.getWorker().postMessage(msg);
+    }
+
+    kontokorrentOeffnen(id: string) {
+        let msg: KontokorrentOeffnenMessage = {
+            type: WorkerMessageType.KontokorrentOeffnen,
+            kontokorrentId: id
+        };
+        this.getWorker().postMessage(msg);
     }
 }
 

@@ -120,21 +120,19 @@ export class BezahlungActionCreator {
             };
         }
         this.store.dispatch(new BezahlungGeoeffnet(kontokorrentId, bezahlungId, b.status, bezahlung));
-        let worker = (await this.workerService.getWorker());
-        await worker.getBeschreibungVorschlaege(kontokorrentId, bezahlung ? bezahlung.beschreibung : null);
+        this.workerService.getBeschreibungVorschlaege(kontokorrentId, bezahlung ? bezahlung.beschreibung : null);
     }
 
     async bezahlungEintragenGeoeffnet() {
         let id = this.store.state.kontokorrents.activeKontokorrentId || await this.db.getZuletztGesehenerKontokorrentId();
         this.store.dispatch(new BezahlungEintragenKontokorrentGeandert(id));
-        let worker = (await this.workerService.getWorker());
-        await worker.getBeschreibungVorschlaege(id, null);
+        this.workerService.getBeschreibungVorschlaege(id, null);
     }
 
     async bezahlungEintragenKontokorrentChanged(id: string) {
         this.store.dispatch(new BezahlungEintragenKontokorrentGeandert(id));
         await this.db.setZuletztGesehenerKontokorrentId(id);
-        await (await this.workerService.getWorker()).getBeschreibungVorschlaege(id, null);
+        this.workerService.getBeschreibungVorschlaege(id, null);
     }
 
     async bezahlungHinzufuegen(kontokorrentId: string,
@@ -143,8 +141,7 @@ export class BezahlungActionCreator {
         if (!(await this.bezahlungPerSyncHinzufuegen(kontokorrentId, id, bezahlung))) {
             await this.bezahlungDirektHinzufuegen(kontokorrentId, bezahlung, id);
         }
-        let worker = (await this.workerService.getWorker());
-        worker.resetBeschreibungenCache();
+        this.workerService.resetBeschreibungenCache();
     }
 
     private async bezahlungPerSyncHinzufuegen(kontokorrentId: string,
@@ -244,8 +241,7 @@ export class BezahlungActionCreator {
             this.store.dispatch(new BezahlungBearbeitenFailed(kontokorrentId, bezahlungId));
             throw err;
         }
-        let worker = (await this.workerService.getWorker());
-        worker.resetBeschreibungenCache();
+        this.workerService.resetBeschreibungenCache();
     }
 
     async bezahlungLoeschen(kontokorrentId: string,
@@ -262,8 +258,8 @@ export class BezahlungActionCreator {
         }
     }
 
-    async getBeschreibungVorschlaege(kontokorrentId: string, eingabe: string) {
-        (await this.workerService.getWorker()).getBeschreibungVorschlaege(kontokorrentId, eingabe);
+    getBeschreibungVorschlaege(kontokorrentId: string, eingabe: string) {
+        this.workerService.getBeschreibungVorschlaege(kontokorrentId, eingabe);
     }
 }
 

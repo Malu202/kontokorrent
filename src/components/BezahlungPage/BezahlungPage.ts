@@ -117,7 +117,7 @@ export class BezahlungPage extends HTMLElement {
         catch (err) {
             //aborted
         }
-        await this.bezahlungActionCreator.getBeschreibungVorschlaege(this.kontokorrentIdParameter, betreff);
+        this.bezahlungActionCreator.getBeschreibungVorschlaege(this.kontokorrentIdParameter, betreff);
     }
     private beschreibungVorschlaegeChanged(s: State): void {
         if (s.beschreibungVorschlaege?.kontokorrentId == this.kontokorrentIdParameter) {
