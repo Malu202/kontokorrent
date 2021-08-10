@@ -110,7 +110,7 @@ export class BezahlungEintragenForm extends HTMLElement {
         this.betreff.removeEventListener("keydown", this.betreffKeyDownListener)
     }
 
-    onFormInput() {
+    private onFormInput() {
         this.validateWhileManipulating();
     }
 

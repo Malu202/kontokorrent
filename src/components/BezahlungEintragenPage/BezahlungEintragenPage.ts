@@ -62,6 +62,7 @@ export class BezahlungEintragenPage extends HTMLElement {
         this.saveButton.addEventListener("click", this.saveEventListener);
         this.bezahlungEintragenForm.addEventListener("betreffChanged", (ev: CustomEvent) => this.betreffChanged(ev.detail));
     }
+
     async betreffChanged(betreff: string) {
         try {
             await this.betreffVorschlagDebouncer.trigger(200);
@@ -80,7 +81,7 @@ export class BezahlungEintragenPage extends HTMLElement {
         }
     }
 
-    async save() {
+    private async save() {
         if (this.bezahlungEintragenForm.validate()) {
             let data = this.bezahlungEintragenForm.getData();
             await this.bezahlungActionCreator.bezahlungHinzufuegen(this.kontokorrentId, data);

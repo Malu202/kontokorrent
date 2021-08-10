@@ -4,10 +4,10 @@ import { PersonenListenEintrag, PersonenListenEintragTagName } from "./PersonenL
 export class PersonenListe extends HTMLElement {
     private addPersonButton: HTMLButtonElement;
     private personenListe: HTMLUListElement;
+    private rendered = false;
 
     constructor() {
         super();
-        this.innerHTML = template;
     }
 
     get personen() {
@@ -17,9 +17,12 @@ export class PersonenListe extends HTMLElement {
     }
 
     connectedCallback() {
-        let element = this;
-        this.addPersonButton = element.querySelector("#add-person");
-        this.personenListe = element.querySelector("#personen-liste");
+        if (!this.rendered) {
+            this.innerHTML = template;
+            this.addPersonButton = this.querySelector("#add-person");
+            this.personenListe = this.querySelector("#personen-liste");
+            this.rendered = true;
+        }
         this.addPersonButton.addEventListener("click", () => {
             let li = document.createElement("li");
             let e = new PersonenListenEintrag();

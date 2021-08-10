@@ -3,16 +3,19 @@ import template from "./PersonenListenEintrag.html";
 export class PersonenListenEintrag extends HTMLElement {
     private removeButton: HTMLButtonElement;
     private nameInput: HTMLInputElement;
+    private rendered = false;
 
     constructor() {
         super();
-        this.innerHTML = template;
     }
 
     connectedCallback() {
-        let element = this;
-        this.removeButton = element.querySelector("#remove");
-        this.nameInput = element.querySelector("#name");
+        if (!this.rendered) {
+            this.innerHTML = template;
+            this.rendered = true;
+            this.removeButton = this.querySelector("#remove");
+            this.nameInput = this.querySelector("#name");
+        }
         this.nameInput.addEventListener("change", () => {
             this.dispatchEvent(new Event("change"));
         });
@@ -21,7 +24,7 @@ export class PersonenListenEintrag extends HTMLElement {
         })
     }
 
-    get name(){
+    get name() {
         return this.nameInput.value;
     }
 
@@ -30,5 +33,5 @@ export class PersonenListenEintrag extends HTMLElement {
     }
 
 }
-export const PersonenListenEintragTagName = 'app-personen-listen-eintrag'; 
+export const PersonenListenEintragTagName = 'app-personen-listen-eintrag';
 customElements.define(PersonenListenEintragTagName, PersonenListenEintrag);
