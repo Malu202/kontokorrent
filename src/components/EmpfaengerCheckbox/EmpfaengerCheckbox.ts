@@ -3,35 +3,47 @@ import "./EmpfaengerCheckbox.scss";
 import "../MdcCheckbox/MdcCheckbox";
 import { MdcCheckbox } from "../MdcCheckbox/MdcCheckbox";
 import { Person } from "../../state/State";
-import { ReuseableTemplate } from "../../utils/ReuseableTemplate";
+import { ReuseableTemplate, TemplateInstance } from "../../utils/ReuseableTemplate";
 
 const template = new ReuseableTemplate(templateContent);
 
 export class EmpfaengerCheckbox extends HTMLElement {
     private mdcCheckBox: MdcCheckbox;
     private label: HTMLLabelElement;
+    private templateInstance: TemplateInstance;
+
+    private checkboxId:string;
+    private personName:string;
 
     constructor() {
         super();
-        this.appendChild(template.get());
-        this.mdcCheckBox = this.querySelector("mdc-checkbox");
-        this.label = this.querySelector("label");
+        this.templateInstance = template.getInstance();
     }
 
     set person(value: Person) {
-        this.label.innerText = value.name;
-        const id = `empfaenger-${value.id}`;
-        this.label.setAttribute("for", id);
-        this.mdcCheckBox.setAttribute("checkbox-id", id);
-        this.mdcCheckBox.setAttribute("checkbox-name", id);
+        this.personName = value.name;
+        this.checkboxId = `empfaenger-${value.id}`;
     }
 
     connectedCallback() {
-
+        if (this.templateInstance.apply(this)) {
+            this.mdcCheckBox = this.querySelector("mdc-checkbox");
+            this.label = this.querySelector("label");
+            this.update();
+        }
     }
 
     disconnectedCallback() {
 
+    }
+
+    private update() {
+        if (this.templateInstance.isApplied()) {
+            this.label.innerText = this.personName;
+            this.label.setAttribute("for", this.checkboxId);
+            this.mdcCheckBox.setAttribute("checkbox-id", this.checkboxId);
+            this.mdcCheckBox.setAttribute("checkbox-name", this.checkboxId);
+        }
     }
 }
 

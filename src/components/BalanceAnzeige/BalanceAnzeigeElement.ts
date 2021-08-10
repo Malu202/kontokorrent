@@ -1,7 +1,7 @@
 import templateContent from "./BalanceAnzeigeElement.html";
 import "./BalanceAnzeigeElement.scss";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { ReuseableTemplate } from "../../utils/ReuseableTemplate";
+import { ReuseableTemplate, TemplateInstance } from "../../utils/ReuseableTemplate";
 
 export const PersonNameAttribute = "person-name";
 export const BalanceAttribute = "balance";
@@ -17,17 +17,20 @@ export class BalanceAnzeigeElement extends HTMLElement {
     private balanceRange: number;
     private barElement: HTMLDivElement;
     private balanceContainerElement: HTMLSpanElement;
+    private templateInstance: TemplateInstance;
 
     constructor() {
         super();
-        this.appendChild(template.get());
-        this.personNameElement = this.querySelector(`[data-ref="person-name"]`);
-        this.balanceTextElement = this.querySelector(`[data-ref="balance-text"]`);
-        this.balanceContainerElement = this.querySelector(`[data-ref="balance-container"]`);
-        this.barElement = this.querySelector(`[data-ref="bar"]`);
+        this.templateInstance = template.getInstance();
     }
 
     connectedCallback() {
+        if (this.templateInstance.apply(this)) {
+            this.personNameElement = this.querySelector(`[data-ref="person-name"]`);
+            this.balanceTextElement = this.querySelector(`[data-ref="balance-text"]`);
+            this.balanceContainerElement = this.querySelector(`[data-ref="balance-container"]`);
+            this.barElement = this.querySelector(`[data-ref="bar"]`);
+        }
         requestAnimationFrame(() => {
             this.barElement.style.transform = `scaleY(0)`;
             this.updatesStyle();

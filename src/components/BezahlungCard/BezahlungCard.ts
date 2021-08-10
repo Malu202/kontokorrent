@@ -1,7 +1,7 @@
 import templateContent from "./BezahlungCard.html";
 import "./BezahlungCard.scss";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { ReuseableTemplate } from "../../utils/ReuseableTemplate";
+import { ReuseableTemplate, TemplateInstance } from "../../utils/ReuseableTemplate";
 import { BezahlungStatus } from "../../state/State";
 
 export const BeschreibungAttribute = "beschreibung";
@@ -31,6 +31,7 @@ export class BezahlungCard extends HTMLElement {
     private doneAllElement: HTMLSpanElement;
     private syncElement: HTMLSpanElement;
     private clickListener: (e: MouseEvent) => void;
+    private templateInstance: TemplateInstance;
 
     constructor() {
         super();
@@ -41,14 +42,7 @@ export class BezahlungCard extends HTMLElement {
             wert: null,
             status: null
         };
-        this.appendChild(template.get());
-        this.beschreibungElement = this.querySelector(`[data-ref="beschreibung"]`);
-        this.bezahlendePersonElement = this.querySelector(`[data-ref="bezahlende-person"]`);
-        this.empfaengerElement = this.querySelector(`[data-ref="empfaenger"]`);
-        this.wertElement = this.querySelector(`[data-ref="wert"]`);
-        this.doneElement = this.querySelector(`[data-ref="icon-done"]`);
-        this.doneAllElement = this.querySelector(`[data-ref="icon-done-all"]`);
-        this.syncElement = this.querySelector(`[data-ref="icon-sync"]`);
+        this.templateInstance = template.getInstance();
     }
 
     private onClick(e: MouseEvent) {
@@ -56,6 +50,16 @@ export class BezahlungCard extends HTMLElement {
     }
 
     connectedCallback() {
+        if (this.templateInstance.apply(this)) {
+            this.beschreibungElement = this.querySelector(`[data-ref="beschreibung"]`);
+            this.bezahlendePersonElement = this.querySelector(`[data-ref="bezahlende-person"]`);
+            this.empfaengerElement = this.querySelector(`[data-ref="empfaenger"]`);
+            this.wertElement = this.querySelector(`[data-ref="wert"]`);
+            this.doneElement = this.querySelector(`[data-ref="icon-done"]`);
+            this.doneAllElement = this.querySelector(`[data-ref="icon-done-all"]`);
+            this.syncElement = this.querySelector(`[data-ref="icon-sync"]`);
+            this.updatesStyle();
+        }
         this.clickListener = e => this.onClick(e);
         this.addEventListener("click", this.clickListener);
     }
@@ -95,13 +99,15 @@ export class BezahlungCard extends HTMLElement {
     }
 
     private updatesStyle() {
-        this.beschreibungElement.innerText = this.attributeStore.beschreibung;
-        this.bezahlendePersonElement.innerText = this.attributeStore.bezahlendePerson;
-        this.wertElement.innerText = formatCurrency(this.attributeStore.wert);
-        this.empfaengerElement.innerText = this.attributeStore.empfaenger;
-        this.doneAllElement.style.display = this.attributeStore.status == BezahlungStatus.Gespeichert ? "inline" : "none";
-        this.doneElement.style.display = this.attributeStore.status == BezahlungStatus.Zwischengespeichert ? "inline" : "none";
-        this.syncElement.style.display = this.attributeStore.status == BezahlungStatus.Speichern ? "inline" : "none";
+        if (this.templateInstance.isApplied()) {
+            this.beschreibungElement.innerText = this.attributeStore.beschreibung;
+            this.bezahlendePersonElement.innerText = this.attributeStore.bezahlendePerson;
+            this.wertElement.innerText = formatCurrency(this.attributeStore.wert);
+            this.empfaengerElement.innerText = this.attributeStore.empfaenger;
+            this.doneAllElement.style.display = this.attributeStore.status == BezahlungStatus.Gespeichert ? "inline" : "none";
+            this.doneElement.style.display = this.attributeStore.status == BezahlungStatus.Zwischengespeichert ? "inline" : "none";
+            this.syncElement.style.display = this.attributeStore.status == BezahlungStatus.Speichern ? "inline" : "none";
+        }
     }
 
 }

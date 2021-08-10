@@ -17,16 +17,21 @@ export class AppBar extends HTMLElement {
     private accountActionCreator: AccountActionCreator;
     private logoutDialog: Popup;
     private subscription: () => void;
+    private rendered: boolean = false;
 
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.kontokorrentSelect = this.querySelector(KontokorrentSelectTagName);
-        this.logoutDialog = this.querySelector("#logout-dialog");
     }
 
     connectedCallback() {
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+
+            this.kontokorrentSelect = this.querySelector(KontokorrentSelectTagName);
+            this.logoutDialog = this.querySelector("#logout-dialog");
+        }
         this.querySelector("#logout-button").addEventListener("click", (e: MouseEvent) => {
             this.logoutDialog.toggle();
             e.stopPropagation();

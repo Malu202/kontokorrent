@@ -7,17 +7,20 @@ export class BalanceAnzeige extends HTMLElement {
     private balanceRange: number;
     private personen: Person[];
     private personenRenderer: ArrayToElementRenderer<Person, HTMLElement, string>;
+    private rendered = false;
 
     constructor() {
         super();
-        this.innerHTML = template;
         this.personenRenderer = new ArrayToElementRenderer(this,
             (b: Person) => b.id,
             b => new BalanceAnzeigeElement());
     }
 
     connectedCallback() {
-
+        if(!this.rendered) {
+            this.innerHTML = template;
+            this.rendered = true;
+        }
     }
 
     disconnectedCallback() {
