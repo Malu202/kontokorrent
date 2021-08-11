@@ -23,53 +23,61 @@ export class BezahlungEintragenForm extends HTMLElement {
     private formInputListener: () => void;
     private betragInvalidError: HTMLDivElement;
     private empfaengerAuswahl: HTMLDivElement;
-    private _personen: Person[];
+    private _personen: Person[] = [];
     private alleCheck: MdcCheckbox;
     private alleClickListener: () => void;
     private betreffInputListener: () => void;
     private beschreibungVorschlaegeRenderer: ArrayToElementRenderer<string, HTMLElement, string>;
-    private vorschlaege: string[];
+    private vorschlaege: string[] = [];
     private betreffKeyDownListener: (e: KeyboardEvent) => void;
+    private rendered = false;
+    private bezahlung: Bezahlung;
+    private bezahlungSet = false;
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.empfaengerAuswahl = this.querySelector("#empfaenger-auswahl");
-        this.zahlendePersonRenderer = new ArrayToElementRenderer<Person, BezahlendePersonRadioButton, string>(
-            this.querySelector("#zahlende-person-auswahl"),
-            p => p.id,
-            p => new BezahlendePersonRadioButton());
-        this.empfaengerRenderer = new ArrayToElementRenderer<Person, EmpfaengerCheckbox, string>(
-            this.empfaengerAuswahl,
-            p => p.id,
-            p => new EmpfaengerCheckbox());
-        this.beschreibungVorschlaegeRenderer = new ArrayToElementRenderer<string, HTMLElement, string>(
-            this.querySelector("#beschreibung-vorschlaege"),
-            p => p,
-            p => {
-                let el = document.createElement("button");
-                el.className = "bezahlung-eintragen-form__vorschlag";
-                el.innerText = p;
-                el.type = "button";
-                el.addEventListener("click", e => {
-                    this.completeBetreff(p);
-                });
-                return el;
-            });
-        this.datum = this.querySelector("#datum");
-        this.datum.value = toDateInputValue(new Date());
-        this.betrag = this.querySelector("#betrag");
-        this.betreff = this.querySelector("#betreff");
-        this.zahlendePersonMissingError = this.querySelector("#zahlende-person-missing-error");
-        this.betreffMissingError = this.querySelector("#betreff-missing-error");
-        this.betragMissingError = this.querySelector("#betrag-missing-error");
-        this.betragInvalidError = this.querySelector("#betrag-invalid-error");
-        this.empfaengerMissingError = this.querySelector("#empfaenger-missing-error");
-        this.form = this.querySelector("#bezahlung-eintragen-form");
-        this.alleCheck = this.querySelector("#alle-check");
     }
 
     connectedCallback() {
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.empfaengerAuswahl = this.querySelector("#empfaenger-auswahl");
+            this.zahlendePersonRenderer = new ArrayToElementRenderer<Person, BezahlendePersonRadioButton, string>(
+                this.querySelector("#zahlende-person-auswahl"),
+                p => p.id,
+                p => new BezahlendePersonRadioButton());
+            this.empfaengerRenderer = new ArrayToElementRenderer<Person, EmpfaengerCheckbox, string>(
+                this.empfaengerAuswahl,
+                p => p.id,
+                p => new EmpfaengerCheckbox());
+            this.beschreibungVorschlaegeRenderer = new ArrayToElementRenderer<string, HTMLElement, string>(
+                this.querySelector("#beschreibung-vorschlaege"),
+                p => p,
+                p => {
+                    let el = document.createElement("button");
+                    el.className = "bezahlung-eintragen-form__vorschlag";
+                    el.innerText = p;
+                    el.type = "button";
+                    el.addEventListener("click", e => {
+                        this.completeBetreff(p);
+                    });
+                    return el;
+                });
+            this.datum = this.querySelector("#datum");
+            this.datum.value = toDateInputValue(new Date());
+            this.betrag = this.querySelector("#betrag");
+            this.betreff = this.querySelector("#betreff");
+            this.zahlendePersonMissingError = this.querySelector("#zahlende-person-missing-error");
+            this.betreffMissingError = this.querySelector("#betreff-missing-error");
+            this.betragMissingError = this.querySelector("#betrag-missing-error");
+            this.betragInvalidError = this.querySelector("#betrag-invalid-error");
+            this.empfaengerMissingError = this.querySelector("#empfaenger-missing-error");
+            this.form = this.querySelector("#bezahlung-eintragen-form");
+            this.alleCheck = this.querySelector("#alle-check");
+            this.update();
+        }
+
         this.formInputListener = () => this.onFormInput();
         this.form.addEventListener("input", this.formInputListener);
         this.betrag.focus();
@@ -83,7 +91,7 @@ export class BezahlungEintragenForm extends HTMLElement {
         this.betreff.addEventListener("keydown", this.betreffKeyDownListener)
     }
 
-    betreffKeyDown(e: KeyboardEvent) {
+    private betreffKeyDown(e: KeyboardEvent) {
         if (e.code == "Enter" && this.vorschlaege?.length > 0) {
             this.completeBetreff(this.vorschlaege[0]);
         }
@@ -115,6 +123,9 @@ export class BezahlungEintragenForm extends HTMLElement {
     }
 
     validate() {
+        if (!this.rendered) {
+            return false;
+        }
         this.validationRequested = true;
         let betrag = this.parseBetrag();
         let betragValid = betrag.valid;
@@ -132,6 +143,9 @@ export class BezahlungEintragenForm extends HTMLElement {
     }
 
     getData() {
+        if (!this.rendered) {
+            return null;
+        }
         return {
             betrag: this.parseBetrag().value,
             betreff: this.betreff.value,
@@ -142,17 +156,8 @@ export class BezahlungEintragenForm extends HTMLElement {
     }
 
     setData(b: Bezahlung) {
-        this.betreff.value = b.beschreibung;
-        this.bezahlendePerson.value = b.bezahlendePersonId;
-        // this can fail if personen not yet loaded
-        for (let p of this._personen) {
-            let e = this.form["empfaenger-" + p.id] as HTMLInputElement;
-            e.checked = !!b.empfaengerIds.find(i => i == p.id);
-        }
-        let alleInput = this.form["alle"] as HTMLInputElement;
-        alleInput.checked = !this.empfaengerCheckboxen.some(e => !e.checked);
-        this.datum.value = toDateInputValue(b.zeitpunkt);
-        this.betrag.value = `${b.wert}`;
+        this.bezahlung = b;
+        this.update();
     }
 
     private parseBetrag() {
@@ -200,18 +205,40 @@ export class BezahlungEintragenForm extends HTMLElement {
 
     set personen(value: Person[]) {
         this._personen = value;
-        this.zahlendePersonRenderer.update(value, (element, person) => {
-            element.person = person;
-            element.radioName = "bezahlende-person";
-        });
-        this.empfaengerRenderer.update(value, (element, person) => {
-            element.person = person;
-        });
+        this.update();
     }
 
     set beschreibungVorschlaege(value: string[]) {
         this.vorschlaege = value;
-        this.beschreibungVorschlaegeRenderer.update(value, () => { });
+        this.update();
+    }
+
+    update() {
+        if (!this.rendered) {
+            return;
+        }
+        if (!this.bezahlungSet && this.bezahlung) {
+            this.bezahlungSet = true;
+            this.betreff.value = this.bezahlung.beschreibung;
+            this.bezahlendePerson.value = this.bezahlung.bezahlendePersonId;
+            // this can fail if personen not yet loaded
+            for (let p of this._personen) {
+                let e = this.form["empfaenger-" + p.id] as HTMLInputElement;
+                e.checked = !!this.bezahlung.empfaengerIds.find(i => i == p.id);
+            }
+            let alleInput = this.form["alle"] as HTMLInputElement;
+            alleInput.checked = !this.empfaengerCheckboxen.some(e => !e.checked);
+            this.datum.value = toDateInputValue(this.bezahlung.zeitpunkt);
+            this.betrag.value = `${this.bezahlung.wert}`;
+        }
+        this.zahlendePersonRenderer.update(this._personen, (element, person) => {
+            element.person = person;
+            element.radioName = "bezahlende-person";
+        });
+        this.empfaengerRenderer.update(this._personen, (element, person) => {
+            element.person = person;
+        });
+        this.beschreibungVorschlaegeRenderer.update(this.vorschlaege, () => { });
     }
 }
 export const BezahlungEintragenFormTagName = "bezahlung-eintragen-form";
