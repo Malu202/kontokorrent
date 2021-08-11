@@ -8,6 +8,7 @@ import { ActionNames } from "./ActionNames";
 import { KontokorrentSynchronizer } from "../../lib/KontokorrentSynchronizer";
 import { BalanceCalculator } from "../../lib/BalanceCalculator";
 import { KontokorrentBalance } from "../../lib/KontokorrentBalance";
+import { AusgleichService } from "../../lib/ausgleich/AusgleichService";
 
 export class KontokorrentGeoeffnet implements Action {
     readonly type = ActionNames.KontokorrentGeoeffnet;

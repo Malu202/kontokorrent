@@ -13,11 +13,22 @@ class GeteilteZahlung {
 
 type Bezahlung = { empfaengerIds: string[], bezahlendePersonId: string, wert: number };
 
+interface KontokorrentBalanceRequest {
+    kontokorrentId: string;
+    zwischengespeicherte: boolean;
+    bisLaufendeNummer: null | number;
+}
+
+interface KontokorrentBalanceResult {
+    bezahlungen: Bezahlung[];
+    balance: KontokorrentBalance;
+}
+
 export class BalanceCalculator {
     constructor(private db: KontokorrentDatabase) {
     }
 
-    erweitern(summe: number, nenner: number, andere: number[]) {
+    private erweitern(summe: number, nenner: number, andere: number[]) {
         let c = 1;
         for (let n of andere) {
             if (n != nenner) {
@@ -27,12 +38,20 @@ export class BalanceCalculator {
         return summe * c;
     }
 
-    async calculateBalance(kontokorrentId: string) {
-        let aktionen = await this.db.getAktionen(kontokorrentId);
+    async getBalance(request: KontokorrentBalanceRequest): Promise<KontokorrentBalanceResult> {
+        let aktionen = await this.db.getAktionen(request.kontokorrentId);
+        if (request.bisLaufendeNummer) {
+            aktionen = aktionen.filter(a => a.laufendeNummer <= request.bisLaufendeNummer);
+        }
         let gespeicherte: Bezahlung[] = filterBezahlungen(aktionen);
-        let zwischengespeicherte: Bezahlung[] = await this.db.getZwischengespeicherteBezahlungenForKontokorrent(kontokorrentId);
-        let bezahlungen = [...zwischengespeicherte, ...gespeicherte];
-        let kk = await this.db.getKontokorrent(kontokorrentId);
+        let bezahlungen: Bezahlung[];
+        let zwischengespeicherte: Bezahlung[] = await this.db.getZwischengespeicherteBezahlungenForKontokorrent(request.kontokorrentId);
+        if (request.zwischengespeicherte) {
+            bezahlungen = [...zwischengespeicherte, ...gespeicherte];
+        } else {
+            bezahlungen = gespeicherte;
+        }
+        let kk = await this.db.getKontokorrent(request.kontokorrentId);
         let geteilteZahlungen: { [id: string]: GeteilteZahlung[] } = {};
         for (let p of kk.personen) {
             geteilteZahlungen[p.id] = [];
@@ -67,6 +86,17 @@ export class BalanceCalculator {
                 balance[p.id] = gesamtSumme;
             }
         }
-        return balance;
+        return {
+            bezahlungen: bezahlungen,
+            balance: balance
+        };
+    }
+
+    async calculateBalance(kontokorrentId: string) {
+        return (await this.getBalance({
+            kontokorrentId: kontokorrentId,
+            zwischengespeicherte: true,
+            bisLaufendeNummer: null
+        })).balance;
     }
 }
