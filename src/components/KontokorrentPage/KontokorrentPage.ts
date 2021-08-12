@@ -24,9 +24,9 @@ export class KontokorrentPage extends HTMLElement {
     private bezahlungenView: BezahlungenView;
     private kontokorrentSpinner: HTMLSpanElement;
     private kontokorrent: KontokorrentState;
-    private kontokorrentIdParameter: string;
     private kontokorrentListenActionCreator: KontokorrentListenActionCreator;
     private bezahlungClickListener: (e: CustomEvent) => void;
+    private oeffentlicherNameParameter: string;
 
     constructor() {
         super();
@@ -46,16 +46,16 @@ export class KontokorrentPage extends HTMLElement {
     }
 
     private bezahlungClick(id: string) {
-        this.routingActionCreator.navigateBezahlung(this.kontokorrentIdParameter, id);
+        this.routingActionCreator.navigateBezahlung(this.kontokorrent.id, id);
     }
 
     connectedCallback() {
-        if (!this.kontokorrentIdParameter) {
+        if (!this.oeffentlicherNameParameter) {
             this.kontokorrentListenActionCreator.navigiereZuLetztGesehenem(true);
         }
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
-        this.appBar.addEventListener("gotokontokorrent", (e: CustomEvent) => {
-            this.routingActionCreator.navigateKontokorrent(e.detail);
+        this.appBar.addEventListener("gotokontokorrent", async (e: CustomEvent) => {
+            await this.routingActionCreator.navigateKontokorrentById(e.detail);
         });
         convertLinks(this.querySelectorAll("#eintragen-desktop, #eintragen-mobile"), this.routingActionCreator);
         this.applyStoreState(this.store.state);
@@ -75,9 +75,9 @@ export class KontokorrentPage extends HTMLElement {
         }
     }
 
-    setRouteParameters(id: string) {
-        this.kontokorrentActionCreator.kontokorrentOeffnen(id);
-        this.kontokorrentIdParameter = id;
+    setRouteParameters(oeffentlicherName: string) {
+        this.oeffentlicherNameParameter = oeffentlicherName;
+        this.kontokorrentActionCreator.kontokorrentOeffnen(oeffentlicherName);
     }
 
     disconnectedCallback() {

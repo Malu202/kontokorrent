@@ -45,7 +45,7 @@ export class KontokorrentListenActionCreator {
     async navigiereZuLetztGesehenem(replace?: boolean) {
         let id = await this.db.getZuletztGesehenerKontokorrentId();
         if (id) {
-            this.routingActionCreator.navigateKontokorrent(id, replace);
+            await this.routingActionCreator.navigateKontokorrentById(id, replace);
             return true;
         }
         return false;

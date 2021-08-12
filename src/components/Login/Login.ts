@@ -64,7 +64,7 @@ export class Login extends HTMLElement {
             if (await this.accountActionCreator.ensureAccount()) {
                 let id = await this.kontokorrentHinzufuegenActionCreator.kontokorrentHinzufuegen(event);
                 if (id) {
-                    this.routingActionCreator.navigateKontokorrent(id);
+                    await this.routingActionCreator.navigateKontokorrentById(id);
                 };
             }
         }

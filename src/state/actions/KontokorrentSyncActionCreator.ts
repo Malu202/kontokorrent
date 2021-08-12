@@ -8,7 +8,6 @@ import { ActionNames } from "./ActionNames";
 import { KontokorrentSynchronizer } from "../../lib/KontokorrentSynchronizer";
 import { BalanceCalculator } from "../../lib/BalanceCalculator";
 import { KontokorrentBalance } from "../../lib/KontokorrentBalance";
-import { AusgleichService } from "../../lib/ausgleich/AusgleichService";
 
 export class KontokorrentGeoeffnet implements Action {
     readonly type = ActionNames.KontokorrentGeoeffnet;
@@ -105,12 +104,12 @@ export class KontokorrentSyncActionCreator {
 
 
 
-    async kontokorrentOeffnen(id: string) {
-        let kk = await this.db.getKontokorrent(id);
+    async kontokorrentOeffnen(oeffentlicherName: string) {
+        let kk = await this.db.getPerOeffentlichName(oeffentlicherName);
         if (null != kk) {
-            this.store.dispatch(new KontokorrentGeoeffnet(id));
-            await Promise.all([this.db.setZuletztGesehenerKontokorrentId(id), this.refreshKontokorrent(id)]);
-            await this.kontokorrentSynchronisieren(id);
+            this.store.dispatch(new KontokorrentGeoeffnet(kk.id));
+            await Promise.all([this.db.setZuletztGesehenerKontokorrentId(kk.id), this.refreshKontokorrent(kk.id)]);
+            await this.kontokorrentSynchronisieren(kk.id);
         }
     }
 }

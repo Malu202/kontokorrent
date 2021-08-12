@@ -37,10 +37,10 @@ export class WorkerService {
         this.getWorker().postMessage(msg);
     }
 
-    kontokorrentOeffnen(id: string) {
+    kontokorrentOeffnen(oeffentlicherName: string) {
         let msg: KontokorrentOeffnenMessage = {
             type: WorkerMessageType.KontokorrentOeffnen,
-            kontokorrentId: id
+            oeffentlicherName: oeffentlicherName
         };
         this.getWorker().postMessage(msg);
     }

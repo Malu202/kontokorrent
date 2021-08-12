@@ -27,9 +27,6 @@ export class InitializationActionCreator {
             return;
         }
         let initialized = await this.accountActionCreator.initializeAccount();
-        if (!initialized) {
-            window.history.replaceState({}, document.title, Paths.Login);
-        }
         this.router.run();
         if (initialized) {
             await this.kontokorrentsActionCreator.syncKontokorrentListe();

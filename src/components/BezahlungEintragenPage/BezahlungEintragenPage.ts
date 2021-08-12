@@ -85,7 +85,7 @@ export class BezahlungEintragenPage extends HTMLElement {
         if (this.bezahlungEintragenForm.validate()) {
             let data = this.bezahlungEintragenForm.getData();
             await this.bezahlungActionCreator.bezahlungHinzufuegen(this.kontokorrentId, data);
-            this.routingActionCreator.navigateKontokorrent(this.kontokorrentId, true);
+            await this.routingActionCreator.navigateKontokorrentById(this.kontokorrentId, true);
         }
         else {
             this.formContainer.scroll({ top: 0, behavior: "smooth" });
@@ -93,12 +93,13 @@ export class BezahlungEintragenPage extends HTMLElement {
     }
 
     private applyStoreState(s: State) {
-        this.zurueckLink.href = s.kontokorrents.activeKontokorrentId ? `kontokorrents/${s.kontokorrents.activeKontokorrentId}` : null;
         if (s.kontokorrents.activeKontokorrentId) {
-            this.bezahlungEintragenForm.personen = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].personen;
-            this.editingSection.style.display = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].bezahlungAnlegen == RequestStatus.InProgress ? "none" : "flex";
-            this.savingSection.style.display = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].bezahlungAnlegen != RequestStatus.InProgress ? "none" : "flex";
-            this.saveError.hidden = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId].bezahlungAnlegen != RequestStatus.Failed;
+            let kk = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId];
+            this.zurueckLink.href = s.kontokorrents.activeKontokorrentId ? `kontokorrents/o/${kk.oeffentlicherName}` : null;
+            this.bezahlungEintragenForm.personen = kk.personen;
+            this.editingSection.style.display = kk.bezahlungAnlegen == RequestStatus.InProgress ? "none" : "flex";
+            this.savingSection.style.display = kk.bezahlungAnlegen != RequestStatus.InProgress ? "none" : "flex";
+            this.saveError.hidden = kk.bezahlungAnlegen != RequestStatus.Failed;
         }
         this.kontokorrentId = s.kontokorrents.activeKontokorrentId;
     }

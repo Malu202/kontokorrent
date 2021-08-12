@@ -108,6 +108,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                             ...s.kontokorrents, [action.kontokorrent.id]: {
                                 id: action.kontokorrent.id,
                                 name: action.kontokorrent.name,
+                                oeffentlicherName: action.kontokorrent.oeffentlicherName,
                                 synchronisieren: false,
                                 personen: action.kontokorrent.personen.map(p => {
                                     return {

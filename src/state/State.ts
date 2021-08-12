@@ -58,6 +58,7 @@ export interface AngezeigteBezahlungState {
 export interface KontokorrentState {
     id: string;
     name: string;
+    oeffentlicherName:string;
     personen: Person[];
     bezahlungen: Bezahlung[];
     synchronisieren: boolean;

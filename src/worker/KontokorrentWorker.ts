@@ -19,7 +19,7 @@ export const enum WorkerMessageType {
 
 export interface KontokorrentOeffnenMessage {
     type: WorkerMessageType.KontokorrentOeffnen;
-    kontokorrentId: string;
+    oeffentlicherName: string;
 }
 
 export interface GetBeschreibungVorschlaegeMessage {
@@ -44,7 +44,7 @@ const kontokorrentSyncActionCreator = new KontokorrentSyncActionCreator(storeAda
 async function process(msg: WorkerMessage) {
     switch (msg.type) {
         case WorkerMessageType.KontokorrentOeffnen:
-            await kontokorrentSyncActionCreator.kontokorrentOeffnen(msg.kontokorrentId);
+            await kontokorrentSyncActionCreator.kontokorrentOeffnen(msg.oeffentlicherName);
             break;
         case WorkerMessageType.GetBeschreibungVorschlaege:
             await beschreibungVorschlagActionCreator.getVorschlaege(msg.kontokorrentId, msg.eingabe);

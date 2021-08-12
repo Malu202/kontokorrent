@@ -7,8 +7,8 @@ export class KontokorrentActionCreator {
 
     }
 
-    kontokorrentOeffnen(id: string) {
-        this.workerService.kontokorrentOeffnen(id);
+    kontokorrentOeffnen(oeffentlicherName: string) {
+        this.workerService.kontokorrentOeffnen(oeffentlicherName);
     }
 }
 

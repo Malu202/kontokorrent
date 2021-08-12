@@ -17,8 +17,7 @@ export class FeaturesRequired extends HTMLElement {
     connectedCallback() {
         testFeatures().then(t => {
             if (t.allPassed) {
-                this.routingActionCreator.navigateHome();
-                window.location.reload();
+                this.routingActionCreator.navigateHomeWithPageRefresh();
             }
         });
     }

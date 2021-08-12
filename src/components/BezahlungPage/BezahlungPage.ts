@@ -27,7 +27,6 @@ export class BezahlungPage extends HTMLElement {
     private formContainer: HTMLDivElement;
     private beschreibungVorschlagSubscription: () => void;
     private betreffVorschlagDebouncer = new Debouncer();
-    private kontokorrentIdParameter: string;
     private bezahlungIdParameter: string;
     private bezahlungNichtGefundenError: HTMLDivElement;
     private bezahlungZwischengespeichertError: HTMLDivElement;
@@ -40,6 +39,7 @@ export class BezahlungPage extends HTMLElement {
     private deleteDialog: Popup;
     private updateError: HTMLDivElement;
     private deleteError: HTMLDivElement;
+    private activeKontokorrentId: string;
 
     constructor() {
         super();
@@ -71,8 +71,8 @@ export class BezahlungPage extends HTMLElement {
     connectedCallback() {
         this.kontokorrentsSubscription = this.store.subscribe("kontokorrents", s => this.applyStoreState(s));
         this.beschreibungVorschlagSubscription = this.store.subscribe("beschreibungVorschlaege", s => this.beschreibungVorschlaegeChanged(s));
-        this.appBar.addEventListener("gotokontokorrent", (e: CustomEvent) => {
-            this.routingActionCreator.navigateKontokorrent(e.detail);
+        this.appBar.addEventListener("gotokontokorrent", async (e: CustomEvent) => {
+            await this.routingActionCreator.navigateKontokorrentById(e.detail);
         });
         convertLinks([this.zurueckLink], this.routingActionCreator);
         this.beschreibungVorschlaegeChanged(this.store.state);
@@ -91,8 +91,8 @@ export class BezahlungPage extends HTMLElement {
         this.querySelector("#confirm-update").addEventListener("click", async () => {
             this.updateDialog.hide();
             let data = this.bezahlungEintragenForm.getData();
-            await this.bezahlungActionCreator.bezahlungBearbeiten(this.kontokorrentIdParameter, this.bezahlungIdParameter, data);
-            this.routingActionCreator.navigateKontokorrent(this.kontokorrentIdParameter);
+            await this.bezahlungActionCreator.bezahlungBearbeiten(this.activeKontokorrentId, this.bezahlungIdParameter, data);
+            await this.routingActionCreator.navigateKontokorrentById(this.activeKontokorrentId);
         });
         this.querySelector("#abort-update").addEventListener("click", () => {
             this.updateDialog.hide();
@@ -103,8 +103,8 @@ export class BezahlungPage extends HTMLElement {
         });
         this.querySelector("#confirm-delete").addEventListener("click", async () => {
             this.deleteDialog.hide();
-            await this.bezahlungActionCreator.bezahlungLoeschen(this.kontokorrentIdParameter, this.bezahlungIdParameter);
-            this.routingActionCreator.navigateKontokorrent(this.kontokorrentIdParameter);
+            await this.bezahlungActionCreator.bezahlungLoeschen(this.activeKontokorrentId, this.bezahlungIdParameter);
+            await this.routingActionCreator.navigateKontokorrentById(this.activeKontokorrentId);
         });
         this.querySelector("#abort-delete").addEventListener("click", () => {
             this.deleteDialog.hide();
@@ -117,10 +117,10 @@ export class BezahlungPage extends HTMLElement {
         catch (err) {
             //aborted
         }
-        this.bezahlungActionCreator.getBeschreibungVorschlaege(this.kontokorrentIdParameter, betreff);
+        this.bezahlungActionCreator.getBeschreibungVorschlaege(this.activeKontokorrentId, betreff);
     }
     private beschreibungVorschlaegeChanged(s: State): void {
-        if (s.beschreibungVorschlaege?.kontokorrentId == this.kontokorrentIdParameter) {
+        if (s.beschreibungVorschlaege?.kontokorrentId == this.activeKontokorrentId) {
             this.bezahlungEintragenForm.beschreibungVorschlaege = s.beschreibungVorschlaege.vorschlaege.slice(0, 10);
         }
         else {
@@ -134,8 +134,9 @@ export class BezahlungPage extends HTMLElement {
         let deleting = false;
         let updateError = false;
         let deleteError = false;
-        if (this.kontokorrentIdParameter && this.bezahlungIdParameter) {
-            let kontokorrent = s.kontokorrents.kontokorrents[this.kontokorrentIdParameter];
+        if (s.kontokorrents.activeKontokorrentId && this.bezahlungIdParameter) {
+            this.activeKontokorrentId = s.kontokorrents.activeKontokorrentId;
+            let kontokorrent = s.kontokorrents.kontokorrents[s.kontokorrents.activeKontokorrentId];
             if (kontokorrent) {
                 this.bezahlungEintragenForm.personen = kontokorrent.personen;
                 let angezeigteBezahlung = kontokorrent.angezeigteBezahlung[this.bezahlungIdParameter];
@@ -168,11 +169,10 @@ export class BezahlungPage extends HTMLElement {
         this.deleteError.hidden = !deleteError;
     }
 
-    setRouteParameters(kontokorrentId: string, bezahlungId: string) {
-        this.kontokorrentIdParameter = kontokorrentId;
+    setRouteParameters(oeffentlicherName: string, bezahlungId: string) {
         this.bezahlungIdParameter = bezahlungId;
-        this.zurueckLink.href = `kontokorrents/${kontokorrentId}`;
-        this.bezahlungActionCreator.bezahlungGeoeffnet(kontokorrentId, bezahlungId);
+        this.zurueckLink.href = `kontokorrents/o/${oeffentlicherName}`;
+        this.bezahlungActionCreator.bezahlungGeoeffnet(oeffentlicherName, bezahlungId);
     }
 
     disconnectedCallback() {

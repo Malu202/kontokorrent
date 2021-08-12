@@ -12,6 +12,7 @@ import { Bezahlung, BezahlungStatus } from "../State";
 import { WorkerService, workerServiceFactory } from "../../lib/WorkerService";
 import { BearbeitungsStatus } from "../../lib/BearbeitungsStatus";
 import { BezahlungBearbeitenRequest } from "../../api/BezahlungBearbeitenRequest";
+import { RoutingActionCreator, routingActionCreatorFactory } from "./RoutingActionCreator";
 
 export class BezahlungEintragenKontokorrentGeandert implements Action {
     readonly type = ActionNames.BezahlungEintragenKontokorrentGeandert;
@@ -100,27 +101,33 @@ export class BezahlungActionCreator {
     constructor(private store: Store,
         private db: KontokorrentDatabase,
         private bezahlungenService: BezahlungenService,
-        private workerService: WorkerService) {
+        private workerService: WorkerService,
+        private routingActionCreator: RoutingActionCreator) {
     }
 
 
-    async bezahlungGeoeffnet(kontokorrentId: string, bezahlungId: string) {
-        let b = await this.db.getBearbeitungsStatus(kontokorrentId, bezahlungId);
-        let bezahlung: Bezahlung = null;
-        if (b.aktion) {
-            let bezahlungAktion = b.aktion;
-            bezahlung = {
-                beschreibung: bezahlungAktion.bezahlung.beschreibung,
-                bezahlendePersonId: bezahlungAktion.bezahlung.bezahlendePersonId,
-                empfaengerIds: bezahlungAktion.bezahlung.empfaengerIds,
-                id: bezahlungAktion.bezahlung.id,
-                status: BezahlungStatus.Gespeichert,
-                wert: bezahlungAktion.bezahlung.wert,
-                zeitpunkt: bezahlungAktion.bezahlung.zeitpunkt
-            };
+    async bezahlungGeoeffnet(oeffentlicherName: string, bezahlungId: string) {
+        let kk = await this.db.getPerOeffentlichName(oeffentlicherName);
+        if (!kk) {
+            this.routingActionCreator.navigateHome();
+        } else {
+            let b = await this.db.getBearbeitungsStatus(kk.id, bezahlungId);
+            let bezahlung: Bezahlung = null;
+            if (b.aktion) {
+                let bezahlungAktion = b.aktion;
+                bezahlung = {
+                    beschreibung: bezahlungAktion.bezahlung.beschreibung,
+                    bezahlendePersonId: bezahlungAktion.bezahlung.bezahlendePersonId,
+                    empfaengerIds: bezahlungAktion.bezahlung.empfaengerIds,
+                    id: bezahlungAktion.bezahlung.id,
+                    status: BezahlungStatus.Gespeichert,
+                    wert: bezahlungAktion.bezahlung.wert,
+                    zeitpunkt: bezahlungAktion.bezahlung.zeitpunkt
+                };
+            }
+            this.store.dispatch(new BezahlungGeoeffnet(kk.id, bezahlungId, b.status, bezahlung));
+            this.workerService.getBeschreibungVorschlaege(kk.id, bezahlung ? bezahlung.beschreibung : null);
         }
-        this.store.dispatch(new BezahlungGeoeffnet(kontokorrentId, bezahlungId, b.status, bezahlung));
-        this.workerService.getBeschreibungVorschlaege(kontokorrentId, bezahlung ? bezahlung.beschreibung : null);
     }
 
     async bezahlungEintragenGeoeffnet() {
@@ -268,5 +275,6 @@ export function bezahlungActionCreatorFactory(serviceLocator: ServiceLocator) {
         serviceLocator => new BezahlungActionCreator(serviceLocator.store,
             serviceLocator.db,
             bezahlungenServiceFactory(serviceLocator),
-            workerServiceFactory(serviceLocator)));
+            workerServiceFactory(serviceLocator),
+            routingActionCreatorFactory(serviceLocator)));
 }

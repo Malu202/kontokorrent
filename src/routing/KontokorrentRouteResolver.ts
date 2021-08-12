@@ -11,7 +11,6 @@ export enum Paths {
     Info = "info",
     Home = "",
     FeaturesRequired = "features-required",
-    Kontokorrents = "kontokorrents",
     CreateEvent = "create-event",
     BezahlungEintragen = "eintragen",
     MultiBezahlungEintragen = "multi-eintragen",
@@ -60,6 +59,7 @@ export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement
             }
         }
         if (!this.store.state.account.accountCreated) {
+            router.navigate(Paths.Login, null, true);
             return false;
         }
         switch (currentRoute) {
@@ -82,21 +82,21 @@ export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement
                 return component;
             }
         }
-        let kontokorrentsRoute = /^kontokorrents\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
-        if (kontokorrentsRoute) {
-            let id: string = kontokorrentsRoute[1];
+        let oeffentlicherKontokorrentRoute = /^kontokorrents\/o\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
+        if (oeffentlicherKontokorrentRoute) {
+            let oeffentlicherName: string = oeffentlicherKontokorrentRoute[1];
             let component = await this.getKontokorrentPageComponent();
-            component.setRouteParameters(id);
+            component.setRouteParameters(oeffentlicherName);
             return component;
         }
-        let bezahlungRoute = /^kontokorrents\/([a-zA-Z0-9\-]+)\/bezahlungen\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
-        if (bezahlungRoute) {
-            let kontokorrentId = bezahlungRoute[1];
-            let bezahlungId = bezahlungRoute[2];
+        let oeffentlicherKontokorrentBezahlungRoute = /^kontokorrents\/o\/([a-zA-Z0-9\-]+)\/bezahlungen\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
+        if (oeffentlicherKontokorrentBezahlungRoute) {
+            let oeffentlicherName = oeffentlicherKontokorrentBezahlungRoute[1];
+            let bezahlungId = oeffentlicherKontokorrentBezahlungRoute[2];
             const { BezahlungPage } = await import("../components/BezahlungPage/BezahlungPage");
             let component = new BezahlungPage();
             component.addServices(this.serviceLocator);
-            component.setRouteParameters(kontokorrentId, bezahlungId);
+            component.setRouteParameters(oeffentlicherName, bezahlungId);
             return component;
         }
         let component = await this.getKontokorrentPageComponent();
