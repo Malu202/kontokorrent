@@ -9,7 +9,6 @@ export class DatabaseDebug extends HTMLElement {
 
     constructor() {
         super();
-        this.innerHTML = template;
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -17,6 +16,7 @@ export class DatabaseDebug extends HTMLElement {
     }
 
     connectedCallback() {
+        this.innerHTML = template;
         this.container = this.querySelector("#container");
         this.render();
     }

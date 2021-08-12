@@ -20,6 +20,7 @@ export class AppBar extends HTMLElement {
     private rendered: boolean = false;
 
 
+
     constructor() {
         super();
     }
@@ -28,9 +29,11 @@ export class AppBar extends HTMLElement {
         if (!this.rendered) {
             this.rendered = true;
             this.innerHTML = template;
-
             this.kontokorrentSelect = this.querySelector(KontokorrentSelectTagName);
             this.logoutDialog = this.querySelector("#logout-dialog");
+            if (this.store) {
+                this.applyStoreState(this.store.state);
+            }
         }
         this.querySelector("#logout-button").addEventListener("click", (e: MouseEvent) => {
             this.logoutDialog.toggle();
@@ -42,27 +45,39 @@ export class AppBar extends HTMLElement {
         this.querySelector("#abort-logout").addEventListener("click", () => {
             this.logoutDialog.hide();
         });
-        convertLinks(this.querySelectorAll("a"), this.routingActionCreator);
-        this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
-        this.applyStoreState(this.store.state);
+        this.querySelectorAll("a").forEach((e: HTMLAnchorElement) => {
+            e.addEventListener("click", ev => {
+                ev.preventDefault();
+                this.routingActionCreator.navigate(e.getAttribute("href"));
+            });
+        });
+
         this.kontokorrentSelect.addEventListener("addkontokorrent", () => {
             this.routingActionCreator.navigateLogin();
         });
     }
 
-    applyStoreState(state: State): void {
-        this.kontokorrentSelect.kontokorrents = Object.values(state.kontokorrents.kontokorrents);
-        this.kontokorrentSelect.setAttribute("active-kontokorrent-id", state.kontokorrents.activeKontokorrentId);
+    private applyStoreState(state: State): void {
+        if (this.rendered) {
+            this.kontokorrentSelect.kontokorrents = Object.values(state.kontokorrents.kontokorrents);
+            this.kontokorrentSelect.setAttribute("active-kontokorrent-id", state.kontokorrents.activeKontokorrentId);
+        }
     }
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
         this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
         this.accountActionCreator = accountActionCreatorFactory(serviceLocator);
+        this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
+        this.applyStoreState(this.store.state);
     }
 
     disconnectedCallback() {
-        this.subscription();
+        if (this.subscription) {
+            this.subscription();
+            this.subscription = null;
+        }
+
     }
 }
 export const AppBarTagName = "app-bar";

@@ -27,14 +27,11 @@ export class KontokorrentPage extends HTMLElement {
     private kontokorrentListenActionCreator: KontokorrentListenActionCreator;
     private bezahlungClickListener: (e: CustomEvent) => void;
     private oeffentlicherNameParameter: string;
+    private rendered = false;
+    private serviceLocator: ServiceLocator;
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.appBar = this.querySelector(AppBarTagName);
-        this.balanceAnzeige = this.querySelector("#balance-anzeige");
-        this.bezahlungenView = this.querySelector("#bezahlungen-view");
-        this.kontokorrentSpinner = this.querySelector("#spinner");
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -42,7 +39,7 @@ export class KontokorrentPage extends HTMLElement {
         this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
         this.kontokorrentActionCreator = kontokorrentActionCreatorFactory(serviceLocator);
         this.kontokorrentListenActionCreator = kontokorrentListenActionCreatorFactory(serviceLocator);
-        this.appBar.addServices(serviceLocator);
+        this.serviceLocator = serviceLocator;
     }
 
     private bezahlungClick(id: string) {
@@ -50,6 +47,15 @@ export class KontokorrentPage extends HTMLElement {
     }
 
     connectedCallback() {
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.appBar = this.querySelector(AppBarTagName);
+            this.appBar.addServices(this.serviceLocator);
+            this.balanceAnzeige = this.querySelector("#balance-anzeige");
+            this.bezahlungenView = this.querySelector("#bezahlungen-view");
+            this.kontokorrentSpinner = this.querySelector("#spinner");
+        }
         if (!this.oeffentlicherNameParameter) {
             this.kontokorrentListenActionCreator.navigiereZuLetztGesehenem(true);
         }

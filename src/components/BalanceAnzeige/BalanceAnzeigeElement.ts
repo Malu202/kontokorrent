@@ -30,6 +30,7 @@ export class BalanceAnzeigeElement extends HTMLElement {
             this.balanceTextElement = this.querySelector(`[data-ref="balance-text"]`);
             this.balanceContainerElement = this.querySelector(`[data-ref="balance-container"]`);
             this.barElement = this.querySelector(`[data-ref="bar"]`);
+            this.updatesStyle();
         }
         requestAnimationFrame(() => {
             this.barElement.style.transform = `scaleY(0)`;
@@ -57,23 +58,25 @@ export class BalanceAnzeigeElement extends HTMLElement {
     }
 
     private updatesStyle() {
-        requestAnimationFrame(() => {
-            this.personNameElement.innerText = this.personName;
-            this.balanceTextElement.innerText = formatCurrency(this.balance);
-            let scale = Math.sign(this.balance) * Math.abs(this.balance) / this.balanceRange;
-            let balanceTransform = scale * 1.9;
-            this.barElement.style.transform = `scaleY(${scale})`;
-            this.balanceContainerElement.style.transform = Math.sign(this.balance) < 0 ? `translateY(calc(${balanceTransform}em - 150%))`
-                : `translateY(calc(${balanceTransform}em + 50%))`;
-            if (scale > 0) {
-                this.barElement.classList.add("balance-anzeige-element__bar--negative");
-                this.barElement.classList.remove("balance-anzeige-element__bar--positive");
-            }
-            else {
-                this.barElement.classList.remove("balance-anzeige-element__bar--negative");
-                this.barElement.classList.add("balance-anzeige-element__bar--positive");
-            }
-        });
+        if (this.templateInstance.isApplied()) {
+            requestAnimationFrame(() => {
+                this.personNameElement.innerText = this.personName;
+                this.balanceTextElement.innerText = formatCurrency(this.balance);
+                let scale = Math.sign(this.balance) * Math.abs(this.balance) / this.balanceRange;
+                let balanceTransform = scale * 1.9;
+                this.barElement.style.transform = `scaleY(${scale})`;
+                this.balanceContainerElement.style.transform = Math.sign(this.balance) < 0 ? `translateY(calc(${balanceTransform}em - 150%))`
+                    : `translateY(calc(${balanceTransform}em + 50%))`;
+                if (scale > 0) {
+                    this.barElement.classList.add("balance-anzeige-element__bar--negative");
+                    this.barElement.classList.remove("balance-anzeige-element__bar--positive");
+                }
+                else {
+                    this.barElement.classList.remove("balance-anzeige-element__bar--negative");
+                    this.barElement.classList.add("balance-anzeige-element__bar--positive");
+                }
+            });
+        }
     }
 
 }

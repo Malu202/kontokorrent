@@ -8,20 +8,26 @@ export class BezahlungenGroup extends HTMLElement {
     private container: HTMLDivElement;
     private titleElement: HTMLHeadingElement;
     private bezahlungenRenderer: ArrayToElementRenderer<BezahlungViewModel, BezahlungCard, string>;
+    private rendered = false;
+    private bezahlungen: BezahlungViewModel[] = [];
+    private _title: string = "";
 
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.container = this.querySelector(`[data-ref="container"]`);
-        this.titleElement = this.querySelector(`[data-ref="title"]`);
-        this.bezahlungenRenderer = new ArrayToElementRenderer(this.container,
-            (b: BezahlungViewModel) => b.id,
-            b => new BezahlungCard());
     }
 
     connectedCallback() {
-
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.container = this.querySelector(`[data-ref="container"]`);
+            this.titleElement = this.querySelector(`[data-ref="title"]`);
+            this.bezahlungenRenderer = new ArrayToElementRenderer(this.container,
+                (b: BezahlungViewModel) => b.id,
+                b => new BezahlungCard());
+            this.update();
+        }
     }
 
     disconnectedCallback() {
@@ -30,18 +36,27 @@ export class BezahlungenGroup extends HTMLElement {
 
 
     setBezahlungen(bezahlungen: BezahlungViewModel[]) {
-        this.bezahlungenRenderer.update(bezahlungen, (e, b) => {
-            e.setAttribute(BeschreibungAttribute, b.beschreibung);
-            e.setAttribute(WertAttribute, "" + b.wert);
-            e.setAttribute(BezahlendePersonAttribute, b.bezahlendePersonName);
-            e.setAttribute(EmpfaengerAttribute, b.empfaenger);
-            e.setAttribute(StatusAttribute, b.status);
-            e.setAttribute(BezahlungIdAttribute, b.id);
-        });
+        this.bezahlungen = bezahlungen;
+        this.update();
     }
 
     set title(t: string) {
-        this.titleElement.innerText = t;
+        this._title = t;
+        this.update();
+    }
+
+    private update() {
+        if (this.rendered) {
+            this.bezahlungenRenderer.update(this.bezahlungen, (e, b) => {
+                e.setAttribute(BeschreibungAttribute, b.beschreibung);
+                e.setAttribute(WertAttribute, "" + b.wert);
+                e.setAttribute(BezahlendePersonAttribute, b.bezahlendePersonName);
+                e.setAttribute(EmpfaengerAttribute, b.empfaenger);
+                e.setAttribute(StatusAttribute, b.status);
+                e.setAttribute(BezahlungIdAttribute, b.id);
+            });
+            this.titleElement.innerText = this._title;
+        }
     }
 
 }

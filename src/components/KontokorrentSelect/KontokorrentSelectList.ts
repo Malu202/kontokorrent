@@ -10,23 +10,28 @@ export class KontokorrentSelectList extends HTMLElement {
     private _kontokorrents: KontokorrentState[];
     private _activeKontokorrentId: string;
     private kontokorrentsRenderer: ArrayToElementRenderer<KontokorrentState, HTMLLIElement, string>;
+    private rendered = false;
 
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.list = this.querySelector(`[data-ref="list"]`);
-        this._kontokorrents = [];
-        this.kontokorrentsRenderer = new ArrayToElementRenderer(this.list,
-            (k: KontokorrentState) => k.id,
-            () => {
-                let li = document.createElement("li");
-                li.appendChild(new KontokorrentSelectListEntry());
-                return li;
-            });
     }
 
     connectedCallback() {
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.list = this.querySelector(`[data-ref="list"]`);
+            this._kontokorrents = [];
+            this.kontokorrentsRenderer = new ArrayToElementRenderer(this.list,
+                (k: KontokorrentState) => k.id,
+                () => {
+                    let li = document.createElement("li");
+                    li.appendChild(new KontokorrentSelectListEntry());
+                    return li;
+                });
+            this.update();
+        }
     }
 
     disconnectedCallback() {
@@ -34,11 +39,13 @@ export class KontokorrentSelectList extends HTMLElement {
     }
 
     private update() {
-        this.kontokorrentsRenderer.update(this._kontokorrents,
-            (li, kontokorrent) => {
-                let x: KontokorrentSelectListEntry = <KontokorrentSelectListEntry>li.firstChild;
-                x.update(kontokorrent, this._activeKontokorrentId == kontokorrent.id);
-            });
+        if (this.rendered) {
+            this.kontokorrentsRenderer.update(this._kontokorrents,
+                (li, kontokorrent) => {
+                    let x: KontokorrentSelectListEntry = <KontokorrentSelectListEntry>li.firstChild;
+                    x.update(kontokorrent, this._activeKontokorrentId == kontokorrent.id);
+                });
+        }
     }
 
     set kontokorrents(kontokorrents: KontokorrentState[]) {

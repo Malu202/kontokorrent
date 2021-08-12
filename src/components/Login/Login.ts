@@ -24,10 +24,10 @@ export class Login extends HTMLElement {
     private processing: HTMLDivElement;
     private homeButton: HTMLButtonElement;
     private loginBox: HTMLDivElement;
+    private rendered = false;
 
     constructor() {
         super();
-        this.innerHTML = template;
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -38,16 +38,19 @@ export class Login extends HTMLElement {
     }
 
     connectedCallback() {
-        let element = this;
-        convertLinks(element.querySelectorAll("a"), this.routingActionCreator);
-        this.eventInput = element.querySelector("#eventInput");
-        this.loginButton = element.querySelector("#loginButton");
-        this.homeButton = element.querySelector("#home-button");
-        this.loginBox = element.querySelector("#login-box");
-        this.eventMissingError = element.querySelector("#eventMissingError");
-        this.accountCreationFailed = element.querySelector("#account-creation-failed");
-        this.notFoundError = element.querySelector("#notFoundError");
-        this.processing = element.querySelector("#processing");
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+        }
+        convertLinks(this.querySelectorAll("a"), this.routingActionCreator);
+        this.eventInput = this.querySelector("#eventInput");
+        this.loginButton = this.querySelector("#loginButton");
+        this.homeButton = this.querySelector("#home-button");
+        this.loginBox = this.querySelector("#login-box");
+        this.eventMissingError = this.querySelector("#eventMissingError");
+        this.accountCreationFailed = this.querySelector("#account-creation-failed");
+        this.notFoundError = this.querySelector("#notFoundError");
+        this.processing = this.querySelector("#processing");
 
         this.loginButton.addEventListener("click", this.loginFuerEvent.bind(this));
 
@@ -57,7 +60,7 @@ export class Login extends HTMLElement {
         this.kontokorrentHinzufuegenActionCreator.loginPageGeoeffnet();
     }
 
-    async loginFuerEvent() {
+    private async loginFuerEvent() {
         let event = this.eventInput.value;
         this.eventMissingError.style.display = event ? "none" : "block";
         if (event) {

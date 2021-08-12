@@ -23,6 +23,7 @@ export class EmpfaengerCheckbox extends HTMLElement {
     set person(value: Person) {
         this.personName = value.name;
         this.checkboxId = `empfaenger-${value.id}`;
+        this.update();
     }
 
     connectedCallback() {

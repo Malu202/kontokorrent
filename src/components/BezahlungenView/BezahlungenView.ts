@@ -13,26 +13,31 @@ export class BezahlungenView extends HTMLElement {
     private minEintraege: number;
     private minTage: number;
     private all: boolean;
-    private bezahlungen: Bezahlung[];
-    private personen: Person[];
+    private bezahlungen: Bezahlung[] = [];
+    private personen: Person[] = [];
     private bezahlungenContainer: HTMLDivElement;
     private showMoreButton: HTMLButtonElement;
     private groupRenderer: ArrayToElementRenderer<[number, BezahlungViewModel[]], BezahlungenGroup, string>;
+    private templateApplied = false;
 
     constructor() {
         super();
         this.minTage = 3;
         this.minEintraege = 20;
         this.all = false;
-        this.innerHTML = template;
-        this.bezahlungenContainer = this.querySelector("#bezahlungen-container");
-        this.showMoreButton = this.querySelector("#show-more");
-        this.showMoreClick = this.showMoreClick.bind(this);
-        this.groupRenderer = new ArrayToElementRenderer(this.bezahlungenContainer,
-            (s: [number, BezahlungViewModel[]]) => "" + s[0], () => new BezahlungenGroup());
     }
 
     connectedCallback() {
+        if (!this.templateApplied) {
+            this.templateApplied = true;
+            this.innerHTML = template;
+            this.bezahlungenContainer = this.querySelector("#bezahlungen-container");
+            this.showMoreButton = this.querySelector("#show-more");
+            this.showMoreClick = this.showMoreClick.bind(this);
+            this.groupRenderer = new ArrayToElementRenderer(this.bezahlungenContainer,
+                (s: [number, BezahlungViewModel[]]) => "" + s[0], () => new BezahlungenGroup());
+            this.render();
+        }
         this.showMoreButton.addEventListener("click", this.showMoreClick);
     }
 
@@ -46,7 +51,7 @@ export class BezahlungenView extends HTMLElement {
         }
     }
 
-    showMoreClick() {
+    private showMoreClick() {
         let last: BezahlungenGroup = <BezahlungenGroup>this.bezahlungenContainer.lastElementChild;
         this.anzahlEintraege += 20;
         if (last) {
@@ -70,50 +75,51 @@ export class BezahlungenView extends HTMLElement {
     }
 
     private render() {
-        let sorted = this.bezahlungen.sort((a, b) => +b.zeitpunkt - +a.zeitpunkt);
+        if (this.templateApplied) {
+            let sorted = this.bezahlungen.sort((a, b) => +b.zeitpunkt - +a.zeitpunkt);
 
-        let filtered = sorted;
-        if (!this.all) {
-            filtered = sorted.filter(z => z.zeitpunkt > addDays(startOfToday(), -this.minTage));
-            if (filtered.length < this.minEintraege) {
-                filtered = sorted.slice(0, this.minEintraege)
+            let filtered = sorted;
+            if (!this.all) {
+                filtered = sorted.filter(z => z.zeitpunkt > addDays(startOfToday(), -this.minTage));
+                if (filtered.length < this.minEintraege) {
+                    filtered = sorted.slice(0, this.minEintraege)
+                }
             }
-        }
 
-        let mapped = filtered.map(z => {
-            let x: BezahlungViewModel = {
-                bezahlendePersonName: this.personen.find(p => p.id == z.bezahlendePersonId).name,
-                wert: z.wert,
-                beschreibung: z.beschreibung,
-                empfaenger: this.formatEmpfaenger(z, this.personen),
-                tag: +startOfDay(z.zeitpunkt),
-                id: z.id,
-                woche: +startOfWeek(z.zeitpunkt),
-                status: z.status
-            };
-            return x;
-        });
-
-        let isWeek = false;
-        let grouped = Array.of(...groupBy(mapped, "tag").entries());
-        let avgGroupSize = grouped.reduce((p, c) => p + c[1].length, 0) / grouped.length;
-        if (avgGroupSize < 3) {
-            grouped = Array.of(...groupBy(mapped, "woche").entries());
-            isWeek = true;
-        }
-        let sortedGroups = grouped.sort((a, b) => b[0] - a[0]);
-        this.groupRenderer.update(sortedGroups,
-            (e, d) => {
-                e.setBezahlungen(d[1]);
-                if (isWeek) {
-                    e.title = this.formatWeek(new Date(d[0]));
-                }
-                else {
-
-                    e.title = this.formatDay(new Date(d[0]));
-                }
+            let mapped = filtered.map(z => {
+                let x: BezahlungViewModel = {
+                    bezahlendePersonName: this.personen.find(p => p.id == z.bezahlendePersonId).name,
+                    wert: z.wert,
+                    beschreibung: z.beschreibung,
+                    empfaenger: this.formatEmpfaenger(z, this.personen),
+                    tag: +startOfDay(z.zeitpunkt),
+                    id: z.id,
+                    woche: +startOfWeek(z.zeitpunkt),
+                    status: z.status
+                };
+                return x;
             });
 
+            let isWeek = false;
+            let grouped = Array.of(...groupBy(mapped, "tag").entries());
+            let avgGroupSize = grouped.reduce((p, c) => p + c[1].length, 0) / grouped.length;
+            if (avgGroupSize < 3) {
+                grouped = Array.of(...groupBy(mapped, "woche").entries());
+                isWeek = true;
+            }
+            let sortedGroups = grouped.sort((a, b) => b[0] - a[0]);
+            this.groupRenderer.update(sortedGroups,
+                (e, d) => {
+                    e.setBezahlungen(d[1]);
+                    if (isWeek) {
+                        e.title = this.formatWeek(new Date(d[0]));
+                    }
+                    else {
+
+                        e.title = this.formatDay(new Date(d[0]));
+                    }
+                });
+        }
     }
 
     get anzahlEintraege() {

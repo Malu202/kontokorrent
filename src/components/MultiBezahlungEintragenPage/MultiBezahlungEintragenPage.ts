@@ -50,21 +50,27 @@ export class MultiBezahlungEintragenPage extends HTMLElement {
     private saveBtn: HTMLButtonElement;
     private form: HTMLFormElement;
     private personen: Person[];
+    private rendered = false;
+    private serviceLocator: ServiceLocator;
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.appBar = this.querySelector(AppBarTagName);
     }
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
         this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
         this.bezahlungActionCreator = bezahlungActionCreatorFactory(serviceLocator);
-        this.appBar.addServices(serviceLocator);
+        this.serviceLocator = serviceLocator;
     }
 
     connectedCallback() {
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.appBar = this.querySelector(AppBarTagName);
+            this.appBar.addServices(this.serviceLocator);
+        }
         this.bezahlungenTable = this.querySelector("#bezahlungen-table");
         this.bezahlungenRenderer = new ArrayToElementRenderer(this.bezahlungenTable,
             b => b.id,
@@ -97,7 +103,7 @@ export class MultiBezahlungEintragenPage extends HTMLElement {
         document.addEventListener("paste", this.onPasteHandler);
         convertLinks([this.querySelector("#zurueck-zum-kontokorrent")], this.routingActionCreator);
     }
-    async save() {
+    private async save() {
         for (let b of this.bezahlungen) {
             try {
                 await this.bezahlungActionCreator.bezahlungDirektHinzufuegen(this.kontokorrentId, {

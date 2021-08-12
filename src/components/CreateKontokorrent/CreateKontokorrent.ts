@@ -8,7 +8,6 @@ import "../PersonenListe/PersonenListe";
 import { PersonenListe } from "../PersonenListe/PersonenListe";
 import { v4 as uuid } from "uuid";
 import "./CreateKontokorrent.scss";
-import { KontokorrentListenActionCreator, kontokorrentListenActionCreatorFactory } from "../../state/actions/KontokorrentListenActionCreator";
 import { KontokorrentHinzufuegenActionCreator, kontokorrentHinzufuegenActionCreatorFactory } from "../../state/actions/KontokorrentHinzufuegenActionCreator";
 import "../ui-components/popup/popup";
 import "../ui-components/tip-button/tip-button";
@@ -39,10 +38,10 @@ export class CreateKontokorrent extends HTMLElement {
     private kontokorrentHinzufuegenActionCreator: KontokorrentHinzufuegenActionCreator;
     private accountCreationFailed: HTMLDivElement;
     private personNameDuplicateError: HTMLDivElement;
+    private rendered = false;
 
     constructor() {
         super();
-        this.innerHTML = template;
         this.kontokorrentId = uuid();
         this.oeffentlicherNameManuell = false;
     }
@@ -55,23 +54,25 @@ export class CreateKontokorrent extends HTMLElement {
     }
 
     connectedCallback() {
-        let element = this;
-        this.personenListe = element.querySelector("#personen-liste");
-        this.emptyNameError = element.querySelector("#empty-name-error");
-        this.eventCreateError = element.querySelector("#event-create-error");
-        this.personCountError = element.querySelector("#person-count-error");
-        this.eventNameError = element.querySelector("#event-name-error");
-        this.createButton = element.querySelector("#create-button");
-        this.eventName = element.querySelector("#event-name");
-        this.creating = element.querySelector("#creating");
-        this.oeffentlicherName = element.querySelector("#oeffentlicher-name");
-        this.oeffentlich = element.querySelector("#oeffentlich");
-        this.oeffentlichBox = element.querySelector("#oeffentlich-box");
-        this.oeffentlicherNameError = element.querySelector("#oeffentlicher-name-error");
-        this.eventNameDuplicate = element.querySelector("#event-name-duplicate");
-        this.accountCreationFailed = element.querySelector("#account-creation-failed");
-        this.personNameDuplicateError = element.querySelector("#person-name-duplicate-error");
-
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.personenListe = this.querySelector("#personen-liste");
+            this.emptyNameError = this.querySelector("#empty-name-error");
+            this.eventCreateError = this.querySelector("#event-create-error");
+            this.personCountError = this.querySelector("#person-count-error");
+            this.eventNameError = this.querySelector("#event-name-error");
+            this.createButton = this.querySelector("#create-button");
+            this.eventName = this.querySelector("#event-name");
+            this.creating = this.querySelector("#creating");
+            this.oeffentlicherName = this.querySelector("#oeffentlicher-name");
+            this.oeffentlich = this.querySelector("#oeffentlich");
+            this.oeffentlichBox = this.querySelector("#oeffentlich-box");
+            this.oeffentlicherNameError = this.querySelector("#oeffentlicher-name-error");
+            this.eventNameDuplicate = this.querySelector("#event-name-duplicate");
+            this.accountCreationFailed = this.querySelector("#account-creation-failed");
+            this.personNameDuplicateError = this.querySelector("#person-name-duplicate-error");
+        }
 
         this.createButton.addEventListener("click", this.createEvent.bind(this));
 
@@ -91,10 +92,10 @@ export class CreateKontokorrent extends HTMLElement {
 
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
-        convertLinks(element.querySelectorAll("a"), this.routingActionCreator);
+        convertLinks(this.querySelectorAll("a"), this.routingActionCreator);
     }
 
-    async createEvent() {
+    private async createEvent() {
         let eventName = this.eventName.value;
         let personNames = this.personenListe.personen;
         this.eventNameError.style.display = eventName ? "none" : "block";

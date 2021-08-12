@@ -51,6 +51,7 @@ export class BezahlungCard extends HTMLElement {
 
     connectedCallback() {
         if (this.templateInstance.apply(this)) {
+            this.setAttribute("title", "Bezahlung bearbeiten oder löschen");
             this.beschreibungElement = this.querySelector(`[data-ref="beschreibung"]`);
             this.bezahlendePersonElement = this.querySelector(`[data-ref="bezahlende-person"]`);
             this.empfaengerElement = this.querySelector(`[data-ref="empfaenger"]`);

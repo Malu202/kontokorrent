@@ -28,28 +28,34 @@ export class BezahlungEintragenPage extends HTMLElement {
     private formContainer: HTMLDivElement;
     private beschreibungVorschlagSubscription: () => void;
     private betreffVorschlagDebouncer = new Debouncer();
+    private rendered = false;
+    private serviceLocator: ServiceLocator;
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.zurueckLink = this.querySelector("#zurueck-zum-kontokorrent");
-        this.appBar = this.querySelector(AppBarTagName);
-        this.bezahlungEintragenForm = this.querySelector(BezahlungEintragenFormTagName);
-        this.saveButton = this.querySelector("#bezahlung-eintragen__save");
-        this.editingSection = this.querySelector("#bezahlung-eintragen__edit");
-        this.savingSection = this.querySelector("#bezahlung-eintragen__saving");
-        this.saveError = this.querySelector("#save-error");
-        this.formContainer = this.querySelector("#bezahlung-eintragen__form-container");
     }
 
     addServices(serviceLocator: ServiceLocator) {
+        this.serviceLocator = serviceLocator;
         this.store = serviceLocator.store;
         this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
         this.bezahlungActionCreator = bezahlungActionCreatorFactory(serviceLocator);
-        this.appBar.addServices(serviceLocator);
     }
 
     connectedCallback() {
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.zurueckLink = this.querySelector("#zurueck-zum-kontokorrent");
+            this.appBar = this.querySelector(AppBarTagName);
+            this.appBar.addServices(this.serviceLocator);
+            this.bezahlungEintragenForm = this.querySelector(BezahlungEintragenFormTagName);
+            this.saveButton = this.querySelector("#bezahlung-eintragen__save");
+            this.editingSection = this.querySelector("#bezahlung-eintragen__edit");
+            this.savingSection = this.querySelector("#bezahlung-eintragen__saving");
+            this.saveError = this.querySelector("#save-error");
+            this.formContainer = this.querySelector("#bezahlung-eintragen__form-container");
+        }
         this.kontokorrentsSubscription = this.store.subscribe("kontokorrents", s => this.applyStoreState(s));
         this.beschreibungVorschlagSubscription = this.store.subscribe("beschreibungVorschlaege", s => this.beschreibungVorschlaegeChanged(s));
         this.appBar.addEventListener("gotokontokorrent", (e: CustomEvent) => {
@@ -63,7 +69,7 @@ export class BezahlungEintragenPage extends HTMLElement {
         this.bezahlungEintragenForm.addEventListener("betreffChanged", (ev: CustomEvent) => this.betreffChanged(ev.detail));
     }
 
-    async betreffChanged(betreff: string) {
+    private async betreffChanged(betreff: string) {
         try {
             await this.betreffVorschlagDebouncer.trigger(200);
         }

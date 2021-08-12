@@ -6,16 +6,22 @@ export class KontokorrentSelectListEntry extends HTMLElement {
     private name: HTMLSpanElement;
     private link: HTMLAnchorElement;
     private kontokorrent: KontokorrentState;
+    private rendered = false;
+    private isActive: boolean = false;
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.name = this.querySelector(`[data-ref="name"]`);
-        this.link = this.querySelector(`[data-ref="link"]`);
-        this.clickEvent = this.clickEvent.bind(this);
     }
 
     connectedCallback() {
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.name = this.querySelector(`[data-ref="name"]`);
+            this.link = this.querySelector(`[data-ref="link"]`);
+            this.updateStyle();
+        }
+        this.clickEvent = this.clickEvent.bind(this);
         this.link.addEventListener("click", this.clickEvent);
     }
 
@@ -30,9 +36,16 @@ export class KontokorrentSelectListEntry extends HTMLElement {
 
     update(kontokorrent: KontokorrentState, isActive: boolean) {
         this.kontokorrent = kontokorrent;
-        this.name.innerText = kontokorrent.name;
-        this.link.href = `kontokorrents/${kontokorrent.id}`;
-        this.link.classList.toggle("kontokorrent-select-list__entry--active", isActive);
+        this.isActive = isActive;
+        this.updateStyle();
+    }
+
+    private updateStyle() {
+        if (this.rendered && this.kontokorrent) {
+            this.name.innerText = this.kontokorrent.name;
+            this.link.href = `kontokorrents/${this.kontokorrent.id}`;
+            this.link.classList.toggle("kontokorrent-select-list__entry--active", this.isActive);
+        }
     }
 }
 export const KontokorrentSelectListEntryTagName = "kontokorrent-select-list-entry";

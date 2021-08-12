@@ -12,19 +12,22 @@ export class KontokorrentSelect extends HTMLElement {
     private kontokorrentSelectList: KontokorrentSelectList;
     private addButton: HTMLButtonElement;
     private activeKontokorrentId: string;
-    private _kontokorrents: KontokorrentState[];
+    private _kontokorrents: KontokorrentState[] = null;
+    private rendered = false;
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.kontokorrentName = this.querySelector(`[data-ref="kontokorrent-name"]`);
-        this.kontokorrentSelectList = this.querySelector(KontokorrentSelectListTagName);
-        this.addButton = this.querySelector(`#add-kontokorrent`);
-        this._kontokorrents = null;
     }
 
     connectedCallback() {
-        this.popup = this.querySelector(`app-popup`);
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.kontokorrentName = this.querySelector(`[data-ref="kontokorrent-name"]`);
+            this.kontokorrentSelectList = this.querySelector(KontokorrentSelectListTagName);
+            this.addButton = this.querySelector(`#add-kontokorrent`);
+            this.popup = this.querySelector(`app-popup`);
+        }
         this.updateAttributes();
         this.addEventListener("click", e => {
             if (!this.popup.contains(<Element>(event.target))) {
@@ -65,7 +68,7 @@ export class KontokorrentSelect extends HTMLElement {
     }
 
     private updatesStyle() {
-        if (this._kontokorrents && this._kontokorrents.length) {
+        if (this.rendered && this._kontokorrents && this._kontokorrents.length) {
             let activeKontokorrent = this._kontokorrents.find(k => k.id == this.activeKontokorrentId);
             if (activeKontokorrent) {
                 this.kontokorrentName.innerText = activeKontokorrent.name;

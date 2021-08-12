@@ -5,7 +5,7 @@ import { Person } from "../../state/State";
 
 export class BalanceAnzeige extends HTMLElement {
     private balanceRange: number;
-    private personen: Person[];
+    private personen: Person[] = [];
     private personenRenderer: ArrayToElementRenderer<Person, HTMLElement, string>;
     private rendered = false;
 
@@ -17,9 +17,10 @@ export class BalanceAnzeige extends HTMLElement {
     }
 
     connectedCallback() {
-        if(!this.rendered) {
-            this.innerHTML = template;
+        if (!this.rendered) {
             this.rendered = true;
+            this.innerHTML = template;
+            this.updatesStyle();
         }
     }
 
@@ -34,12 +35,14 @@ export class BalanceAnzeige extends HTMLElement {
     }
 
     private updatesStyle() {
-        this.personenRenderer.update(this.personen,
-            (e, b) => {
-                e.setAttribute(PersonNameAttribute, b.name);
-                e.setAttribute(BalanceAttribute, "" + b.balance);
-                e.setAttribute(BalanceRangeAttribute, "" + this.balanceRange);
-            });
+        if (this.rendered) {
+            this.personenRenderer.update(this.personen,
+                (e, b) => {
+                    e.setAttribute(PersonNameAttribute, b.name);
+                    e.setAttribute(BalanceAttribute, "" + b.balance);
+                    e.setAttribute(BalanceRangeAttribute, "" + this.balanceRange);
+                });
+        }
     }
 
 }

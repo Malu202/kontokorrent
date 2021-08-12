@@ -4,28 +4,39 @@ import "./MultiBezahlungZeile.scss";
 
 export class MultiBezahlungZeile extends HTMLElement {
     private datumText: HTMLSpanElement;
-    private betreff: HTMLInputElement;
+    private betreffInput: HTMLInputElement;
     private betragText: HTMLSpanElement;
     private removeBtn: HTMLButtonElement;
     private removeClickListener: () => void;
     private status: HTMLSpanElement;
+    private rendered = false;
+    private betrag: number;
+    private betreff: string;
+    private datum: Date;
+    private done: boolean;
+    private error: boolean;
+    private pendingdata = false;
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.datumText = this.querySelector(`[data-ref="datum"]`);
-        this.betreff = this.querySelector(`[data-ref="betreff"]`);
-        this.betragText = this.querySelector(`[data-ref="betrag"]`);
-        this.removeBtn = this.querySelector(`[data-ref="remove"]`);
-        this.status = this.querySelector(`[data-ref="status"]`);
     }
 
     connectedCallback() {
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.datumText = this.querySelector(`[data-ref="datum"]`);
+            this.betreffInput = this.querySelector(`[data-ref="betreff"]`);
+            this.betragText = this.querySelector(`[data-ref="betrag"]`);
+            this.removeBtn = this.querySelector(`[data-ref="remove"]`);
+            this.status = this.querySelector(`[data-ref="status"]`);
+            this.updateStyle();
+        }
         this.removeClickListener = () => this.removeClick();
         this.removeBtn.addEventListener("click", this.removeClickListener);
     }
 
-    removeClick() {
+    private removeClick() {
         this.dispatchEvent(new CustomEvent("removebezahlung"));
     }
 
@@ -34,14 +45,27 @@ export class MultiBezahlungZeile extends HTMLElement {
     }
 
     setData(d: { betreff?: string; betrag?: number; datum?: Date; done: boolean, error: boolean }) {
-        this.betragText.innerText = formatCurrency(d.betrag);
-        this.datumText.innerText = new Intl.DateTimeFormat().format(d.datum);
-        this.betreff.value = d.betreff;
-        this.status.innerText = d.error ? "Fehler" : (d.done ? "gespeichert" : "");
+        this.betrag = d.betrag;
+        this.betreff = d.betreff;
+        this.datum = d.datum;
+        this.done = d.done;
+        this.error = d.error;
+        this.pendingdata = true;
+        this.updateStyle();
+    }
+
+    private updateStyle() {
+        if (this.rendered && this.pendingdata) {
+            this.pendingdata = false;
+            this.betragText.innerText = formatCurrency(this.betrag);
+            this.datumText.innerText = new Intl.DateTimeFormat().format(this.datum);
+            this.betreffInput.value = this.betreff;
+            this.status.innerText = this.error ? "Fehler" : (this.done ? "gespeichert" : "");
+        }
     }
 
     getData() {
-        return { betreff: this.betreff.value };
+        return { betreff: this.betreffInput.value };
     }
 }
 

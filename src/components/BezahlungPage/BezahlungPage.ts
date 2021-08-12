@@ -40,35 +40,42 @@ export class BezahlungPage extends HTMLElement {
     private updateError: HTMLDivElement;
     private deleteError: HTMLDivElement;
     private activeKontokorrentId: string;
+    private rendered = false;
+    private serviceLocator: ServiceLocator;
 
     constructor() {
         super();
-        this.innerHTML = template;
-        this.zurueckLink = this.querySelector("#zurueck-zum-kontokorrent");
-        this.appBar = this.querySelector(AppBarTagName);
-        this.bezahlungEintragenForm = this.querySelector(BezahlungEintragenFormTagName);
-        this.bezahlungNichtGefundenError = this.querySelector("#bezahlung-nicht-gefunden-error");
-        this.bezahlungZwischengespeichertError = this.querySelector("#bezahlung-zwischengespeichert-error");
-        this.bezahlungGeloeschtError = this.querySelector("#bezahlung-geloescht-error");
-        this.bezahlungBearbeitetError = this.querySelector("#bezahlung-bearbeitet-error");
-        this.updateButton = this.querySelector("#bezahlung__update");
-        this.deleteButton = this.querySelector("#bezahlung__delete");
-        this.editingSection = this.querySelector("#bezahlung__edit");
-        this.updatingSection = this.querySelector("#bezahlung__updating");
-        this.deletingSection = this.querySelector("#bezahlung__deleting");
-        this.updateError = this.querySelector("#update-error");
-        this.deleteError = this.querySelector("#delete-error");
-        this.formContainer = this.querySelector("#bezahlung__form-container");
+
     }
 
     addServices(serviceLocator: ServiceLocator) {
         this.store = serviceLocator.store;
         this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
         this.bezahlungActionCreator = bezahlungActionCreatorFactory(serviceLocator);
-        this.appBar.addServices(serviceLocator);
+        this.serviceLocator = serviceLocator;
     }
 
     connectedCallback() {
+        if (!this.rendered) {
+            this.rendered = true;
+            this.innerHTML = template;
+            this.zurueckLink = this.querySelector("#zurueck-zum-kontokorrent");
+            this.appBar = this.querySelector(AppBarTagName);
+            this.appBar.addServices(this.serviceLocator);
+            this.bezahlungEintragenForm = this.querySelector(BezahlungEintragenFormTagName);
+            this.bezahlungNichtGefundenError = this.querySelector("#bezahlung-nicht-gefunden-error");
+            this.bezahlungZwischengespeichertError = this.querySelector("#bezahlung-zwischengespeichert-error");
+            this.bezahlungGeloeschtError = this.querySelector("#bezahlung-geloescht-error");
+            this.bezahlungBearbeitetError = this.querySelector("#bezahlung-bearbeitet-error");
+            this.updateButton = this.querySelector("#bezahlung__update");
+            this.deleteButton = this.querySelector("#bezahlung__delete");
+            this.editingSection = this.querySelector("#bezahlung__edit");
+            this.updatingSection = this.querySelector("#bezahlung__updating");
+            this.deletingSection = this.querySelector("#bezahlung__deleting");
+            this.updateError = this.querySelector("#update-error");
+            this.deleteError = this.querySelector("#delete-error");
+            this.formContainer = this.querySelector("#bezahlung__form-container");
+        }
         this.kontokorrentsSubscription = this.store.subscribe("kontokorrents", s => this.applyStoreState(s));
         this.beschreibungVorschlagSubscription = this.store.subscribe("beschreibungVorschlaege", s => this.beschreibungVorschlaegeChanged(s));
         this.appBar.addEventListener("gotokontokorrent", async (e: CustomEvent) => {
@@ -110,7 +117,7 @@ export class BezahlungPage extends HTMLElement {
             this.deleteDialog.hide();
         });
     }
-    async betreffChanged(betreff: string) {
+    private async betreffChanged(betreff: string) {
         try {
             await this.betreffVorschlagDebouncer.trigger(200);
         }
@@ -158,6 +165,7 @@ export class BezahlungPage extends HTMLElement {
                     this.bezahlungEintragenForm.setData(bezahlungData);
                 }
             }
+            this.zurueckLink.href = `kontokorrents/o/${kontokorrent.oeffentlicherName}`;
         }
         this.updateButton.style.visibility = editable ? "visible" : "collapse";
         this.deleteButton.style.visibility = editable ? "visible" : "collapse";
@@ -171,7 +179,6 @@ export class BezahlungPage extends HTMLElement {
 
     setRouteParameters(oeffentlicherName: string, bezahlungId: string) {
         this.bezahlungIdParameter = bezahlungId;
-        this.zurueckLink.href = `kontokorrents/o/${oeffentlicherName}`;
         this.bezahlungActionCreator.bezahlungGeoeffnet(oeffentlicherName, bezahlungId);
     }
 

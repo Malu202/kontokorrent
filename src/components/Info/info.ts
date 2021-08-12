@@ -8,13 +8,14 @@ export class Info extends HTMLElement {
 
     constructor() {
         super();
-        this.innerHTML = template;
+
     }
     addServices(serviceLocator: ServiceLocator) {
         this.routingActionCreator = routingActionCreatorFactory(serviceLocator);
     }
 
     async connectedCallback() {
+        this.innerHTML = template;
         let res = await fetch("licenses.txt");
         let text = await res.text();
         (<HTMLDivElement>this.querySelector("#third-party")).innerText = text;
