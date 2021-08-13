@@ -5,6 +5,8 @@ import { FeaturesRequired } from "../components/FeaturesRequired/FeaturesRequire
 import { Store } from "../state/Store";
 import { AsyncRouteResolver } from "route-it/dist/router";
 
+export const OeffentlicherNameParam = "oeffentlicherName";
+
 
 export enum Paths {
     Login = "login",
@@ -15,6 +17,17 @@ export enum Paths {
     BezahlungEintragen = "eintragen",
     MultiBezahlungEintragen = "multi-eintragen",
     DatabaseDebug = "database-debug"
+}
+
+function matchOeffentlicherKontokorrentRoute(route: string) {
+    let oeffentlicherKontokorrentRoute = /^kontokorrents\/o\/([a-zA-Z0-9\-]+)$/.exec(route);
+    if (oeffentlicherKontokorrentRoute) {
+        let oeffentlicherName: string = oeffentlicherKontokorrentRoute[1];
+        return {
+            oeffentlicherName: oeffentlicherName
+        };
+    }
+    return null;
 }
 
 export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement> {
@@ -59,7 +72,15 @@ export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement
             }
         }
         if (!this.store.state.account.accountCreated) {
-            router.navigate(Paths.Login, null, true);
+            let oeffentlicher = matchOeffentlicherKontokorrentRoute(currentRoute);
+            if (oeffentlicher) {
+                let p = new URLSearchParams();
+                p.set(OeffentlicherNameParam, oeffentlicher.oeffentlicherName);
+                router.navigate(`${Paths.Login}?${p}`, null, true);
+            }
+            else {
+                router.navigate(`${Paths.Login}`, null, true);
+            }
             return false;
         }
         switch (currentRoute) {
@@ -82,11 +103,10 @@ export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement
                 return component;
             }
         }
-        let oeffentlicherKontokorrentRoute = /^kontokorrents\/o\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);
-        if (oeffentlicherKontokorrentRoute) {
-            let oeffentlicherName: string = oeffentlicherKontokorrentRoute[1];
+        let routeMatch = matchOeffentlicherKontokorrentRoute(currentRoute);
+        if (routeMatch) {
             let component = await this.getKontokorrentPageComponent();
-            component.setRouteParameters(oeffentlicherName);
+            component.setRouteParameters(routeMatch.oeffentlicherName);
             return component;
         }
         let oeffentlicherKontokorrentBezahlungRoute = /^kontokorrents\/o\/([a-zA-Z0-9\-]+)\/bezahlungen\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);

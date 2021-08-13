@@ -9,6 +9,7 @@ import "./Login.scss";
 import "../ui-components/popup/popup";
 import "../ui-components/tip-button/tip-button";
 import { KontokorrentHinzufuegenActionCreator, kontokorrentHinzufuegenActionCreatorFactory } from "../../state/actions/KontokorrentHinzufuegenActionCreator";
+import { OeffentlicherNameParam } from "../../routing/KontokorrentRouteResolver";
 
 export class Login extends HTMLElement {
     store: Store;
@@ -41,19 +42,21 @@ export class Login extends HTMLElement {
         if (!this.rendered) {
             this.rendered = true;
             this.innerHTML = template;
+            this.loginButton = this.querySelector("#loginButton");
+            this.homeButton = this.querySelector("#home-button");
+            this.loginBox = this.querySelector("#login-box");
+            this.eventMissingError = this.querySelector("#eventMissingError");
+            this.accountCreationFailed = this.querySelector("#account-creation-failed");
+            this.notFoundError = this.querySelector("#notFoundError");
+            this.processing = this.querySelector("#processing");
+            this.eventInput = this.querySelector("#eventInput");
+            let searchParams = new URLSearchParams(window.location.search);
+            if (searchParams.has(OeffentlicherNameParam)) {
+                this.eventInput.value = searchParams.get(OeffentlicherNameParam);
+            }
+            convertLinks(this.querySelectorAll("a"), this.routingActionCreator);
         }
-        convertLinks(this.querySelectorAll("a"), this.routingActionCreator);
-        this.eventInput = this.querySelector("#eventInput");
-        this.loginButton = this.querySelector("#loginButton");
-        this.homeButton = this.querySelector("#home-button");
-        this.loginBox = this.querySelector("#login-box");
-        this.eventMissingError = this.querySelector("#eventMissingError");
-        this.accountCreationFailed = this.querySelector("#account-creation-failed");
-        this.notFoundError = this.querySelector("#notFoundError");
-        this.processing = this.querySelector("#processing");
-
         this.loginButton.addEventListener("click", this.loginFuerEvent.bind(this));
-
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
         this.accountActionCreator.initializeAccount();

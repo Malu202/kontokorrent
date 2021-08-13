@@ -8,7 +8,7 @@
     "core-js": "^3.16.1",
     "date-fns": "^2.23.0",
     "idb": "^6.1.2",
-    "route-it": "^1.2.0",
+    "route-it": "^1.2.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
