@@ -241,7 +241,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 --------------------------------------------------------------------------------
-route-it v1.2.0
+route-it v1.2.1
 https://github.com/tuwrraphael/route-it.git
 --------------------------------------------------------------------------------
 
