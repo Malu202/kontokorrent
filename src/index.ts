@@ -39,7 +39,8 @@ async function run() {
                 creationFailed: null,
                 kontokorrents: {},
                 listeLaden: false,
-                activeKontokorrentId: null
+                activeKontokorrentId: null,
+                nichtGefunden: null
             },
             beschreibungVorschlaege: {
                 vorschlaege: [],

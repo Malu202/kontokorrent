@@ -33,5 +33,8 @@ export const enum ActionNames {
     BezahlungBearbeitenFailed,
     BezahlungLoeschen,
     BezahlungGeloescht,
-    BezahlungLoeschenFailed
+    BezahlungLoeschenFailed,
+    KontokorrentNichtGefunden,
+    KontokorrentOeffnen,
+    NichtGefundenPageGeoeffnet
 }

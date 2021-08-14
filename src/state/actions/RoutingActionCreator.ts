@@ -1,6 +1,6 @@
 import { Router } from "route-it";
 import { KontokorrentDatabase } from "../../lib/KontokorrentDatabase";
-import { Paths } from "../../routing/KontokorrentRouteResolver";
+import { OeffentlicherNameParam, Paths } from "../../routing/KontokorrentRouteResolver";
 import { ServiceLocator } from "../../ServiceLocator";
 import { Store } from "../Store";
 export class RoutingActionCreator {
@@ -18,6 +18,11 @@ export class RoutingActionCreator {
     }
     navigateLogin(replace?: boolean) {
         this.router.navigate(Paths.Login, null, replace);
+    }
+    navigateNichtGefunden(oeffentlicherName: string) {
+        let p = new URLSearchParams();
+        p.set(OeffentlicherNameParam, oeffentlicherName);
+        this.router.navigate(`${Paths.NichtGefunden}?${p}`, null, true);
     }
     navigateFeaturesRequired() {
         this.router.navigate(Paths.FeaturesRequired, null);

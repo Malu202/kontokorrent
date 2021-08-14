@@ -99,6 +99,26 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                 })
             }
                 break;
+            case ActionNames.KontokorrentNichtGefunden: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        nichtGefunden: {
+                            oeffentlicherName: action.oeffentlicherName
+                        }
+                    };
+                })
+            }
+                break;
+            case ActionNames.KontokorrentOeffnen: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        nichtGefunden: null
+                    };
+                })
+            }
+                break;
             case ActionNames.KontokorrentCreated: {
                 updateStore(s => {
                     return {
@@ -187,7 +207,20 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                     return {
                         ...s,
                         hinzufuegen: false,
-                        hinzufuegenFailed: null
+                        hinzufuegenFailed: null,
+                        nichtGefunden: null
+                    };
+                });
+                break;
+            }
+            case ActionNames.NichtGefundenPageGeoeffnet: {
+                updateStore(s => {
+                    return {
+                        ...s,
+                        hinzufuegen: false,
+                        hinzufuegenFailed: null,
+                        activeKontokorrentId: null,
+                        nichtGefunden: null
                     };
                 });
                 break;

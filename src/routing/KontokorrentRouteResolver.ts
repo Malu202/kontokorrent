@@ -16,7 +16,8 @@ export enum Paths {
     CreateEvent = "create-event",
     BezahlungEintragen = "eintragen",
     MultiBezahlungEintragen = "multi-eintragen",
-    DatabaseDebug = "database-debug"
+    DatabaseDebug = "database-debug",
+    NichtGefunden = "nicht-gefunden"
 }
 
 function matchOeffentlicherKontokorrentRoute(route: string) {
@@ -102,6 +103,12 @@ export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement
                 component.addServices(this.serviceLocator);
                 return component;
             }
+        }
+        if (currentRoute.startsWith(Paths.NichtGefunden)) {
+            const { KontokorrentNichtGefunden } = await import("../components/KontokorrentNichtGefunden/KontokorrentNichtGefunden");
+            let component = new KontokorrentNichtGefunden();
+            component.addServices(this.serviceLocator);
+            return component;
         }
         let routeMatch = matchOeffentlicherKontokorrentRoute(currentRoute);
         if (routeMatch) {

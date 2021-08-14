@@ -29,6 +29,7 @@ export class KontokorrentPage extends HTMLElement {
     private oeffentlicherNameParameter: string;
     private rendered = false;
     private serviceLocator: ServiceLocator;
+    private navigiertZuNichtGefunden = false;
 
     constructor() {
         super();
@@ -78,6 +79,10 @@ export class KontokorrentPage extends HTMLElement {
                 this.bezahlungenView.setBezahlungen(this.kontokorrent.bezahlungen, this.kontokorrent.personen);
             }
             this.kontokorrentSpinner.style.display = this.kontokorrent.synchronisieren ? "flex" : "none";
+        }
+        if (state.kontokorrents.nichtGefunden && !this.navigiertZuNichtGefunden) {
+            this.navigiertZuNichtGefunden = true;
+            this.routingActionCreator.navigateNichtGefunden(state.kontokorrents.nichtGefunden.oeffentlicherName);
         }
     }
 

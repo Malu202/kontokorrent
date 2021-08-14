@@ -19,6 +19,9 @@ export interface KontokorrentsState {
     creating: boolean;
     creationFailed: { exists: boolean };
     activeKontokorrentId: string;
+    nichtGefunden: {
+        oeffentlicherName: string
+    }
 }
 
 export interface Person {
@@ -58,7 +61,7 @@ export interface AngezeigteBezahlungState {
 export interface KontokorrentState {
     id: string;
     name: string;
-    oeffentlicherName:string;
+    oeffentlicherName: string;
     personen: Person[];
     bezahlungen: Bezahlung[];
     synchronisieren: boolean;

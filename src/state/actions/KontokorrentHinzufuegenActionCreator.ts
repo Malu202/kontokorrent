@@ -57,13 +57,21 @@ export class LoginPageGeoeffnet implements Action {
     }
 }
 
+export class NichtGefundenPageGeoeffnet implements Action {
+    readonly type = ActionNames.NichtGefundenPageGeoeffnet;
+    constructor() {
+
+    }
+}
+
 export type KontokorrentHinzufuegenActions = KontokorrentCreationFailed
     | KontokorrentCreating
     | KontokorrentCreated
     | KontokorrentHinzufuegenFailed
     | KontokorrentHinzufuegen
     | KontokorrentHinzufuegenSuccess
-    | LoginPageGeoeffnet;
+    | LoginPageGeoeffnet
+    | NichtGefundenPageGeoeffnet;
 
 export class KontokorrentHinzufuegenActionCreator {
 
@@ -75,6 +83,10 @@ export class KontokorrentHinzufuegenActionCreator {
 
     loginPageGeoeffnet() {
         this.store.dispatch(new LoginPageGeoeffnet());
+    }
+
+    nichtGefundenPageGeoeffnet() {
+        this.store.dispatch(new NichtGefundenPageGeoeffnet());
     }
 
     async kontokorrentErstellen(id: string, name: string, oeffentlicherName: string, personen: string[]) {
@@ -131,7 +143,7 @@ export class KontokorrentHinzufuegenActionCreator {
                 return newIds[0];
             }
         }
-        catch(err) {
+        catch (err) {
             this.store.dispatch(new KontokorrentHinzufuegenFailed(false));
         }
         return false;

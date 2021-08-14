@@ -1,0 +1,25 @@
+@use "../ui-components/theme";
+@use "../ui-components/utils";
+
+kontokorrent-nicht-gefunden {
+    @include theme.property(background-color, bg-container);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.kontokorrent-hinzufuegen-section {
+    margin-top: 2em;
+    text-align: center;
+    max-width: 40em;
+    align-self: center;
+}
+
+.hinzufuegen__progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    margin-top: 5em;
+}

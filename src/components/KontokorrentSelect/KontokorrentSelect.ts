@@ -72,9 +72,11 @@ export class KontokorrentSelect extends HTMLElement {
             let activeKontokorrent = this._kontokorrents.find(k => k.id == this.activeKontokorrentId);
             if (activeKontokorrent) {
                 this.kontokorrentName.innerText = activeKontokorrent.name;
+                this.kontokorrentName.classList.remove("kontokorrent-select__name--unselected");
             }
             else {
                 this.kontokorrentName.innerText = "(Kontokorrent wählen)";
+                this.kontokorrentName.classList.add("kontokorrent-select__name--unselected");
             }
         }
     }

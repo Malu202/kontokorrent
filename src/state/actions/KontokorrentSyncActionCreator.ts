@@ -44,12 +44,28 @@ export class KontokorrentBalanceAktualisiert implements Action {
     }
 }
 
+export class KontokorrentNichtGefunden implements Action {
+    readonly type = ActionNames.KontokorrentNichtGefunden;
+    constructor(public oeffentlicherName: string) {
+
+    }
+}
+
+export class KontokorrentOeffnen implements Action {
+    readonly type = ActionNames.KontokorrentOeffnen;
+    constructor(public oeffentlicherName: string) {
+
+    }
+}
+
 export type KontokorrentSyncActions =
     | KontokorrentGeoeffnet
     | KontokorrentBezahlungen
     | KontokorrentSynchronisieren
     | KontokorrentSynchronisiert
-    | KontokorrentBalanceAktualisiert;
+    | KontokorrentBalanceAktualisiert
+    | KontokorrentNichtGefunden
+    | KontokorrentOeffnen;
 
 export class KontokorrentSyncActionCreator {
 
@@ -105,11 +121,14 @@ export class KontokorrentSyncActionCreator {
 
 
     async kontokorrentOeffnen(oeffentlicherName: string) {
+        this.store.dispatch(new KontokorrentOeffnen(oeffentlicherName));
         let kk = await this.db.getPerOeffentlichName(oeffentlicherName);
         if (null != kk) {
             this.store.dispatch(new KontokorrentGeoeffnet(kk.id));
             await Promise.all([this.db.setZuletztGesehenerKontokorrentId(kk.id), this.refreshKontokorrent(kk.id)]);
             await this.kontokorrentSynchronisieren(kk.id);
+        } else {
+            this.store.dispatch(new KontokorrentNichtGefunden(oeffentlicherName));
         }
     }
 }
