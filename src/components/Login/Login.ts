@@ -68,7 +68,7 @@ export class Login extends HTMLElement {
         this.eventMissingError.style.display = event ? "none" : "block";
         if (event) {
             if (await this.accountActionCreator.ensureAccount()) {
-                let id = await this.kontokorrentHinzufuegenActionCreator.kontokorrentHinzufuegen(event);
+                let id = await this.kontokorrentHinzufuegenActionCreator.kontokorrentHinzufuegen(event.toLowerCase());
                 if (id) {
                     await this.routingActionCreator.navigateKontokorrentById(id);
                 };

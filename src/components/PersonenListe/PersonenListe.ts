@@ -28,6 +28,7 @@ export class PersonenListe extends HTMLElement {
             let e = new PersonenListenEintrag();
             li.appendChild(e);
             this.personenListe.appendChild(li);
+            e.querySelector("input").focus();
             e.addEventListener("onremove", () => {
                 this.personenListe.removeChild(li);
             });

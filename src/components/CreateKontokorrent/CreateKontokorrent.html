@@ -7,9 +7,9 @@
         werden</div>
     <div id="event-name-duplicate" class="alert alert--error" style="display: none;">Ein Kontokorrent mit diesem Namen
         exisitert bereits</div>
-    <div id="event-name-error" class="alert alert--error" style="display: none;">Eventname angeben</div>
-    <div id="oeffentlicher-name-error" class="alert alert--error" style="display: none;">Öfferntlicher Name: Nur
-        Kleinbuchstaben und Zahlen</div>
+    <div id="event-name-required-error" class="alert alert--error" style="display: none;">Eventname angeben</div>
+    <div id="event-name-error" class="alert alert--error" style="display: none;">Name: Nur
+        Groß-/Kleinbuchstaben (A-Z, a-z) und Zahlen</div>
     <div id="person-name-duplicate-error" class="alert alert--error" style="display: none;">Personennamen müssen
         unterschiedlich sein</div>
     <div id="account-creation-failed" class="alert alert--error" style="display: none;">Account konnte nicht erstellt
@@ -23,32 +23,14 @@
             </span>
         </tip-button>
         <app-popup id="eventNameExplainer" class="tip tip--with-input">
-            Wie soll die Gruppe heißen? Unter diesem Namen wird die Gruppe nach dem einloggen angezeigt.
-            Kann, muss aber nicht mit dem öffentlichen Namen übereinstimmen.
+            Wie soll die Gruppe heißen?
+            Groß- und Kleinbuchstaben (A-Z, a-z) sowie Zahlen sind erlaubt.
+            Der Name wir auch zum Einloggen verwendet dabei wird Groß-/Kleinschreibung ignoriert.
         </app-popup>
-    </div>
-    <!-- TODO nicht oeffentliche enablen -->
-    <label for="event-name" class="create-event-box__label" style="display: none;">Oeffentlich</label>
-    <input type="checkbox" id="oeffentlich" name="oeffentlich" checked="checked" disabled="disabled"
-        style="display: none;">
-
-    <div id="oeffentlich-box">
-        <label for="oeffentlicher-name" class="create-event-box__label">Öffentlicher Name</label>
-        <div class="create-event-box__input-with-tip">
-            <input type="text" id="oeffentlicher-name" name="oeffentlicher-name">
-            <tip-button popup-id="oeffentlicherNameExplainer" title="öffentlicher Name Erklärung">
-                <span class="material-icons">
-                    info
-                </span>
-            </tip-button>
-            <app-popup id="oeffentlicherNameExplainer" class="tip tip--with-input">
-                Gib hier den Namen, den die anderen Gruppenmitglieder verwenden um sich einzuloggen. ("Passwort")
-            </app-popup>
-        </div>
     </div>
     <label class="create-event-box__label">Personen</label>
     <app-personen-liste id="personen-liste"></app-personen-liste>
-    <div id="creating" class="create-event-box__processing" style="display: none;">
+    <div id="creating" class="create-event-box__processing">
         <span class="spinner"></span>
     </div>
     <div>

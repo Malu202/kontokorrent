@@ -24,26 +24,21 @@ export class CreateKontokorrent extends HTMLElement {
     private emptyNameError: HTMLDivElement;
     private eventCreateError: HTMLDivElement;
     private personCountError: HTMLDivElement;
-    private eventNameError: HTMLDivElement;
+    private eventNameRequiredError: HTMLDivElement;
     private createButton: HTMLButtonElement;
     private eventName: HTMLInputElement;
     private readonly kontokorrentId: string;
     private creating: HTMLDivElement;
-    private oeffentlicherName: HTMLInputElement;
-    private oeffentlich: HTMLInputElement;
-    private oeffentlichBox: HTMLDivElement;
-    private oeffentlicherNameManuell: boolean;
-    private oeffentlicherNameError: HTMLDivElement;
     private eventNameDuplicate: HTMLDivElement;
     private kontokorrentHinzufuegenActionCreator: KontokorrentHinzufuegenActionCreator;
     private accountCreationFailed: HTMLDivElement;
     private personNameDuplicateError: HTMLDivElement;
     private rendered = false;
+    private eventNameError: HTMLDivElement;
 
     constructor() {
         super();
         this.kontokorrentId = uuid();
-        this.oeffentlicherNameManuell = false;
     }
 
     addServices(serviceLocator: ServiceLocator) {
@@ -61,35 +56,17 @@ export class CreateKontokorrent extends HTMLElement {
             this.emptyNameError = this.querySelector("#empty-name-error");
             this.eventCreateError = this.querySelector("#event-create-error");
             this.personCountError = this.querySelector("#person-count-error");
+            this.eventNameRequiredError = this.querySelector("#event-name-required-error");
             this.eventNameError = this.querySelector("#event-name-error");
             this.createButton = this.querySelector("#create-button");
             this.eventName = this.querySelector("#event-name");
             this.creating = this.querySelector("#creating");
-            this.oeffentlicherName = this.querySelector("#oeffentlicher-name");
-            this.oeffentlich = this.querySelector("#oeffentlich");
-            this.oeffentlichBox = this.querySelector("#oeffentlich-box");
-            this.oeffentlicherNameError = this.querySelector("#oeffentlicher-name-error");
             this.eventNameDuplicate = this.querySelector("#event-name-duplicate");
             this.accountCreationFailed = this.querySelector("#account-creation-failed");
             this.personNameDuplicateError = this.querySelector("#person-name-duplicate-error");
         }
 
         this.createButton.addEventListener("click", this.createEvent.bind(this));
-
-        this.oeffentlich.addEventListener("change", () => {
-            this.oeffentlichBox.style.display = this.oeffentlich.checked ? "block" : "none";
-        });
-
-        this.eventName.addEventListener("change", () => {
-            if (!this.oeffentlicherNameManuell) {
-                this.oeffentlicherName.value = (this.eventName.value || "").toLowerCase();
-            }
-        });
-
-        this.oeffentlicherName.addEventListener("change", () => {
-            this.oeffentlicherNameManuell = true;
-        });
-
         this.subscription = this.store.subscribe(null, state => this.applyStoreState(state));
         this.applyStoreState(this.store.state);
         convertLinks(this.querySelectorAll("a"), this.routingActionCreator);
@@ -98,18 +75,19 @@ export class CreateKontokorrent extends HTMLElement {
     private async createEvent() {
         let eventName = this.eventName.value;
         let personNames = this.personenListe.personen;
-        this.eventNameError.style.display = eventName ? "none" : "block";
+        this.eventNameRequiredError.style.display = eventName ? "none" : "block";
         let personCountOk = personNames.length >= 2;
         this.personCountError.style.display = personCountOk ? "none" : "block";
         let personNameError = personNames.some(v => !v);
         this.emptyNameError.style.display = personNameError ? "block" : "none";
-        let oeffentlicherNameError = this.oeffentlich.checked && (!this.oeffentlicherName.value || !/^[a-z0-9]+$/.test(this.oeffentlicherName.value));
-        this.oeffentlicherNameError.style.display = oeffentlicherNameError ? "block" : "none";
+        let oeffentlicherName = (this.eventName.value || "").toLowerCase();
+        let nameError = (oeffentlicherName && !/^[a-z0-9]+$/.test(oeffentlicherName));
+        this.eventNameError.style.display = nameError ? "block" : "none";
         let personNameDuplicateError = (personNames.some((item, index) => personNames.indexOf(item) != index));
         this.personNameDuplicateError.style.display = personNameDuplicateError ? "block" : "none";
-        if (eventName && personCountOk && !personNameError && !oeffentlicherNameError && !personNameDuplicateError) {
+        if (eventName && personCountOk && !personNameError && !nameError && !personNameDuplicateError) {
             if (await this.accountActionCreator.ensureAccount()) {
-                if (await this.kontokorrentHinzufuegenActionCreator.kontokorrentErstellen(this.kontokorrentId, this.eventName.value, this.oeffentlich.checked ? this.oeffentlicherName.value : null, personNames)) {
+                if (await this.kontokorrentHinzufuegenActionCreator.kontokorrentErstellen(this.kontokorrentId, this.eventName.value, oeffentlicherName, personNames)) {
                     await this.routingActionCreator.navigateKontokorrentById(this.kontokorrentId);
                 };
             }
@@ -119,7 +97,7 @@ export class CreateKontokorrent extends HTMLElement {
     }
 
     private applyStoreState(state: State) {
-        this.creating.style.display = state.kontokorrents.creating || state.account.accountCreating ? "block" : "none";
+        this.creating.style.display = state.kontokorrents.creating || state.account.accountCreating ? "flex" : "none";
         this.eventCreateError.style.display = state.kontokorrents.creationFailed ? "block" : "none";
         this.eventNameDuplicate.style.display = state.kontokorrents.creationFailed && state.kontokorrents.creationFailed.exists ? "block" : "none";
         this.accountCreationFailed.style.display = !state.account.accountCreating && state.account.accountCreationFailed ?

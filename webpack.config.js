@@ -129,7 +129,8 @@ module.exports = (env, argv) => {
             new CleanWebpackPlugin(),
             new DefinePlugin({
                 __ENVIRONMENT: `"${environment}"`,
-                __CACHENAME: `"${cacheName}"`
+                __CACHENAME: `"${cacheName}"`,
+                __BUILD_DATE: `"${new Date().toISOString()}"`
             }),
             new CopyPlugin({
                 patterns: [

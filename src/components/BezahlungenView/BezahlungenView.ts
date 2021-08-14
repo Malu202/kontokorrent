@@ -19,7 +19,7 @@ export class BezahlungenView extends HTMLElement {
     private showMoreButton: HTMLButtonElement;
     private groupRenderer: ArrayToElementRenderer<[number, BezahlungViewModel[]], BezahlungenGroup, string>;
     private templateApplied = false;
-    private scrollLastIntoView = false;
+    private scrollToElement: Element;
 
     constructor() {
         super();
@@ -53,8 +53,10 @@ export class BezahlungenView extends HTMLElement {
     }
 
     private showMoreClick() {
+        let cards = this.bezahlungenContainer.lastElementChild.querySelectorAll("bezahlung-card");
+        this.scrollToElement = cards[cards.length - 1];
         this.anzahlEintraege += 20;
-        this.scrollLastIntoView = true;
+
         this.setShowMoreButtonDisplay();
     }
 
@@ -117,12 +119,9 @@ export class BezahlungenView extends HTMLElement {
                         e.title = this.formatDay(new Date(d[0]));
                     }
                 });
-            if (this.scrollLastIntoView) {
-                this.scrollLastIntoView = false;
-                let last: BezahlungenGroup = <BezahlungenGroup>this.bezahlungenContainer.lastElementChild;
-                if (last) {
-                    last.scrollIntoView({ behavior: "smooth" });
-                }
+            if (this.scrollToElement) {
+                this.scrollToElement.scrollIntoView({ behavior: "smooth" });
+                this.scrollToElement = null;
             }
         }
     }

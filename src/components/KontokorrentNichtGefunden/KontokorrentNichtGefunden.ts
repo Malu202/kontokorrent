@@ -46,7 +46,7 @@ export class KontokorrentNichtGefunden extends HTMLElement {
             this.appBar.addServices(this.serviceLocator);
             let searchParams = new URLSearchParams(window.location.search);
             if (searchParams.has(OeffentlicherNameParam)) {
-                this.oeffentlicherName = searchParams.get(OeffentlicherNameParam);
+                this.oeffentlicherName = searchParams.get(OeffentlicherNameParam).toLowerCase();
                 this.oeffentlicherKontokorrentLabel.innerText = this.oeffentlicherName;
             }
         }
