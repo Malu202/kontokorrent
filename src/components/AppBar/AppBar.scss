@@ -72,6 +72,7 @@ $app-bar-size: 4em;
             justify-content: flex-start;
             padding: 0em 0.5em;
             margin: 0;
+            box-sizing: border-box;
             border-radius: 0;
         }
     }
