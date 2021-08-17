@@ -1,22 +1,36 @@
 <header class="app-bar">
     <kontokorrent-select class="app-bar__kontokorrent-select"></kontokorrent-select>
     <nav class="app-bar__links">
-        <button id="logout-button" class="app-bar__link" title="Logout">
+        <button id="share-button" class="app-bar__link" title="Teilen-Dialog öffnen">
             <span class="material-icons">
-                exit_to_app
+                share
             </span>
         </button>
-        <a href="info" class="app-bar__link" title="Informationen über diese App">
+        <button id="open-menu-button" class="app-bar__link" title="Menü öffnen">
             <span class="material-icons">
-                info
+                menu
             </span>
-        </a>
+        </button>
+        <app-popup class="app-bar__nav-popup" id="appbar-menu">
+            <a href="info" class="button" title="Informationen über diese App">
+                <span class="material-icons">
+                    info
+                </span>
+                Info
+            </a>
+            <button id="logout-button" class="button">
+                <span class="material-icons">
+                    exit_to_app
+                </span>
+                Ausloggen
+            </button>
+        </app-popup>
     </nav>
 </header>
 <app-popup id="logout-dialog">
     <div class="dialog__backdrop"></div>
     <div class="dialog">
-        <p>
+        <p class="dialog__question">
             Wirklich aus allen Kontokorrents ausloggen?
         </p>
         <div class="dialog__button-pane">
@@ -24,4 +38,6 @@
             <button id="confirm-logout" class="button">Ausloggen</button>
         </div>
     </div>
+</app-popup>
+<app-popup id="share-dialog">
 </app-popup>

@@ -1,6 +1,7 @@
 @use "../ui-components/theme";
 @use "../ui-components/reset";
 @use "../ui-components/utils";
+@use "../ui-components/popup";
 
 $app-bar-size: 4em;
 
@@ -20,6 +21,10 @@ $app-bar-size: 4em;
 
     &:after {
         border-radius: 50%;
+    }
+
+    &:disabled {
+        @include theme.property(color, disabled-on-primary);
     }
 }
 
@@ -42,10 +47,32 @@ $app-bar-size: 4em;
 
     &__links {
         flex-shrink: 0;
+        position: relative;
     }
 
     &__kontokorrent-select {
         margin-left: 1em;
         min-width: 6em;
+    }
+
+
+    &__nav-popup {
+        position: absolute;
+        @include theme.property(background-color, bg-container);
+        @include theme.property(color, fg-on-container);
+        @include utils.default-shadow;
+        border-radius: popup.$border-radius;
+        @include popup.open-animation();
+        z-index: 1;
+        right: 0.5em;
+        min-width: 10em;
+
+        &>.button {
+            width: 100%;
+            justify-content: flex-start;
+            padding: 0em 0.5em;
+            margin: 0;
+            border-radius: 0;
+        }
     }
 }

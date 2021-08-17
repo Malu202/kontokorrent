@@ -3,7 +3,7 @@
 @mixin hover-effect {
     position: relative;
 
-    &:hover {
+    &:hover:not(:disabled){
         &::after {
             opacity: 0.08;
         }

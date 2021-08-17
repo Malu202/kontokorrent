@@ -1,0 +1,44 @@
+<div class="dialog__backdrop" id="backdrop"></div>
+<div class="dialog">
+    <h2>
+        <strong class="share-dialog__display-name">
+            <span id="share-display-name"></span>
+        </strong>
+        teilen
+    </h2>
+    <p>
+        Alle die den Namen <strong><span id="share-oeffentlicher-name"></span></strong>
+        kennen, können sich einloggen.
+    </p>
+    <div id="web-share">
+        <h3>Über App Teilen</h3>
+        <p>Teile den Kontokorrent über eine App, zum Beispiel im Chat deiner Gruppe.</p>
+        <button title="über eine App teilen" class="button button--raised" id="web-share-btn">
+            <span class="material-icons">
+                share
+            </span>
+            Teilen
+        </button>
+    </div>
+    <div>
+        <h3>Link kopieren</h3>
+        <p>Kopiere den Link und sende ihn an weitere Personen.</p>
+        <div class="share-dialog__link-box">
+            <input type="text" readonly="readonly" id="share-link">
+            <button title="über eine App teilen" class="button" id="share-copy-link-btn" title="Link kopieren">
+                <span class="material-icons">
+                    content_copy
+                </span>
+            </button>
+        </div>
+        <div style="visibility: hidden;" class="share-dialog__copied" id="share-copied">
+            <span class="material-icons">
+                done
+            </span>
+            kopiert.
+        </div>
+    </div>
+    <div class="dialog__button-pane">
+        <button id="share-done" class="button">Fertig</button>
+    </div>
+</div>

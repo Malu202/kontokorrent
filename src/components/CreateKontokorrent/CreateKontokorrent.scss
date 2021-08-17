@@ -19,10 +19,6 @@ app-create-event {
     @include box-width;
     flex: 3 0 0px;
 
-    & h1 {
-        font-weight: normal;
-    }
-
     &__label {
         font-weight: 500;
         margin-top: 0.5em;

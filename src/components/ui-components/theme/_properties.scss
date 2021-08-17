@@ -2,6 +2,7 @@
 
 $primary: #6200ee !default;
 $fg-on-primary : #fff !default;
+$disabled-on-primary :  color.adjust($color: $primary, $lightness: 20%) !default;
 $sublte-on-primary : color.adjust($color: $primary, $lightness: 20%) !default;
 $hover-on-container: color.adjust($color: $primary, $alpha: -0.96) !default;
 $hover-on-primary: color.adjust($color: $primary, $alpha: -0.96) !default;
@@ -19,6 +20,7 @@ $error-alert-bg: color.adjust($color: #FF5252, $lightness: 20%) !default;
 
 $theme-props : (primary: $primary,
     fg-on-primary :$fg-on-primary,
+    disabled-on-primary :$disabled-on-primary,
     sublte-on-primary : $sublte-on-primary,
     hover-on-container: $hover-on-container,
     hover-on-primary: $hover-on-primary,

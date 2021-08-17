@@ -80,7 +80,7 @@ export class AusgleichStatus {
         };
     }
 
-    flattenAusgleichZahlungen(z: AusgleichsZahlung[][]) {
+    private flattenAusgleichZahlungen(z: AusgleichsZahlung[][]) {
         return z.reduce((a, b) => a.concat(b), []);
     }
 

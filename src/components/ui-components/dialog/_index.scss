@@ -22,6 +22,11 @@
             justify-content: flex-end;
         }
 
+        &__question {
+            margin-block-start: 1em;
+            margin-block-end: 1em;
+        }
+
         &__backdrop {
             position: fixed;
             top: 0;
