@@ -43,7 +43,7 @@ export class KontokorrentSelectListEntry extends HTMLElement {
     private updateStyle() {
         if (this.rendered && this.kontokorrent) {
             this.name.innerText = this.kontokorrent.name;
-            this.link.href = `kontokorrents/${this.kontokorrent.id}`;
+            this.link.href = `kontokorrents/o/${this.kontokorrent.oeffentlicherName}`;
             this.link.classList.toggle("kontokorrent-select-list__entry--active", this.isActive);
         }
     }
