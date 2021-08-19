@@ -14,6 +14,20 @@
             "type": "image/png"
         }
     ],
+    "shortcuts": [
+        {
+            "name": "Bezahlung eintragen",
+            "short_name": "Bezahlung eintragen",
+            "description": "Neue Bezahlung zu einem Kontokorrent hinzufügen",
+            "url": "./eintragen",
+            "icons": [
+                {
+                    "src": "assets/bezahlung-eintragen_192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ],
     "start_url": "./",
     "theme_color": "#6200ee",
     "background_color": "#ffffff",

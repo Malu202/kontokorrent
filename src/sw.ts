@@ -14,13 +14,13 @@ declare global {
 }
 let cacheNames = {
     code: `code-${__CACHENAME}`,
-    asset: "asset-v1",
+    asset: "asset-v2",
     webfont: "webfont"
 };
 
 self.addEventListener("install", function (event) {
     let dividedAssets = self.__WB_MANIFEST.reduce((acc, next) => {
-        if (next.url.indexOf("favicons/") > -1) {
+        if (next.url.indexOf("favicons/") > -1 || next.url.indexOf("assets/") > -1) {
             acc.asset.push(next.url);
         }
         else {

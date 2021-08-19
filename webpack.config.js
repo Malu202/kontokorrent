@@ -135,6 +135,7 @@ module.exports = (env, argv) => {
             new CopyPlugin({
                 patterns: [
                     { from: './favicons', to: 'favicons' },
+                    { from: './assets', to: 'assets' },
                     { from: './src/site.webmanifest', to: './' },
                 ],
             }),
