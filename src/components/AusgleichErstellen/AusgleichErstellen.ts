@@ -11,6 +11,7 @@ import { ArrayToElementRenderer } from "../../utils/ArrayToElementRenderer";
 import { AusgleichsZahlungDisplay, BezahlendePersonNameAttribute, EmpfaengerPersonNameAttribute, WertAttribute } from "./AusgleichsZahlungDisplay";
 import { convertLinks } from "../convertLinks";
 import { AusgleichOptions } from "../../lib/ausgleich/AusgleichOptions";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 export class AusgleichErstellen extends HTMLElement {
     private rendered = false;
@@ -100,6 +101,7 @@ export class AusgleichErstellen extends HTMLElement {
     }
 
     private applyStoreState(state: State) {
+        let umrechnungskurs = (parseFloat(this.umrechnungskurs.value) || 1);
         let ausgleichProgress = false;
         let kontokorrent = state.kontokorrents.kontokorrents[state.kontokorrents.activeKontokorrentId];
         if (kontokorrent) {
@@ -111,7 +113,7 @@ export class AusgleichErstellen extends HTMLElement {
                     let e: AusgleichsZahlungDisplay = <AusgleichsZahlungDisplay>li.children[0];
                     e.setAttribute(BezahlendePersonNameAttribute, kontokorrent.personen.find(x => x.id == a.bezahlendePersonId).name);
                     e.setAttribute(EmpfaengerPersonNameAttribute, kontokorrent.personen.find(x => x.id == a.empfaengerPersonId).name);
-                    e.setAttribute(WertAttribute, `${a.wert / (parseFloat(this.umrechnungskurs.value) || 1)}`);
+                    e.setAttribute(WertAttribute, `${formatCurrency(a.wert)}${(umrechnungskurs != 1 ? ` (umgerechnet  ${formatCurrency(a.wert/umrechnungskurs)})`:"")}`);
                 });
             }
 

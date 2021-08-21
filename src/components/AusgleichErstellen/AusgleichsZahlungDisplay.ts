@@ -1,4 +1,3 @@
-import { formatCurrency } from "../../utils/formatCurrency";
 import template from "./AusgleichsZahlungDisplay.html";
 
 export const BezahlendePersonNameAttribute = "bezahlender";
@@ -52,8 +51,8 @@ export class AusgleichsZahlungDisplay extends HTMLElement {
         if (this.rendered) {
             this.bezahlendePersonDisplay.innerText = this.bezahlendePersonName;
             this.empfaengerPersonDisplay.innerText = this.empfaengerPersonName;
-            this.zahlung.innerText = `bezahlt ${formatCurrency(parseFloat(this.wert))} an`;
-            this.zahlung.title = `bezahlt ${formatCurrency(parseFloat(this.wert))} an`;
+            this.zahlung.innerText = `bezahlt ${this.wert} an`;
+            this.zahlung.title = `bezahlt ${this.wert} an`;
         }
     }
 
