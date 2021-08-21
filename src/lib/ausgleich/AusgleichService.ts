@@ -17,8 +17,8 @@ export class AusgleichService {
             zwischengespeicherte: false,
             bisLaufendeNummer: request.bisLaufendeNummer,
         });
-        let ausgleichStatus = new AusgleichStatus(balance.balance, new PersonenBeziehungScoreBewerter(balance.balance, balance.bezahlungen, request.geforderteZahlungen));
-        ausgleichStatus.mussZahlungenAnwenden(request.mussZahlungen);
+        let ausgleichStatus = new AusgleichStatus(balance.balance, new PersonenBeziehungScoreBewerter(balance.balance, balance.bezahlungen, request.ausgleichOptions.geforderteZahlungen));
+        ausgleichStatus.mussZahlungenAnwenden(request.ausgleichOptions.mussZahlungen);
         for (let i = 0; i < 1000; i++) {
             if (ausgleichStatus.istAufgeloest()) {
                 return ausgleichStatus.getAusgleich();

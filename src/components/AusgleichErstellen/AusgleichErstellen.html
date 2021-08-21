@@ -1,0 +1,43 @@
+<app-bar></app-bar>
+<div class="ausgleich-erstellen__ausgleich">
+    <div class="ausgleich-menu">
+        <a id="zurueck-zum-kontokorrent" class="button">
+            <span class="material-icons">
+                arrow_back
+            </span>
+            zurück
+        </a>
+    </div>
+    <h2>Ausgleich</h2>
+    <h3>Optionen</h3>
+    <form id="optionen-form">
+        <div>
+            <input type="radio" name="typ" value="bevorzugt" id="bevorzugt" required="required">
+            <label for="bevorzugt">Bevorzugt</label>
+            <input type="radio" name="typ" value="muss" id="muss" required="required">
+            <label for="muss">Muss</label>
+        </div>
+        <div>
+            <select name="bezahlender" id="bezahlender" required></select>
+            bezahlt an
+            <select name="empfaenger" id="empfaenger" required></select>
+        </div>
+        <div>
+            <button type="submit" id="option-hinzufuegen-button">Option hinzufügen</button>
+        </div>
+    </form>
+    <div id="optionen">
+    </div>
+    <div>
+        <label for="umrechnungskurs">Umrechnungskurs</label>
+        <input type="number" id="umrechnungskurs" value="1">
+    </div>
+    <h3>Zahlungen</h3>
+    <ol id="zahlungen">
+
+    </ol>
+</div>
+<div class="ausgleich-erstellen__progress" id="ausgleich-progress">
+    <span class="spinner"></span>
+    <span id="progress-label"></span>
+</div>

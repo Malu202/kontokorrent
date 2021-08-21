@@ -8,6 +8,10 @@ import { ActionNames } from "./ActionNames";
 import { KontokorrentSynchronizer } from "../../lib/KontokorrentSynchronizer";
 import { BalanceCalculator } from "../../lib/BalanceCalculator";
 import { KontokorrentBalance } from "../../lib/KontokorrentBalance";
+import { GeforderteZahlung } from "../../lib/ausgleich/GeforderteZahlung";
+import { AusgleichOptions } from "../../lib/ausgleich/AusgleichOptions";
+import { AusgleichService } from "../../lib/ausgleich/AusgleichService";
+import { KontokorrentAusgleich } from "../../lib/ausgleich/KontokorrentAusgleich";
 
 export class KontokorrentGeoeffnet implements Action {
     readonly type = ActionNames.KontokorrentGeoeffnet;
@@ -58,6 +62,20 @@ export class KontokorrentOeffnen implements Action {
     }
 }
 
+export class AusgleichBerechnen implements Action {
+    readonly type = ActionNames.AusgleichBerechnen;
+    constructor(public kontokorrentId: string) {
+
+    }
+}
+
+export class AusgleichBerechnet implements Action {
+    readonly type = ActionNames.AusgleichBerechnet;
+    constructor(public kontokorrentId: string, public ausgleich: KontokorrentAusgleich) {
+
+    }
+}
+
 export type KontokorrentSyncActions =
     | KontokorrentGeoeffnet
     | KontokorrentBezahlungen
@@ -65,7 +83,9 @@ export type KontokorrentSyncActions =
     | KontokorrentSynchronisiert
     | KontokorrentBalanceAktualisiert
     | KontokorrentNichtGefunden
-    | KontokorrentOeffnen;
+    | KontokorrentOeffnen
+    | AusgleichBerechnen
+    | AusgleichBerechnet;
 
 export class KontokorrentSyncActionCreator {
 
@@ -127,6 +147,22 @@ export class KontokorrentSyncActionCreator {
             this.store.dispatch(new KontokorrentGeoeffnet(kk.id));
             await Promise.all([this.db.setZuletztGesehenerKontokorrentId(kk.id), this.refreshKontokorrent(kk.id)]);
             await this.kontokorrentSynchronisieren(kk.id);
+        } else {
+            this.store.dispatch(new KontokorrentNichtGefunden(oeffentlicherName));
+        }
+    }
+
+    async ausgleichRechnen(oeffentlicherName: string, ausgleichOptions: AusgleichOptions) {
+        let kk = await this.db.getPerOeffentlichName(oeffentlicherName);
+        if (null != kk) {
+            this.store.dispatch(new AusgleichBerechnen(kk.id));
+            await this.kontokorrentSynchronisieren(kk.id);
+            let ausgleich = await (new AusgleichService(this.db).getAusgleich({
+                ausgleichOptions: ausgleichOptions,
+                bisLaufendeNummer: null,
+                kontokorrentId: kk.id
+            }));
+            this.store.dispatch(new AusgleichBerechnet(kk.id, ausgleich));
         } else {
             this.store.dispatch(new KontokorrentNichtGefunden(oeffentlicherName));
         }

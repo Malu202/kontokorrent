@@ -1,4 +1,5 @@
 import { AccountInfo } from "../lib/AccountInfo";
+import { KontokorrentAusgleich } from "../lib/ausgleich/KontokorrentAusgleich";
 import { BearbeitungsStatus } from "../lib/BearbeitungsStatus";
 
 export interface AccountState {
@@ -67,6 +68,8 @@ export interface KontokorrentState {
     synchronisieren: boolean;
     bezahlungAnlegen: RequestStatus;
     angezeigteBezahlung: { [id: string]: AngezeigteBezahlungState }
+    ausgleichBerechnen: boolean;
+    ausgleich: KontokorrentAusgleich;
 }
 
 export interface BeschreibungVorschlagState {

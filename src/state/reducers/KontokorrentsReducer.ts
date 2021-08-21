@@ -138,7 +138,9 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                                 }),
                                 bezahlungen: [],
                                 bezahlungAnlegen: null,
-                                angezeigteBezahlung: {}
+                                angezeigteBezahlung: {},
+                                ausgleich: null,
+                                ausgleichBerechnen: false
                             }
                         }
                     };
@@ -155,45 +157,26 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                 break;
             }
             case ActionNames.KontokorrentBezahlungen: {
-                updateStore(s => {
-                    return {
-                        ...s,
-                        kontokorrents: {
-                            ...s.kontokorrents, [action.kontokorrentId]: {
-                                ...s.kontokorrents[action.kontokorrentId],
-                                bezahlungen: action.bezahlungen
-                            }
-                        }
-                    };
-                });
+                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { bezahlungen: action.bezahlungen }));
                 break;
             }
             case ActionNames.KontokorrentSynchronisieren: {
+                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { synchronisieren: true }));
+            }
+            case ActionNames.KontokorrentSynchronisiert: {
+                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { synchronisieren: false }));
+                break;
+            }
+            case ActionNames.AusgleichBerechnen: {
                 updateStore(s => {
-                    return {
-                        ...s,
-                        kontokorrents: {
-                            ...s.kontokorrents, [action.kontokorrentId]: {
-                                ...s.kontokorrents[action.kontokorrentId],
-                                synchronisieren: true
-                            }
-                        }
-                    };
+                    s = { ...s, activeKontokorrentId: action.kontokorrentId };
+                    this.updateKontokorrentStatus(s, action.kontokorrentId, { ausgleichBerechnen: true });
+                    return s;
                 });
                 break;
             }
-            case ActionNames.KontokorrentSynchronisiert: {
-                updateStore(s => {
-                    return {
-                        ...s,
-                        kontokorrents: {
-                            ...s.kontokorrents, [action.kontokorrentId]: {
-                                ...s.kontokorrents[action.kontokorrentId],
-                                synchronisieren: false
-                            }
-                        }
-                    };
-                });
+            case ActionNames.AusgleichBerechnet: {
+                updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { ausgleichBerechnen: false, ausgleich: action.ausgleich }));
                 break;
             }
             case ActionNames.KontokorrentBalanceAktualisiert: {
@@ -404,6 +387,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                 synchronisieren: false,
                 bezahlungen: <Bezahlung[]>[],
                 angezeigteBezahlung: {},
+                ausgleichBerechnen: false,
                 // old model
                 ...map[k.id],
                 personen: k.personen.map(v => {

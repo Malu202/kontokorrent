@@ -1,5 +1,8 @@
 import { ServiceLocator } from "../../ServiceLocator";
 import { WorkerService, workerServiceFactory } from "../../lib/WorkerService";
+import { AusgleichRequest } from "../../lib/ausgleich/AusgleichRequest";
+import { GeforderteZahlung } from "../../lib/ausgleich/GeforderteZahlung";
+import { AusgleichOptions } from "../../lib/ausgleich/AusgleichOptions";
 
 export class KontokorrentActionCreator {
 
@@ -9,6 +12,10 @@ export class KontokorrentActionCreator {
 
     kontokorrentOeffnen(oeffentlicherName: string) {
         this.workerService.kontokorrentOeffnen(oeffentlicherName);
+    }
+
+    ausgleichRechnen(oeffentlicherName:string, ausgleichOptions:AusgleichOptions) {
+        this.workerService.ausgleichRechnen(oeffentlicherName, ausgleichOptions);
     }
 }
 

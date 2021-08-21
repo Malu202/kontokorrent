@@ -1,5 +1,7 @@
 import { ApiClient } from "../api/ApiClient";
 import { AccountInfoStore } from "../lib/AccountInfoStore";
+import { AusgleichOptions } from "../lib/ausgleich/AusgleichOptions";
+import { GeforderteZahlung } from "../lib/ausgleich/GeforderteZahlung";
 import { KontokorrentDatabase } from "../lib/KontokorrentDatabase";
 import { BeschreibungVorschlagActionCreator } from "../state/actions/BeschreibungVorschlagActionCreator";
 import { KontokorrentSyncActionCreator } from "../state/actions/KontokorrentSyncActionCreator";
@@ -14,7 +16,8 @@ let storeAdapter = {
 export const enum WorkerMessageType {
     KontokorrentOeffnen,
     GetBeschreibungVorschlaege,
-    ResetBeschreibungenCache
+    ResetBeschreibungenCache,
+    AusgleichRechnen
 }
 
 export interface KontokorrentOeffnenMessage {
@@ -30,10 +33,16 @@ export interface GetBeschreibungVorschlaegeMessage {
 export interface ResetBeschreibungenCacheMessage {
     type: WorkerMessageType.ResetBeschreibungenCache;
 }
+export interface AusgleichRechnenMessage {
+    type: WorkerMessageType.AusgleichRechnen;
+    oeffentlicherName: string;
+    ausgleichOptions: AusgleichOptions;
+}
 
 type WorkerMessage = KontokorrentOeffnenMessage
     | GetBeschreibungVorschlaegeMessage
-    | ResetBeschreibungenCacheMessage;
+    | ResetBeschreibungenCacheMessage
+    | AusgleichRechnenMessage;
 
 const db = new KontokorrentDatabase();
 const accountInfoStore = new AccountInfoStore(db);
@@ -51,6 +60,9 @@ async function process(msg: WorkerMessage) {
             break;
         case WorkerMessageType.ResetBeschreibungenCache:
             beschreibungVorschlagActionCreator.resetCache();
+            break;
+        case WorkerMessageType.AusgleichRechnen:
+            await kontokorrentSyncActionCreator.ausgleichRechnen(msg.oeffentlicherName, msg.ausgleichOptions);
             break;
     }
 }

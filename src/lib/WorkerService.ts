@@ -1,8 +1,11 @@
 import { ServiceLocator } from "../ServiceLocator";
 import { Store } from "../state/Store";
-import { GetBeschreibungVorschlaegeMessage, KontokorrentOeffnenMessage, ResetBeschreibungenCacheMessage, WorkerMessageType } from "../worker/KontokorrentWorker";
+import { AusgleichRechnenMessage, GetBeschreibungVorschlaegeMessage, KontokorrentOeffnenMessage, ResetBeschreibungenCacheMessage, WorkerMessageType } from "../worker/KontokorrentWorker";
+import { AusgleichOptions } from "./ausgleich/AusgleichOptions";
+import { GeforderteZahlung } from "./ausgleich/GeforderteZahlung";
 
 export class WorkerService {
+
     constructor(private store: Store) {
 
     }
@@ -41,6 +44,15 @@ export class WorkerService {
         let msg: KontokorrentOeffnenMessage = {
             type: WorkerMessageType.KontokorrentOeffnen,
             oeffentlicherName: oeffentlicherName
+        };
+        this.getWorker().postMessage(msg);
+    }
+
+    ausgleichRechnen(oeffentlicherName: string, ausgleichOptions:AusgleichOptions) {
+        let msg: AusgleichRechnenMessage = {
+            type: WorkerMessageType.AusgleichRechnen,
+            oeffentlicherName: oeffentlicherName,
+            ausgleichOptions: ausgleichOptions
         };
         this.getWorker().postMessage(msg);
     }

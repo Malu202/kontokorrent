@@ -31,6 +31,17 @@ function matchOeffentlicherKontokorrentRoute(route: string) {
     return null;
 }
 
+function matchOeffentlicherKontokorrentAusgleichRoute(route: string) {
+    let routeMatcher = /^kontokorrents\/o\/([a-zA-Z0-9\-]+)\/ausgleich-erstellen$/.exec(route);
+    if (routeMatcher) {
+        let oeffentlicherName: string = routeMatcher[1];
+        return {
+            oeffentlicherName: oeffentlicherName
+        };
+    }
+    return null;
+}
+
 export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement> {
     constructor(private store: Store) {
     }
@@ -110,10 +121,18 @@ export class KontokorrentRouteResolver implements AsyncRouteResolver<HTMLElement
             component.addServices(this.serviceLocator);
             return component;
         }
-        let routeMatch = matchOeffentlicherKontokorrentRoute(currentRoute);
-        if (routeMatch) {
+        let oeffentlicherKontokorrentRouteMatch = matchOeffentlicherKontokorrentRoute(currentRoute);
+        if (oeffentlicherKontokorrentRouteMatch) {
             let component = await this.getKontokorrentPageComponent();
-            component.setRouteParameters(routeMatch.oeffentlicherName);
+            component.setRouteParameters(oeffentlicherKontokorrentRouteMatch.oeffentlicherName);
+            return component;
+        }
+        let ausgleichMatch = matchOeffentlicherKontokorrentAusgleichRoute(currentRoute);
+        if (ausgleichMatch) {
+            const { AusgleichErstellen } = await import("../components/AusgleichErstellen/AusgleichErstellen");
+            let component = new AusgleichErstellen();
+            component.addServices(this.serviceLocator);
+            component.setRouteParameters(ausgleichMatch.oeffentlicherName);
             return component;
         }
         let oeffentlicherKontokorrentBezahlungRoute = /^kontokorrents\/o\/([a-zA-Z0-9\-]+)\/bezahlungen\/([a-zA-Z0-9\-]+)$/.exec(currentRoute);

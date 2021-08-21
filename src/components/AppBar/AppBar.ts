@@ -24,6 +24,7 @@ export class AppBar extends HTMLElement {
     private shareButton: HTMLButtonElement;
     private shareDialog: Popup;
     private shareListener: (e: MouseEvent) => void;
+    private ausgleichButton: HTMLAnchorElement;
 
 
     constructor() {
@@ -39,6 +40,7 @@ export class AppBar extends HTMLElement {
             this.menuPopup = this.querySelector("#appbar-menu");
             this.shareDialog = this.querySelector("#share-dialog");
             this.shareButton = this.querySelector("#share-button");
+            this.ausgleichButton = this.querySelector("#ausgleich-button");
             this.openMenuButton = this.querySelector("#open-menu-button");
             if (this.store) {
                 this.applyStoreState(this.store.state);
@@ -90,7 +92,14 @@ export class AppBar extends HTMLElement {
             this.kontokorrentSelect.kontokorrents = Object.values(state.kontokorrents.kontokorrents);
             this.kontokorrentSelect.setAttribute("active-kontokorrent-id", state.kontokorrents.activeKontokorrentId);
             this.shareButton.disabled = !state.kontokorrents.activeKontokorrentId;
+            this.ausgleichButton.style.display = state.kontokorrents.activeKontokorrentId ? "" : "none";
             this.applyStoreStateToShareDialog(state);
+            let kontokorrent = state.kontokorrents.kontokorrents[state.kontokorrents.activeKontokorrentId];
+            if (kontokorrent) {
+                this.ausgleichButton.href = `kontokorrents/o/${kontokorrent.oeffentlicherName}/ausgleich-erstellen`;
+            } else {
+                this.ausgleichButton.href = "";
+            }
         }
     }
 
