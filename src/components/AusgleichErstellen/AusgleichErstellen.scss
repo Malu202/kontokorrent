@@ -33,6 +33,9 @@ ausgleich-erstellen {
         width: 100%;
         justify-content: center;
         margin-top: 5em;
+        & > app-spinner {
+            height: 1.2em;
+        }
     }
 
     // &__form-container {

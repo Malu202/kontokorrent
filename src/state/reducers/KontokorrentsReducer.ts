@@ -27,36 +27,36 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                         ...s,
                         listeLaden: true
                     };
-                })
-            }
+                });
                 break;
+            }
             case ActionNames.KontokorrentListeLadenFailed: {
                 updateStore(s => {
                     return {
                         ...s,
                         listeLaden: false
                     };
-                })
-            }
+                });
                 break;
+            }
             case ActionNames.KontokorrentListe: {
                 updateStore(s => {
                     return {
                         ...s,
                         kontokorrents: this.extendMap(s.kontokorrents, action.kontokorrents)
                     };
-                })
-            }
+                });
                 break;
+            }
             case ActionNames.KontokorrentHinzufuegen: {
                 updateStore(s => {
                     return {
                         ...s,
                         hinzufuegen: true
                     };
-                })
-            }
+                });
                 break;
+            }
             case ActionNames.KontokorrentHinzufuegenFailed: {
                 updateStore(s => {
                     return {
@@ -64,9 +64,9 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                         hinzufuegen: false,
                         hinzufuegenFailed: { kontokorrentNotFound: action.notFound },
                     };
-                })
-            }
+                });
                 break;
+            }
             case ActionNames.KontokorrentHinzufuegenSuccess: {
                 updateStore(s => {
 
@@ -75,7 +75,8 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                         hinzufuegen: false,
                         kontokorrents: this.extendMap(s.kontokorrents, action.kontokorrents)
                     };
-                })
+                });
+                break;
             }
             case ActionNames.KontokorrentCreating: {
                 updateStore(s => {
@@ -84,9 +85,9 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                         creating: true,
                         creationFailed: null
                     };
-                })
-            }
+                });
                 break;
+            }
             case ActionNames.KontokorrentCreationFailed: {
                 updateStore(s => {
                     return {
@@ -96,9 +97,9 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                             exists: action.exists
                         }
                     };
-                })
-            }
+                });
                 break;
+            }
             case ActionNames.KontokorrentNichtGefunden: {
                 updateStore(s => {
                     return {
@@ -107,18 +108,18 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
                             oeffentlicherName: action.oeffentlicherName
                         }
                     };
-                })
-            }
+                });
                 break;
+            }
             case ActionNames.KontokorrentOeffnen: {
                 updateStore(s => {
                     return {
                         ...s,
                         nichtGefunden: null
                     };
-                })
-            }
+                });
                 break;
+            }
             case ActionNames.KontokorrentCreated: {
                 updateStore(s => {
                     return {
@@ -162,6 +163,7 @@ export class KontokorrentsReducer implements Reducer<KontokorrentsState, Actions
             }
             case ActionNames.KontokorrentSynchronisieren: {
                 updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { synchronisieren: true }));
+                break;
             }
             case ActionNames.KontokorrentSynchronisiert: {
                 updateStore(s => this.updateKontokorrentStatus(s, action.kontokorrentId, { synchronisieren: false }));

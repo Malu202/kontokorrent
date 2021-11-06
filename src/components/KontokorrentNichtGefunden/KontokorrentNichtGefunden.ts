@@ -7,6 +7,7 @@ import { AppBar, AppBarTagName } from "../AppBar/AppBar";
 import template from "./KontokorrentNichtGefunden.html";
 import "./KontokorrentNichtGefunden.scss";
 import { KontokorrentHinzufuegenActionCreator, kontokorrentHinzufuegenActionCreatorFactory } from "../../state/actions/KontokorrentHinzufuegenActionCreator";
+import "../Spinner/Spinner";
 
 export class KontokorrentNichtGefunden extends HTMLElement {
     private rendered = false;

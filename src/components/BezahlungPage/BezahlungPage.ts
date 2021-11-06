@@ -12,6 +12,7 @@ import { BezahlungEintragenForm, BezahlungEintragenFormTagName } from "../Bezahl
 import { Debouncer } from "../../utils/Debouncer";
 import { BearbeitungsStatus } from "../../lib/BearbeitungsStatus";
 import { Popup } from "../ui-components/popup/popup";
+import "../Spinner/Spinner";
 
 export class BezahlungPage extends HTMLElement {
     private store: Store;

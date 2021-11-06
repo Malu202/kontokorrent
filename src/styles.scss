@@ -4,7 +4,6 @@
 @use "./components/ui-components/button";
 @use "./components/ui-components/floating-action-button";
 @use "./components/ui-components/dialog";
-@use "./components/ui-components/spinner";
 @use "./components/ui-components/input";
 @use "./components/ui-components/tip";
 @use "./components/ui-components/tip-button";
@@ -15,7 +14,6 @@
 @include dialog.core-styles;
 @include floating-action-button.core-styles;
 @include input.core-styles;
-@include spinner.core-styles;
 @include tip.core-styles;
 @include tip-button.core-styles;
 
@@ -61,4 +59,8 @@ h1 {
 h2,
 h3 {
     font-weight: 500;
+}
+
+:root {
+    @include theme.property(--spinner-color, primary);
 }

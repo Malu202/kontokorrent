@@ -10,6 +10,7 @@ import { convertLinks } from "../convertLinks";
 import "../BezahlungEintragenForm/BezahlungEintragenForm";
 import { BezahlungEintragenForm, BezahlungEintragenFormTagName } from "../BezahlungEintragenForm/BezahlungEintragenForm";
 import { Debouncer } from "../../utils/Debouncer";
+import "../Spinner/Spinner";
 
 export class BezahlungEintragenPage extends HTMLElement {
     private store: Store;

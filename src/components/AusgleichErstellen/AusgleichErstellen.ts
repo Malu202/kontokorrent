@@ -12,6 +12,7 @@ import { AusgleichsZahlungDisplay, BezahlendePersonNameAttribute, EmpfaengerPers
 import { convertLinks } from "../convertLinks";
 import { AusgleichOptions } from "../../lib/ausgleich/AusgleichOptions";
 import { formatCurrency } from "../../utils/formatCurrency";
+import "../Spinner/Spinner";
 
 export class AusgleichErstellen extends HTMLElement {
     private rendered = false;

@@ -13,6 +13,7 @@ import { BezahlungenView } from "../BezahlungenView/BezahlungenView";
 import "./KontokorrentPage.scss";
 import { KontokorrentActionCreator, kontokorrentActionCreatorFactory } from "../../state/actions/KontokorrentActionCreator";
 import { KontokorrentListenActionCreator, kontokorrentListenActionCreatorFactory } from "../../state/actions/KontokorrentListenActionCreator";
+import "../Spinner/Spinner";
 
 export class KontokorrentPage extends HTMLElement {
     private store: Store;

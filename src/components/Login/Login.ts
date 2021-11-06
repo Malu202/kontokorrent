@@ -10,6 +10,7 @@ import "../ui-components/popup/popup";
 import "../ui-components/tip-button/tip-button";
 import { KontokorrentHinzufuegenActionCreator, kontokorrentHinzufuegenActionCreatorFactory } from "../../state/actions/KontokorrentHinzufuegenActionCreator";
 import { OeffentlicherNameParam } from "../../routing/KontokorrentRouteResolver";
+import "../Spinner/Spinner";
 
 export class Login extends HTMLElement {
     store: Store;

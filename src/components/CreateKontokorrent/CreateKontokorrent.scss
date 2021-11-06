@@ -27,9 +27,11 @@ app-create-event {
     &__processing {
         height: 2.1875em;
 
-        &>.spinner {
-            font-size: 1.2em;
+        & > app-spinner {
+            height: 100%;
         }
+        padding: 0.3em;
+        box-sizing: border-box;
 
         display: flex;
         align-items: center;

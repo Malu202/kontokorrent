@@ -12,6 +12,7 @@ import { KontokorrentHinzufuegenActionCreator, kontokorrentHinzufuegenActionCrea
 import "../ui-components/popup/popup";
 import "../ui-components/tip-button/tip-button";
 import { convertLinks } from "../convertLinks";
+import "../Spinner/Spinner";
 
 export class CreateKontokorrent extends HTMLElement {
     store: Store;
