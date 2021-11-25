@@ -1,0 +1,4 @@
+#bezahlungen-table{display:grid;grid-template-columns:-webkit-min-content -webkit-min-content 5fr 1fr 1fr;grid-template-columns:min-content min-content 5fr 1fr 1fr;grid-column-gap:2em;align-items:center}
+multi-bezahlung-zeile{display:contents}
+
+/*# sourceMappingURL=468.321291a696fc4746510f.css.map*/
