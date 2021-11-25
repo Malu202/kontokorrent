@@ -20,13 +20,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
-    - run: npm run build -- --mode="production" --env environment="gh-pagesv2"
+    - run: npm run build -- --mode="production" --env environment="gh-pages"
     - run: cp dist/index.html dist/404.html
-    - run: mkdir -p v2
-    - run: cp -r dist/* v2/
-    - run: mkdir -p rootfolder
-    - run: rm -rf rootfolder/*
-    - run: mv v2 rootfolder/
     - name: Install SSH Client 🔑
       uses: webfactory/ssh-agent@v0.4.1
       with:
@@ -36,5 +31,5 @@ jobs:
       with:
         SSH: true
         BRANCH: gh-pages
-        FOLDER: rootfolder
+        FOLDER: dist
         CLEAN: false

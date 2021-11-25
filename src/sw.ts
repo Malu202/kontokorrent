@@ -67,12 +67,12 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", function (event) {
     if (event.request.mode === "navigate") {
         if (event.request.method !== "GET") {
-            return;
+            return fetch(event.request);
         }
         event.respondWith(caches.match("index.html", { cacheName: cacheNames.code }).then(response => {
             return response || fetch(event.request);
         }));
-        return;
+        return fetch(event.request);
     }
     event.respondWith(
         caches.match(event.request).then(function (response) {
