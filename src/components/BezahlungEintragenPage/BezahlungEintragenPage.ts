@@ -31,6 +31,7 @@ export class BezahlungEintragenPage extends HTMLElement {
     private betreffVorschlagDebouncer = new Debouncer();
     private rendered = false;
     private serviceLocator: ServiceLocator;
+    private saveHotkeyListener: (e:KeyboardEvent) => void;
 
     constructor() {
         super();
@@ -68,6 +69,14 @@ export class BezahlungEintragenPage extends HTMLElement {
         this.saveEventListener = () => this.save();
         this.saveButton.addEventListener("click", this.saveEventListener);
         this.bezahlungEintragenForm.addEventListener("betreffChanged", (ev: CustomEvent) => this.betreffChanged(ev.detail));
+
+        this.saveHotkeyListener = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.key === "s") {
+                this.save();
+                e.preventDefault();
+            }
+        };
+        document.addEventListener("keydown", this.saveHotkeyListener);
     }
 
     private async betreffChanged(betreff: string) {
@@ -115,6 +124,7 @@ export class BezahlungEintragenPage extends HTMLElement {
         this.kontokorrentsSubscription();
         this.beschreibungVorschlagSubscription();
         this.saveButton.removeEventListener("click", this.saveEventListener);
+        document.removeEventListener("keydown", this.saveHotkeyListener);
     }
 }
 
