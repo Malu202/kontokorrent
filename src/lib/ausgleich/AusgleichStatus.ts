@@ -35,16 +35,37 @@ export class AusgleichStatus {
         this.anwenden(zahlungen);
     }
 
-    gleicheAufloesen() {
+
+    private getGleicheAufloesenCandidate() {
         let list = balanceList(this.balance);
-        let zahlungen = list.filter(p => p.wert > 0).map(bezahlender => {
-            let empfaenger = list.find(p2 => p2.personId != bezahlender.personId && isCloseTo(0, p2.wert + bezahlender.wert));
-            if (empfaenger) {
-                return new AusgleichsZahlung(bezahlender.personId, empfaenger.personId, bezahlender.wert);
+        let empfaenger = list.filter(e => e.wert < 0);
+        let bezahler = list.filter(e => e.wert > 0);
+        let closestDiff = Infinity;
+        let closestKombination: AusgleichsZahlung[] = [];
+        for (let e of empfaenger) {
+            for (let i = 1; i < 2 ** bezahler.length; i++) {
+                let bezahlerKombination = bezahler.filter((b, index) => (i & (1 << index)) > 0);
+                let summe = bezahlerKombination.reduce((a, b) => a + b.wert, 0);
+                let aktDiff = Math.abs(summe + e.wert);
+                if (aktDiff < closestDiff) {
+                    closestDiff = aktDiff;
+                    closestKombination = bezahlerKombination.map(b => new AusgleichsZahlung(b.personId, e.personId, b.wert));
+                }
+                closestDiff = Math.min(closestDiff, Math.abs(summe + e.wert));
             }
-            return null;
-        }).filter(z => z != null);
-        this.anwenden(zahlungen);
+        }
+        if (closestDiff < 0.5) {
+            return closestKombination;
+        }
+        return null;
+    }
+
+    gleicheAufloesen() {
+        let zahlungen = this.getGleicheAufloesenCandidate();
+        while (zahlungen) {
+            this.anwenden(zahlungen);
+            zahlungen = this.getGleicheAufloesenCandidate();
+        }
     }
 
     gleichheitErzeugen() {
