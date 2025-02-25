@@ -5,7 +5,7 @@ info:
 security:
   - bearerAuth: []
 servers:
-  - url: 'https://kontokorrent.azurewebsites.net/api'
+  - url: 'https://kontokorrent.marik.ch/api'
 paths:
   /token:
     post:

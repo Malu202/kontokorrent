@@ -1,4 +1,4 @@
-var API_URL = "https://kontokorrent.azurewebsites.net/api";
+var API_URL = "https://kontokorrent.marik.ch/api";
 var KONTOKORRENT_URL = API_URL + "/kontokorrent";
 var TOKEN_URL = API_URL + "/token";
 var PERSONS_URL = API_URL + "/persons";
